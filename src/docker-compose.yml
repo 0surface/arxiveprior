@@ -6,3 +6,9 @@ services:
     build:
       context: .
       dockerfile: arx.Extract.API/Dockerfile
+
+  arx.Extract.BackgroundTasks:
+    image: ${DOCKER_REGISTRY-}arxextractbackgroundtasks
+    build:
+     context: .
+     dockerfile: arx.Extract.BackgroundTasks/Dockerfile
