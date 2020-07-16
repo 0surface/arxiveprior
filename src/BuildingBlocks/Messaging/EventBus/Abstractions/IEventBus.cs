@@ -8,6 +8,6 @@ namespace EventBus.Abstractions
 
         void Subscribe<T, TH>()
             where T : IntegrationEvent
-            where TH : IIntgerationEventHandler<T>;
+            where TH : IIntegrationEventHandler<T>;
     }
 }

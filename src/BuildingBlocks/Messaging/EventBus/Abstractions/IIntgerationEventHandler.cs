@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 
 namespace EventBus.Abstractions
 {
-    public interface IIntgerationEventHandler<in TInterationEvent>  : IIntegrationEventHandler
-        where TInterationEvent : IntegrationEvent
+    public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler
+        where TIntegrationEvent : IntegrationEvent
     {
-        Task Handle(TInterationEvent @event);
+        Task Handle(TIntegrationEvent @event);
     }
 
     public interface IIntegrationEventHandler
