@@ -10,9 +10,4 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Events\" />
-    <Folder Include="Tasks\" />
-  </ItemGroup>
 </Project>
