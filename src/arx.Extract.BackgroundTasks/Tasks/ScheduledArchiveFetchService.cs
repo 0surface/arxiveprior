@@ -28,11 +28,11 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogDebug($"ScheduledArchiveFetchService background task is doing background work. [{DateTime.Now}]");
+                _logger.LogDebug($"ScheduledArchiveFetchService background task is doing background work. [{DateTime.UtcNow}]");
 
                 RunScheduledArchiveService();
-
-                await Task.Delay(_settings.PostFetchWaitTime, stoppingToken);
+                _logger.LogInformation($"_settings.PostFetchWaitTime : {_settings.PostFetchWaitTime}");
+                await Task.Delay(/*_settings.PostFetchWaitTime*/10000, stoppingToken);
             }
 
             _logger.LogDebug("ScheduledArchiveFetchService background task is stopping.");
