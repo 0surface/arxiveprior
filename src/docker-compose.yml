@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  arx.extract.api:
+    image: ${DOCKER_REGISTRY-}arxextractapi
+    build:
+      context: .
+      dockerfile: arx.Extract.API/Dockerfile
