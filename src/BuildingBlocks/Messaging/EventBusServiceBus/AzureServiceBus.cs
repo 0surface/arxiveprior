@@ -8,18 +8,18 @@ using System;
 
 namespace EventBusServiceBus
 {
-    public class EventBusServiceBus : IEventBus
+    public class AzureServiceBus : IEventBus
     {
         private readonly IServiceBusPersisterConnection _serviceBusPersisterConnection;
-        private readonly ILogger<EventBusServiceBus> _logger;
+        private readonly ILogger<AzureServiceBus> _logger;
         private readonly IEventBusSubscriptionsManager _subsManager;
         private readonly SubscriptionClient _subscriptionClient;
         private readonly ILifetimeScope _autofac;
         private readonly string AUTOFAC_SCOPE_NAME = "arx_event_bus";
         private const string INTEGRATION_EVENT_SUFFIX = "IntegrationEvent";
 
-        public EventBusServiceBus(IServiceBusPersisterConnection serviceBusPersisterConnection,
-            ILogger<EventBusServiceBus> logger, IEventBusSubscriptionsManager subsManager, string subscriptionClientName,
+        public AzureServiceBus(IServiceBusPersisterConnection serviceBusPersisterConnection,
+            ILogger<AzureServiceBus> logger, IEventBusSubscriptionsManager subsManager, string subscriptionClientName,
             ILifetimeScope autofac)
         {
             _serviceBusPersisterConnection = serviceBusPersisterConnection;
