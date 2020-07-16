@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace EventBus.Abstractions
 {
-    public interface IIntgeationEventHandler<in TInterationEvent>  : IIntegrationEventHandler
+    public interface IIntgerationEventHandler<in TInterationEvent>  : IIntegrationEventHandler
         where TInterationEvent : IntegrationEvent
     {
         Task Handle(TInterationEvent @event);
