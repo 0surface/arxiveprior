@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "arx.Extract.BackgroundTasks
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "arx.Extract.API", "Services\Extract\arx.Extract.API\arx.Extract.API.csproj", "{B4C0E567-C86E-49D9-95D8-CFE64F0EA29F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "arx.Extract.Data", "Services\Extract\arx.Extract.Data\arx.Extract.Data.csproj", "{E26CE36E-A550-43C4-95A8-89666A736213}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{B4C0E567-C86E-49D9-95D8-CFE64F0EA29F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4C0E567-C86E-49D9-95D8-CFE64F0EA29F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4C0E567-C86E-49D9-95D8-CFE64F0EA29F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E26CE36E-A550-43C4-95A8-89666A736213}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E26CE36E-A550-43C4-95A8-89666A736213}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E26CE36E-A550-43C4-95A8-89666A736213}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E26CE36E-A550-43C4-95A8-89666A736213}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +90,7 @@ Global
 		{4608E84B-EB74-41B6-A596-F9CAE47EBE4F} = {94AD6ADE-A286-48B7-9C89-EBBB1A079D0E}
 		{75E0A228-A3C5-4D84-862D-1B987757CE91} = {94AD6ADE-A286-48B7-9C89-EBBB1A079D0E}
 		{B4C0E567-C86E-49D9-95D8-CFE64F0EA29F} = {94AD6ADE-A286-48B7-9C89-EBBB1A079D0E}
+		{E26CE36E-A550-43C4-95A8-89666A736213} = {94AD6ADE-A286-48B7-9C89-EBBB1A079D0E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F51A04B3-2737-4B48-A4D1-959A9BE6F830}
