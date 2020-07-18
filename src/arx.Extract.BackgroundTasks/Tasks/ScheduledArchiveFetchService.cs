@@ -1,4 +1,5 @@
 ﻿using arx.Extract.BackgroundTasks.Events;
+using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,12 +13,15 @@ namespace arx.Extract.BackgroundTasks.Tasks
     public class ScheduledArchiveService : BackgroundService
     {
         private readonly BackgroundTaskSettings _settings;
+        private readonly IEventBus _eventBus;
         private readonly ILogger<ScheduledArchiveService> _logger;
 
         public ScheduledArchiveService(IOptions<BackgroundTaskSettings> settings,
+            IEventBus eventBus,
             ILogger<ScheduledArchiveService> logger)
         {
             _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));
+            _eventBus = eventBus;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger)); ;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -59,6 +63,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                                     extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
 
             //TODO: Publish to eventBus
+            _eventBus.Publish(extractionCompletedEvent);
         }
     }
 }
