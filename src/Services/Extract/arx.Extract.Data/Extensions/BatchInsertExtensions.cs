@@ -5,6 +5,8 @@ using System.Linq;
 
 namespace arx.Extract.Data.Extensions
 {
+    /*Based on code as seen from source
+     https://www.andybutland.dev/2018/11/azure-table-storage-batch-insert-within-operations-limit.html*/
     public static class BatchInsertExtensions
     {
         public static IList<TableResult> ExecuteBatchAsLimitedBatches(this CloudTable table,
