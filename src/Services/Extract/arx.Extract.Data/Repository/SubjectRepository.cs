@@ -1,57 +1,56 @@
-﻿using arx.Extract.Data.Entities;
+﻿using arx.Extract.Data.Common;
+using arx.Extract.Data.Entities;
 using arx.Extract.Data.Extensions;
 using arx.Extract.Data.Seed;
 using Microsoft.Azure.Cosmos.Table;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace arx.Extract.Data.Repository
 {
     public interface ISubjectRepository
     {
-        Task<IEnumerable<SubjectEntity>> All();
+        Task<IEnumerable<SubjectEntity>> GetAll();
+        Task<IEnumerable<SubjectEntity>> GetSubjectsByGroupCode(string groupCode);
+        Task<IEnumerable<SubjectEntity>> GetSubjectsByCode(string code);
         bool Seed();
     }
-    public class SubjectRepository : ISubjectRepository
+    public class SubjectRepository : TableStorage, ISubjectRepository
     {
-        private readonly string _connectionString;
-        private readonly string _tableName;
-        private CloudTable subjectTable = null;
-        public SubjectRepository()
+        public SubjectRepository(string connectionString, string tableName) : base(tableName, connectionString)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_connectionString);
-            var tableClient = storageAccount.CreateCloudTableClient();
-            subjectTable = tableClient.GetTableReference(_tableName);
-            subjectTable.CreateIfNotExists();
-        }
-        public SubjectRepository(string connectionString, string tableName)
-        {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-            var tableClient = storageAccount.CreateCloudTableClient();
-            subjectTable = tableClient.GetTableReference(tableName);
-            subjectTable.CreateIfNotExists();
-            _connectionString = connectionString;
-            _tableName = tableName;
+            Reference.CreateIfNotExists();
         }
 
-        public async Task<IEnumerable<SubjectEntity>> All()
-        {
-            var query = new TableQuery<SubjectEntity>();
+        public async Task<IEnumerable<SubjectEntity>> GetAll()        
+            => await Query<SubjectEntity>(new TableQuery<SubjectEntity>());        
 
-            var entities = subjectTable.ExecuteQuery(query);
+        public async Task<IEnumerable<SubjectEntity>> GetSubjectsByCode(string code)
+            => await QueryByRow<SubjectEntity>(code);
 
-            return await Task.FromResult(entities);
-        }
-
+        public async Task<IEnumerable<SubjectEntity>> GetSubjectsByGroupCode(string groupCode)
+            => await Query<SubjectEntity>(FilteredQuery("GroupCode", groupCode));
+        
         public bool Seed()
         {
             var entities = SeedReader.ReadSubjects();
             var batchOperation = new TableBatchOperation();
             entities.ToList().ForEach(e => batchOperation.InsertOrReplace(e));
-            var result = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(subjectTable, batchOperation, null);
+            var result = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(Reference, batchOperation, null);
 
             return result.Count == entities.Count();
+        }
+
+        private TableQuery<SubjectEntity> FilteredQuery(string propertyName, string filterValue)
+        {
+            return new TableQuery<SubjectEntity>()
+                        .Where(TableQuery.GenerateFilterCondition(
+                                            typeof(SubjectEntity).GetProperty(propertyName).Name,
+                                            QueryComparisons.Equal,
+                                            filterValue));
         }
     }
 }
