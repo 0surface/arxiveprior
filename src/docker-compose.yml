@@ -1,6 +1,10 @@
 version: '3.4'
 
 services:
+
+  rabbitmq:
+    image: rabbitmq:3.8-management-alpine
+
   arx.extract.api:
     image: ${DOCKER_REGISTRY-}arxextractapi
     build:
@@ -10,5 +14,7 @@ services:
   arx.Extract.BackgroundTasks:
     image: ${DOCKER_REGISTRY-}arxextractbackgroundtasks
     build:
-     context: .
-     dockerfile: arx.Extract.BackgroundTasks/Dockerfile
+      context: .
+      dockerfile: arx.Extract.BackgroundTasks/Dockerfile
+    depends_on:
+      - rabbitmq

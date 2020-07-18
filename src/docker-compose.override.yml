@@ -1,6 +1,11 @@
 version: '3.4'
 
 services:
+  rabbitmq:
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
   arx.extract.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
