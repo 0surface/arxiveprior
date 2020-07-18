@@ -4,7 +4,9 @@ using EventBus.Abstractions;
 using EventBus.Events;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
+using System.Text;
 
 namespace EventBusServiceBus
 {
@@ -15,7 +17,6 @@ namespace EventBusServiceBus
         private readonly IEventBusSubscriptionsManager _subsManager;
         private readonly SubscriptionClient _subscriptionClient;
         private readonly ILifetimeScope _autofac;
-        private readonly string AUTOFAC_SCOPE_NAME = "arx_event_bus";
         private const string INTEGRATION_EVENT_SUFFIX = "IntegrationEvent";
 
         public AzureServiceBus(IServiceBusPersisterConnection serviceBusPersisterConnection,
@@ -32,7 +33,22 @@ namespace EventBusServiceBus
         }
         public void Publish(IntegrationEvent @event)
         {
-            throw new NotImplementedException();
+            var eventName = @event.GetType().Name.Replace(INTEGRATION_EVENT_SUFFIX, "");
+            var jsonMessage = JsonConvert.SerializeObject(@event);
+            var body = Encoding.UTF8.GetBytes(jsonMessage);
+
+            var message = new Message
+            {
+                MessageId = Guid.NewGuid().ToString(),
+                Body = body,
+                Label = eventName,
+            };
+
+            var topicClient = _serviceBusPersisterConnection.CreateModel();
+
+            topicClient.SendAsync(message)
+                .GetAwaiter()
+                .GetResult();
         }
 
         public void Subscribe<T, TH>()
