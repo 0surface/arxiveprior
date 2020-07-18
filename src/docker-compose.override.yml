@@ -16,3 +16,9 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  arx.Extract.BackgroundTasks:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Settings__StorageConnectionString=${ARX_AZURE_EXTRACT_STORAGE_CS}
+      - Settings__SubjectTableName=Subjects
