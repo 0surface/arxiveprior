@@ -9,12 +9,12 @@ services:
     image: ${DOCKER_REGISTRY-}arxextractapi
     build:
       context: .
-      dockerfile: arx.Extract.API/Dockerfile
+      dockerfile: Services/Extract/arx.Extract.API/Dockerfile
 
   arx.Extract.BackgroundTasks:
     image: ${DOCKER_REGISTRY-}arxextractbackgroundtasks
     build:
       context: .
-      dockerfile: arx.Extract.BackgroundTasks/Dockerfile
+      dockerfile: Services/Extract/arx.Extract.BackgroundTasks/Dockerfile
     depends_on:
       - rabbitmq
