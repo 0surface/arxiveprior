@@ -1,4 +1,5 @@
-﻿using Autofac;
+﻿using arx.Extract.Data.Repository;
+using Autofac;
 using EventBus;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
@@ -92,6 +93,17 @@ namespace arx.Extract.BackgroundTasks.Extensions
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
+            return services;
+        }
+
+        public static IServiceCollection AddSubjectRepository(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var subjectTableName = configuration["SubjectTableName"];
+            services.AddSingleton<ISubjectRepository>(opt =>
+            {
+                return new SubjectRepository(storageConnectionString, subjectTableName);
+            });
             return services;
         }
     }

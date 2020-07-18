@@ -10,5 +10,8 @@ namespace arx.Extract.BackgroundTasks
         public string EventBusConnection { get; set; }
         public string SubscriptionClientName { get; set; }
         public int PostFetchWaitTime { get; set; }
+        public string StorageConnectionString { get; set; }
+
+        public string SubjectTableName { get; set; }
     }
 }

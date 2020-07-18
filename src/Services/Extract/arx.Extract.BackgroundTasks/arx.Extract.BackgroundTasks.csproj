@@ -19,5 +19,6 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusServiceBus\EventBusServiceBus.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBus\EventBus.csproj" />
+    <ProjectReference Include="..\arx.Extract.Data\arx.Extract.Data.csproj" />
   </ItemGroup>
 </Project>
