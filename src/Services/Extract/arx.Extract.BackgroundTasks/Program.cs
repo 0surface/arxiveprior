@@ -1,6 +1,7 @@
 using arx.Extract.BackgroundTasks.Extensions;
 using arx.Extract.BackgroundTasks.Tasks;
 using Autofac.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -17,12 +18,15 @@ namespace arx.Extract.BackgroundTasks
 
         public static IHost CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseServiceProviderFactory(new AutofacServiceProviderFactory())                
+                .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureServices((hostContext, services) =>
-                {                    
+                {
+                    IConfiguration settings = hostContext.Configuration.GetSection("settings");
                     services.AddHostedService<ScheduledArchiveService>();
-                    services.Configure<BackgroundTaskSettings>(hostContext.Configuration.GetSection("settings"));
-                    services.AddEventBus(hostContext.Configuration.GetSection("settings"));
+                    services.Configure<BackgroundTaskSettings>(settings);
+                    services.AddEventBus(settings)
+                            .AddSubjectRepository(settings);
+                    
                     Console.WriteLine($"host.HostingEnvironment.EnvironmentName : {hostContext.HostingEnvironment.EnvironmentName}");
                 })
             //TODO : Configure SeriLog

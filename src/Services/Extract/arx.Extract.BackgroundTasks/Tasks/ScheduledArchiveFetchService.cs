@@ -1,9 +1,11 @@
 ﻿using arx.Extract.BackgroundTasks.Events;
+using arx.Extract.Data.Repository;
 using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,18 +17,23 @@ namespace arx.Extract.BackgroundTasks.Tasks
         private readonly BackgroundTaskSettings _settings;
         private readonly IEventBus _eventBus;
         private readonly ILogger<ScheduledArchiveService> _logger;
+        private readonly ISubjectRepository _repo;
 
         public ScheduledArchiveService(IOptions<BackgroundTaskSettings> settings,
             IEventBus eventBus,
-            ILogger<ScheduledArchiveService> logger)
+            ILogger<ScheduledArchiveService> logger,
+            ISubjectRepository repo)
         {
             _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));
             _eventBus = eventBus;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger)); ;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _repo = repo;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogDebug("ScheduledArchiveFetchService background task is starting.");
+
+            ServiceSetup();
 
             stoppingToken.Register(() => _logger.LogDebug("#1 ScheduledArchiveFetchService background task is stopping."));
 
@@ -64,6 +71,16 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             //TODO: Publish to eventBus
             _eventBus.Publish(extractionCompletedEvent);
+        }
+
+        private void ServiceSetup()
+        {
+            //Seed Subjects if empty
+           if(_repo.All().Result.Count() == 0)
+            {
+                _logger.LogInformation("Seeding Subject Table.");
+                _repo.Seed();
+            }            
         }
     }
 }
