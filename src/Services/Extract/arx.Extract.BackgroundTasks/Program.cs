@@ -25,7 +25,12 @@ namespace arx.Extract.BackgroundTasks
                     services.AddHostedService<ScheduledArchiveService>();
                     services.Configure<BackgroundTaskSettings>(settings);
                     services.AddEventBus(settings)
-                            .AddSubjectRepository(settings);
+                            .AddSubjectRepository(settings)
+                            .AddJobRepository(settings)
+                            .AddJobItemRepository(settings)
+                            .AddFulfilmentRepository(settings)
+                            .AddFulfilmentItemRepository(settings)
+                            .AddPublicationRepository(settings);
                     
                     Console.WriteLine($"host.HostingEnvironment.EnvironmentName : {hostContext.HostingEnvironment.EnvironmentName}");
                 })

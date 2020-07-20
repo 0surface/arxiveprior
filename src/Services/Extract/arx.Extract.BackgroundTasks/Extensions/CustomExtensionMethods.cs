@@ -106,5 +106,60 @@ namespace arx.Extract.BackgroundTasks.Extensions
             });
             return services;
         }
+
+        public static IServiceCollection AddPublicationRepository(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["PublicationTableName"];
+            services.AddSingleton<IPublicationRepository>(opt =>
+            {
+                return new PublicationRepository(storageConnectionString, tableName);
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddJobRepository(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["JobTableName"];
+            services.AddSingleton<IJobRepository>(opt =>
+            {
+                return new JobRepository(storageConnectionString, tableName);
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddJobItemRepository(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["JobItemTableName"];
+            services.AddSingleton<IJobItemRepository>(opt =>
+            {
+                return new JobItemRepository(storageConnectionString, tableName);
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddFulfilmentRepository(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["FulfilmentTableName"];
+            services.AddSingleton<IFulfilmentRepository>(opt =>
+            {
+                return new FulfilmentRepository(storageConnectionString, tableName);
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddFulfilmentItemRepository(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["FulfilmentItemTableName"];
+            services.AddSingleton<IFulfilmentItemRepository>(opt =>
+            {
+                return new FulfilmentItemRepository(storageConnectionString, tableName);
+            });
+            return services;
+        }
     }
 }
