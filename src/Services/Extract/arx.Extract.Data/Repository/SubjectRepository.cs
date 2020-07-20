@@ -3,10 +3,8 @@ using arx.Extract.Data.Entities;
 using arx.Extract.Data.Extensions;
 using arx.Extract.Data.Seed;
 using Microsoft.Azure.Cosmos.Table;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace arx.Extract.Data.Repository
@@ -25,15 +23,22 @@ namespace arx.Extract.Data.Repository
             Reference.CreateIfNotExists();
         }
 
-        public async Task<IEnumerable<SubjectEntity>> GetAll()        
-            => await Query<SubjectEntity>(new TableQuery<SubjectEntity>());        
+        public async Task<IEnumerable<SubjectEntity>> GetAll()
+            => await Query<SubjectEntity>(new TableQuery<SubjectEntity>());
 
         public async Task<IEnumerable<SubjectEntity>> GetSubjectsByCode(string code)
             => await QueryByRow<SubjectEntity>(code);
 
         public async Task<IEnumerable<SubjectEntity>> GetSubjectsByGroupCode(string groupCode)
-            => await Query<SubjectEntity>(FilteredQuery("GroupCode", groupCode));
-        
+        {
+            var conditions = new List<QueryFilterCondition>()
+            { new QueryFilterCondition(string.Empty, "GroupCode", QueryComparisons.Equal, groupCode) };
+
+            var tableQuery = QueryFilterUtil.AndQueryFilters<SubjectEntity>(conditions);
+
+            return await Query(tableQuery);
+        }
+
         public bool Seed()
         {
             var entities = SeedReader.ReadSubjects();
@@ -42,15 +47,6 @@ namespace arx.Extract.Data.Repository
             var result = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(Reference, batchOperation, null);
 
             return result.Count == entities.Count();
-        }
-
-        private TableQuery<SubjectEntity> FilteredQuery(string propertyName, string filterValue)
-        {
-            return new TableQuery<SubjectEntity>()
-                        .Where(TableQuery.GenerateFilterCondition(
-                                            typeof(SubjectEntity).GetProperty(propertyName).Name,
-                                            QueryComparisons.Equal,
-                                            filterValue));
         }
     }
 }
