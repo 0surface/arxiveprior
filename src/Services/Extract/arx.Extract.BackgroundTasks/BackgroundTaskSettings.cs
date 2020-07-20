@@ -18,5 +18,10 @@ namespace arx.Extract.BackgroundTasks
         public string TaskRecordTableName { get; set; }
         public string TaskRecordItemTableName { get; set; }
         public string ExtractionMode { get; set; }
+        public string ArchiveJobName { get; set; }
+        public string SeedJobName { get; set; }
+        public string JournalJobName { get; set; }
+
+        public int ArxivApiPagingRequestDelay { get; set; }
     }
 }
