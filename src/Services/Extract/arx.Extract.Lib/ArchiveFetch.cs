@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml;
@@ -9,28 +10,30 @@ namespace arx.Extract.Lib
 {
     public interface IArchiveFetch
     {
-        Task<ArxivItem> GetArxivItems(string url);
+        Task<(HttpResponseMessage,ArxivItem)> GetArxivItems(string url);
     }
     public class ArchiveFetch : IArchiveFetch
     {
-        public async Task<ArxivItem> GetArxivItems(string url)
+        public async Task<(HttpResponseMessage, ArxivItem)> GetArxivItems(string url)
         {
             string result;
+            HttpResponseMessage response;
             ArxivItem item = new ArxivItem();
             try
             {
-                result = await HttpQuery(url);
+                (response, result) = await HttpQuery(url);
 
                 item = DeserializeXml(result);
                 item.EntryList = item?.EntryList?.OrderBy(x => x.PublishDate)?.ToList();
 
-                return item != null ? item : new ArxivItem();
+                item = item != null ? item : new ArxivItem();
+                return (response, item);
             }
             catch (Exception ex)
             {
-                item.Error = ex;
+                item.Error = ex;                
+                return (new HttpResponseMessage(HttpStatusCode.InternalServerError), item);
             }
-            return item;
         }
 
         private ArxivItem DeserializeXml(string result)
@@ -45,17 +48,18 @@ namespace arx.Extract.Lib
             return item;
         }
 
-        private async Task<string> HttpQuery(string url)
+        private async Task<(HttpResponseMessage, string)> HttpQuery(string url)
         {
             string result;
+            HttpResponseMessage response;
             using (var httpClient = new HttpClient())
             {
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
-                var response = await httpClient.SendAsync(request);
+                response = await httpClient.SendAsync(request);
                 result = await response.Content.ReadAsStringAsync();
             }
 
-            return result;
+            return (response, result);
         }
     }
 }
