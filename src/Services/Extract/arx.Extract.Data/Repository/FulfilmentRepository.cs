@@ -19,6 +19,11 @@ namespace arx.Extract.Data.Repository
             Reference.CreateIfNotExists();
         }
 
+        public List<FulfilmentItemEntity> GetJobRecordItems(string JobRecordId)
+        {
+            throw new NotImplementedException();
+        }
+
         public FulfilmentEntity GetLastJobRecord()
         {
             throw new NotImplementedException();

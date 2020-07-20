@@ -31,7 +31,8 @@ namespace arx.Extract.Data.Repository
         {
             try
             {
-                var response = InsertOrReplace(fulfilmentItem)
+                var response = InsertOrReplace(fulfilmentItem).Result;
+                return (FulfilmentItemEntity)response.Result;
             }
             catch (Exception)
             {
