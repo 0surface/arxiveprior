@@ -13,5 +13,10 @@ namespace arx.Extract.BackgroundTasks
         public string StorageConnectionString { get; set; }
 
         public string SubjectTableName { get; set; }
+        public string ExtractTaskTableName { get; set; }
+        public string ExtractTaskItemTableName { get; set; }
+        public string TaskRecordTableName { get; set; }
+        public string TaskRecordItemTableName { get; set; }
+        public string ExtractionMode { get; set; }
     }
 }
