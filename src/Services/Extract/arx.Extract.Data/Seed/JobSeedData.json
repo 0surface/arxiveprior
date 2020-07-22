@@ -1,0 +1,20 @@
+[
+  {
+    "Type": "Journal",
+    "UniqueName": "arxjournalv1",
+    "Description": "Daily subject code extractions",
+    "QueryBaseUrl": "http://export.arxiv.org/api/query?search_query="
+  },
+  {
+    "Type": "Archive",
+    "UniqueName": "arxarchivev1",
+    "Description": "Archive between dates extractions",
+    "QueryBaseUrl": "http://export.arxiv.org/api/query?search_query="
+  },
+  {
+    "Type": "Seed",
+    "UniqueName": "seedv1",
+    "Description": "Extract from limited numbers days or weeks in the past upto present",
+    "QueryBaseUrl": "http://export.arxiv.org/api/query?search_query="
+  }
+]

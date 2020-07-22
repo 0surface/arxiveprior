@@ -14,7 +14,8 @@ namespace arx.Extract.Data.Repository
         Task<IEnumerable<SubjectEntity>> GetAll();
         Task<IEnumerable<SubjectEntity>> GetSubjectsByGroupCode(string groupCode);
         Task<IEnumerable<SubjectEntity>> GetSubjectsByCode(string code);
-        bool Seed();
+        bool SeedSubjects();
+        string TableName();
     }
     public class SubjectRepository : TableStorage, ISubjectRepository
     {
@@ -39,7 +40,7 @@ namespace arx.Extract.Data.Repository
             return await Query(tableQuery);
         }
 
-        public bool Seed()
+        public bool SeedSubjects()
         {
             var entities = SeedReader.ReadSubjects();
             var batchOperation = new TableBatchOperation();
@@ -48,5 +49,7 @@ namespace arx.Extract.Data.Repository
 
             return result.Count == entities.Count();
         }
+
+        public string TableName() => Name;
     }
 }

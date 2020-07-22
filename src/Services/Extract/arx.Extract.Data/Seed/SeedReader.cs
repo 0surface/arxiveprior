@@ -1,4 +1,5 @@
 ﻿using arx.Extract.Data.Entities;
+using arx.Extract.Types;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,38 @@ namespace arx.Extract.Data.Seed
                 subject.PartitionKey = "arxiv";
                 subject.RowKey = subject.Code;
                 subject.Timestamp = DateTime.UtcNow;
+            }
+            return entities;
+        }
+
+        public static IEnumerable<JobEntity> ReadJobs()
+        {
+            string jobsFileResourceName = "arx.Extract.Data.Seed.JobSeedData.json";
+            string data = ReadDocument(jobsFileResourceName);
+            var entities = JsonConvert.DeserializeObject<IEnumerable<JobEntity>>(data);
+
+            foreach (var job in entities)
+            {
+                job.PartitionKey = job.Type.ToString();
+                job.RowKey = job.UniqueName;
+                job.Timestamp = DateTime.UtcNow;
+            }
+            return entities;
+        }
+
+        public static IEnumerable<JobItemEntity> ReadJobItems()
+        {
+            string jobItemsFileResourceName = "arx.Extract.Data.Seed.JobItemSeedData.json";
+            string data = ReadDocument(jobItemsFileResourceName);
+            var entities = JsonConvert.DeserializeObject<IEnumerable<JobItemEntity>>(data);
+
+            foreach (var item in entities)
+            {                
+                item.JobItemId = Guid.NewGuid();
+
+                item.PartitionKey = item.JobName;
+                item.RowKey = item.JobItemId.ToString();
+                item.Timestamp = DateTime.UtcNow;
             }
             return entities;
         }
