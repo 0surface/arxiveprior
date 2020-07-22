@@ -6,12 +6,11 @@ using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 
 namespace arx.Extract.Data.Repository
 {
     public interface IJobItemRepository
-    {   
+    {
         List<JobItemEntity> GetJobItems(string jobName);
         bool HasSeed();
         bool SeedJobItems();
@@ -30,12 +29,12 @@ namespace arx.Extract.Data.Repository
             throw new NotImplementedException();
         }
 
-                
+
 
         public bool SeedJobItems()
         {
             int resultCount = 0;
-            var entities = SeedReader.ReadJobItems();                        
+            IEnumerable<JobItemEntity> entities = SeedReader.ReadJobItems();
             var partitionKeys = entities.Select(x => x.PartitionKey).Distinct();
 
             //Insert each jobItem Collection as a batch by Partition Key
@@ -45,12 +44,12 @@ namespace arx.Extract.Data.Repository
 
                 entities
                     .Where(j => j.PartitionKey == key)
-                    .ToList()                    
+                    .ToList()
                     .ForEach(e => batchOperation.InsertOrReplace(e));
 
                 var inserted = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(Reference, batchOperation, null);
 
-                if (inserted != null) resultCount++;;
+                if (inserted != null) resultCount++;
             }
             return resultCount == entities.Count();
         }

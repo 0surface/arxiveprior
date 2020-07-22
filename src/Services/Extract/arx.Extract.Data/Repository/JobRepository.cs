@@ -11,7 +11,7 @@ namespace arx.Extract.Data.Repository
 {
     public interface IJobRepository
     {       
-        JobEntity GetJobByExtractonMode(string jobName);
+        JobEntity GetJob(ExtractTypeEnum type, string jobName);
         bool SeedJobs();
         bool HasSeed();
         string TableName();
@@ -24,14 +24,15 @@ namespace arx.Extract.Data.Repository
             Reference.CreateIfNotExists();
         }
 
-        public JobEntity GetJobByExtractonMode(string jobName)
+        public JobEntity GetJob(ExtractTypeEnum type,  string jobName)
         {
-            throw new System.NotImplementedException();
+            var result = QueryByPartitionAndRow<JobEntity>(type.ToString(), jobName).Result;
+            return result;
         }
 
         public bool SeedJobs()
         {
-            var entities = SeedReader.ReadJobItems();
+            IEnumerable<JobEntity> entities = SeedReader.ReadJobs();
             int resultCount = 0;
             //Insert each job one at a time.
             foreach (var job in entities)
@@ -42,15 +43,7 @@ namespace arx.Extract.Data.Repository
             return resultCount == entities.Count();
         }
 
-        public bool HasSeed()
-        {
-            if (TableExists().Result == false)
-                return false;
-
-            return PartitionExists(ExtractTypeEnum.Archive.ToString())
-                 && PartitionExists(ExtractTypeEnum.Journal.ToString())
-                 && PartitionExists(ExtractTypeEnum.Seed.ToString());
-        }
+        public bool HasSeed() => HasAnyPartitionKey();
         public string TableName() => Name;
     }
 }
