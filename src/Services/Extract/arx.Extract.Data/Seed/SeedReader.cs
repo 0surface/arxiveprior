@@ -65,11 +65,17 @@ namespace arx.Extract.Data.Seed
         private static string ReadDocument(string resourceName)
         {
             string data = "";
-            var assembly = Assembly.GetExecutingAssembly();
-            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-            using (StreamReader reader = new StreamReader(stream))
+            try
             {
-                data = reader.ReadToEnd();
+                var assembly = Assembly.GetExecutingAssembly();
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    data = reader.ReadToEnd();
+                }
+            }
+            catch (Exception)
+            {
             }
 
             return data;

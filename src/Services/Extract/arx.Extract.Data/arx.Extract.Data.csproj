@@ -5,10 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Seed\JobSeedData.json" />
     <None Remove="Seed\SubjectSeedData.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Seed\JobSeedData.json" />
     <EmbeddedResource Include="Seed\SubjectSeedData.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>

@@ -30,13 +30,16 @@ namespace arx.Extract.Data.Repository
         }
 
         public bool SeedJobs()
-        {   
-            var entities = SeedReader.ReadJobs();
-            var batchOperation = new TableBatchOperation();
-            entities.ToList().ForEach(e => batchOperation.InsertOrReplace(e));
-            var result = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(Reference, batchOperation, null);
-
-            return result.Count == entities.Count();
+        {
+            var entities = SeedReader.ReadJobItems();
+            int resultCount = 0;
+            //Insert each job one at a time.
+            foreach (var job in entities)
+            {
+                var inserted = InsertOrReplace(job).Result.Result;
+                if (inserted != null) resultCount++; ;
+            }
+            return resultCount == entities.Count();
         }
 
         public bool HasSeed()
