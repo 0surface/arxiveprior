@@ -1,4 +1,6 @@
-﻿using arx.Extract.Data.Repository;
+﻿using arx.Extract.BackgroundTasks.Core;
+using arx.Extract.Data.Repository;
+using arx.Extract.Lib;
 using Autofac;
 using AutoMapper;
 using EventBus;
@@ -166,6 +168,18 @@ namespace arx.Extract.BackgroundTasks.Extensions
             {
                 return new FulfilmentItemRepository(storageConnectionString, tableName);
             });
+            return services;
+        }
+
+        public static IServiceCollection AddArchiveFetch(this IServiceCollection services)
+        {
+            services.AddSingleton<IArchiveFetch, ArchiveFetch>();
+            return services;
+        }
+
+        public static IServiceCollection AddTransformService(this IServiceCollection services)
+        {
+            services.AddSingleton<ITransformService, TransformService>();
             return services;
         }
     }

@@ -14,6 +14,10 @@ namespace arx.Extract.Lib
     }
     public class ArchiveFetch : IArchiveFetch
     {
+        public ArchiveFetch()
+        {
+
+        }
         public async Task<(HttpResponseMessage, ArxivItem)> GetArxivItems(string url)
         {
             string result;
