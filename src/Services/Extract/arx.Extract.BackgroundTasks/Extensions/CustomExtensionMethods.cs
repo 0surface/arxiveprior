@@ -1,5 +1,6 @@
 ﻿using arx.Extract.Data.Repository;
 using Autofac;
+using AutoMapper;
 using EventBus;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
@@ -9,11 +10,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using System;
 
 namespace arx.Extract.BackgroundTasks.Extensions
 {
     public static class CustomExtensionMethods
     {
+        public static IServiceCollection AddAutoMapper(this IServiceCollection services, Type assemblyMarkerType)
+        {
+            services.AddAutoMapper(c => c.AddProfile<BackgroundTasksAutoMapperProfile>(), assemblyMarkerType);
+            return services;
+        }
         public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
         {
             var subscriptionClientName = configuration["SubscriptionClientName"];
@@ -73,22 +80,22 @@ namespace arx.Extract.BackgroundTasks.Extensions
                     return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
                 });
 
-                services.AddSingleton<IEventBus, EventBusRabbitMQ.EventBusRabbitMQ >(sp =>
-                {
-                    var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
-                    var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
-                    var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ.EventBusRabbitMQ>>();
-                    var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+                services.AddSingleton<IEventBus, EventBusRabbitMQ.EventBusRabbitMQ>(sp =>
+               {
+                   var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                   var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+                   var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ.EventBusRabbitMQ>>();
+                   var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
-                    var retryCount = 5;
+                   var retryCount = 5;
 
-                    if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
-                    {
-                        retryCount = int.Parse(configuration["EventBusRetryCount"]);
-                    }
+                   if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
+                   {
+                       retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                   }
 
-                    return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
-                });
+                   return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+               });
             }
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
