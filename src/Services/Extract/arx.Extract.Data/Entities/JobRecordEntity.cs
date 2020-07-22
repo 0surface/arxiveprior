@@ -4,10 +4,10 @@ using System;
 
 namespace arx.Extract.Data.Entities
 {
-    public class FulfilmentEntity : TableEntity
-    {
-        public Guid JobId { get; set; }
-        public Guid FulfilmentId { get; set; }
+    public class FulfilmentEntity : TableEntity, IFulfilment
+    { 
+        public string JobName { get; set; } //PK
+        public Guid FulfilmentId { get; set; } //RK
         public ExtractTypeEnum Type { get; set; }        
         public DateTime QueryFromDate { get; set; }
         public DateTime QueryToDate { get; set; }
