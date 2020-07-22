@@ -88,6 +88,9 @@ namespace arx.Extract.Lib
     {
         [XmlElement("name")]
         public string Name { get; set; }
+
+        [XmlElement(Namespace = "http://arxiv.org/schemas/atom", ElementName = "affiliation")]
+        public string Affiliation { get; set; }
     }
 
     [XmlRoot("category")]
