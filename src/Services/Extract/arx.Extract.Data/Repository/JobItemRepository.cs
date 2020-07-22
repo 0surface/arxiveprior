@@ -26,10 +26,9 @@ namespace arx.Extract.Data.Repository
 
         public List<JobItemEntity> GetJobItems(string jobName)
         {
-            throw new NotImplementedException();
+            var jobItems = QueryByPartition<JobItemEntity>(jobName).Result;
+            return jobItems?.ToList() ?? new List<JobItemEntity>();
         }
-
-
 
         public bool SeedJobItems()
         {
