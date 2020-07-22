@@ -1,14 +1,17 @@
 ﻿using arx.Extract.Data.Common;
 using arx.Extract.Data.Entities;
+using arx.Extract.Types;
+using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace arx.Extract.Data.Repository
 {
     public interface IFulfilmentRepository
     {
-        FulfilmentEntity GetLastJobRecord();
-        List<FulfilmentItemEntity> GetJobRecordItems(string JobRecordId);
+        FulfilmentEntity GetLastFulfilment(string jobName);
+        List<FulfilmentItemEntity> GetFulfilmentItems(string JobRecordId);
         FulfilmentEntity SaveFulfilment(FulfilmentEntity jobRecord);      
         
     }
@@ -19,14 +22,24 @@ namespace arx.Extract.Data.Repository
             Reference.CreateIfNotExists();
         }
 
-        public List<FulfilmentItemEntity> GetJobRecordItems(string JobRecordId)
+        public List<FulfilmentItemEntity> GetFulfilmentItems(string JobRecordId)
         {
             throw new NotImplementedException();
         }
 
-        public FulfilmentEntity GetLastJobRecord()
+        public FulfilmentEntity GetLastFulfilment(string jobName)
         {
-            throw new NotImplementedException();
+            var conditions = new List<QueryFilterCondition>()
+            {
+                new QueryFilterCondition(string.Empty, "PartitionKey", QueryComparisons.Equal, jobName)
+            };
+
+            var tableQuery = QueryFilterUtil.AndQueryFilters<FulfilmentEntity>(conditions);
+
+            return Query(tableQuery)
+                        .Result
+                        .OrderByDescending(x => x.JobCompletedDate)
+                        .FirstOrDefault();
         }
 
         public FulfilmentEntity SaveFulfilment(FulfilmentEntity fulfilment)
