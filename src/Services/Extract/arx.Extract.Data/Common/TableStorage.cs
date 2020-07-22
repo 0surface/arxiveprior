@@ -258,8 +258,7 @@ namespace arx.Extract.Data.Common
 
         public virtual bool HasAnyPartitionKey()
         {
-            string partitionKey = "";
-            var query = new TableQuery().Where(TableQuery.GenerateFilterCondition(PartitionKey, QueryComparisons.NotEqual, partitionKey));
+            var query = new TableQuery();
             TableContinuationToken token = null;
             return this.reference.ExecuteQuerySegmentedAsync(query, token).Result.Results?.Any() ?? false;
         }

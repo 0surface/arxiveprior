@@ -376,7 +376,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             if (_jobItemRepository.HasSeed() == false)
             {
                 _logger.LogInformation("Seeding Job Table.");
-                if (_jobRepository.SeedJobs())
+                if (_jobItemRepository.SeedJobItems())
                     _logger.LogInformation($"Successfullly Inserted Seed data to {_jobItemRepository.TableName()} Table.");
                 else
                     _logger.LogDebug($"Error inserting Seed data to  {_jobItemRepository.TableName()} Table");
