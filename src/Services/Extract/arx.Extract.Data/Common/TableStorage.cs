@@ -243,6 +243,27 @@ namespace arx.Extract.Data.Common
 
             return entities;
         }
+
+        public virtual async Task<bool> TableExists()
+        {
+            return await this.reference.ExistsAsync();
+        }
+
+        public virtual bool PartitionExists(string partitionKey)
+        {
+            var query = new TableQuery().Where(TableQuery.GenerateFilterCondition(PartitionKey, QueryComparisons.Equal, partitionKey));
+            TableContinuationToken token = null;
+            return  this.reference.ExecuteQuerySegmentedAsync(query, token).Result.Results?.Any() ?? false;
+        }
+
+        public virtual bool HasAnyPartitionKey()
+        {
+            string partitionKey = "";
+            var query = new TableQuery().Where(TableQuery.GenerateFilterCondition(PartitionKey, QueryComparisons.NotEqual, partitionKey));
+            TableContinuationToken token = null;
+            return this.reference.ExecuteQuerySegmentedAsync(query, token).Result.Results?.Any() ?? false;
+        }
+
         #endregion
 
         #region Save Data
