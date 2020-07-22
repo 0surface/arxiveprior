@@ -2,7 +2,7 @@
 {
     public enum ExtractTypeEnum
     {
-        Daily,
+        Journal,
         Archive,
         Seed
     }
