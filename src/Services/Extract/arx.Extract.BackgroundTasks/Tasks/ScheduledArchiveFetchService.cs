@@ -116,10 +116,9 @@ namespace arx.Extract.BackgroundTasks.Tasks
         private Guid ExecuteExtraction(CancellationToken stoppingToken)
         {
             _logger.LogDebug("Reading Metadata to determine archive task parameters.");
-            //  _repo.GetLastJob();
 
-            var jobType = _settings.ArchiveJobName ?? ExtractTypeEnum.Archive.ToString();
-            JobEntity job = _jobRepository.GetJobByExtractonMode(jobType);
+            JobEntity job = _jobRepository.GetJob(ExtractTypeEnum.Archive, _settings.ArchiveJobName);
+
             List<JobItemEntity> jobItems = _jobItemRepository.GetJobItems(job.UniqueName);
 
             if (jobItems == null || jobItems.Count == 0)
@@ -127,7 +126,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 //TODO:Retry, fail logic
             }
 
-            FulfilmentEntity lastFulfilment = _fulfilmentRepository.GetLastJobRecord();
+            FulfilmentEntity lastFulfilment = _fulfilmentRepository.GetLastFulfilment(job.UniqueName);
 
             _logger.LogInformation($"Creating new Fulfilment record from Job {job.UniqueName}");
 
@@ -222,6 +221,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                 int totalEntries = allResults?.Sum(x => x.itemsPerPage) ?? 0;
                 item.TotalResults = totalEntries;
+                newFulfilment.TotalCount += totalEntries;
 
                 if (item.TotalResults > 0)
                 {
@@ -240,13 +240,25 @@ namespace arx.Extract.BackgroundTasks.Tasks
                     _publicationRepository.BatchSavePublications(_mapper.Map<List<PublicationItemEntity>>(publications));
                 }
 
-                //Record process completion Time, interval
+                //Record process completion Time, interval               
                 item.JobItemCompletedDate = DateTime.UtcNow;
                 item.TotalProcessingInMilliseconds = (item.JobItemStartDate - item.JobItemCompletedDate).TotalMilliseconds;
 
                 //Save to fulfilment Item to database
                 _fulfilmentItemRepository.SaveFulfilmentItem(item);
             }
+
+            //Save new Fulilment record values
+            newFulfilment.PartialSuccess = fulfilmentItems.Any(x => x.HttpRequestIsSuccess == true)
+               || fulfilmentItems.Any(x => x.DataExtractionIsSuccess = true);
+
+            newFulfilment.CompleteSuccess = fulfilmentItems.All(x => x.HttpRequestIsSuccess == true)
+                && fulfilmentItems.All(x => x.DataExtractionIsSuccess = true);
+
+            newFulfilment.JobCompletedDate = DateTime.UtcNow;
+
+            //Persist to Storage
+            _fulfilmentRepository.SaveFulfilment(newFulfilment);
 
             return newFulfilment.FulfilmentId;
         }
