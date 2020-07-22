@@ -1,9 +1,6 @@
-﻿using arx.Extract.Data.Entities;
-using arx.Extract.Lib;
+﻿using arx.Extract.Lib;
 using arx.Extract.Types;
 using AutoMapper;
-using Microsoft.OData.UriParser;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,19 +21,19 @@ namespace arx.Extract.BackgroundTasks.Core
             _mapper = mapper;
         }
 
-        public  List<PublicationItem> TransformArxivEntriesToPublications(List<Entry> allArxivEntries)
+        public List<PublicationItem> TransformArxivEntriesToPublications(List<Entry> allArxivEntries)
         {
             List<PublicationItem> results = new List<PublicationItem>();
 
             foreach (var entry in allArxivEntries)
             {
                 var publication = MapEntryToPublication(entry);
-                if(publication != null)
+                if (publication != null)
                 {
                     results.Add(publication);
                 }
             }
-          
+
             return results;
         }
 

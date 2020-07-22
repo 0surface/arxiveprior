@@ -1,10 +1,10 @@
 ﻿using arx.Extract.BackgroundTasks.Core;
 using arx.Extract.BackgroundTasks.Events;
-using arx.Extract.BackgroundTasks.Types;
 using arx.Extract.Data.Entities;
 using arx.Extract.Data.Repository;
 using arx.Extract.Lib;
 using arx.Extract.Types;
+using AutoMapper;
 using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,10 +18,10 @@ using System.Threading.Tasks;
 
 namespace arx.Extract.BackgroundTasks.Tasks
 {
-
     public class ScheduledArchiveService : BackgroundService
     {
         private readonly BackgroundTaskSettings _settings;
+        private readonly IMapper _mapper;
         private readonly IEventBus _eventBus;
         private readonly ILogger<ScheduledArchiveService> _logger;
         private readonly ISubjectRepository _subjectRepo;
@@ -31,8 +31,10 @@ namespace arx.Extract.BackgroundTasks.Tasks
         private readonly IFulfilmentItemRepository _fulfilmentItemRepository;
         private readonly IPublicationRepository _publicationRepository;
         private readonly IArchiveFetch _archiveFetch;
+        private readonly ITransformService _transformService;
 
         public ScheduledArchiveService(IOptions<BackgroundTaskSettings> settings,
+            IMapper mapper,
             IEventBus eventBus,
             ILogger<ScheduledArchiveService> logger,
             ISubjectRepository subjectRepo,
@@ -41,9 +43,11 @@ namespace arx.Extract.BackgroundTasks.Tasks
             IFulfilmentRepository fulfilmentRepository,
             IFulfilmentItemRepository fulfilmentItemRepository,
             IPublicationRepository publicationRepository,
-            IArchiveFetch archiveFetch)
+            IArchiveFetch archiveFetch,
+            ITransformService transformService)
         {
             _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));
+            _mapper = mapper;
             _eventBus = eventBus;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _subjectRepo = subjectRepo;
@@ -53,6 +57,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             _fulfilmentItemRepository = fulfilmentItemRepository;
             _publicationRepository = publicationRepository;
             _archiveFetch = archiveFetch;
+            _transformService = transformService;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -96,17 +101,10 @@ namespace arx.Extract.BackgroundTasks.Tasks
         {
             _logger.LogDebug("Running Scheduled Archive Service.");
 
-            ExecuteExtraction(stoppingToken);
-
-            //TODO connec to db read last archive task, determine next task's jobs' params
-
-            var extractId = Guid.NewGuid().ToString();
-
-            _logger.LogDebug("Fetching data from Http requests and persisting to Store.");
-            //TODO  Loop through each subjectcode/url request cycle
+            var newFulfilmentId = ExecuteExtraction(stoppingToken);
 
 
-            var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(extractId);
+            var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfilmentId.ToString());
 
             _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
                                     extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
@@ -115,14 +113,14 @@ namespace arx.Extract.BackgroundTasks.Tasks
             _eventBus.Publish(extractionCompletedEvent);
         }
 
-        public void ExecuteExtraction(CancellationToken stoppingToken)
+        private Guid ExecuteExtraction(CancellationToken stoppingToken)
         {
             _logger.LogDebug("Reading Metadata to determine archive task parameters.");
             //  _repo.GetLastJob();
 
-            var jobName = _settings.ArchiveJobName ?? ExtractTypeEnum.Archive.ToString();
-            JobEntity job = _jobRepository.GetJobByExtractonMode(jobName);
-            List<JobItemEntity> jobItems = _jobItemRepository.GetJobItems(job.JobId);
+            var jobType = _settings.ArchiveJobName ?? ExtractTypeEnum.Archive.ToString();
+            JobEntity job = _jobRepository.GetJobByExtractonMode(jobType);
+            List<JobItemEntity> jobItems = _jobItemRepository.GetJobItems(job.UniqueName);
 
             if (jobItems == null || jobItems.Count == 0)
             {
@@ -131,7 +129,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             FulfilmentEntity lastFulfilment = _fulfilmentRepository.GetLastJobRecord();
 
-            _logger.LogInformation($"Creating new JobRecord Entry from Job {job.JobId}");
+            _logger.LogInformation($"Creating new Fulfilment record from Job {job.UniqueName}");
 
             FulfilmentEntity newFulfilment = CreateNewFulfilment(job, lastFulfilment);
             if (newFulfilment.FulfilmentId == null)
@@ -231,15 +229,15 @@ namespace arx.Extract.BackgroundTasks.Tasks
                     List<Entry> allArxivEntries = new List<Entry>();
                     allResults?.ForEach(x => allArxivEntries.AddRange(x.EntryList));
 
-                    List<PublicationItemEntity> publications = 
-                        TransformToPublications.TransformArxivEntriesToPublications(allArxivEntries);
+                    //Perform transformations
+                    List<PublicationItem> publications =
+                        _transformService.TransformArxivEntriesToPublications(allArxivEntries);
 
                     //Persist to database
                     item.DataExtractionIsSuccess = publications.Count == allArxivEntries.Count;
 
-                    //Persist publications to database - Batch insert
-                    _publicationRepository.BatchSavePublications(publications);
-
+                    //Persist publications to Storage - Batch insert
+                    _publicationRepository.BatchSavePublications(_mapper.Map<List<PublicationItemEntity>>(publications));
                 }
 
                 //Record process completion Time, interval
@@ -249,9 +247,9 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 //Save to fulfilment Item to database
                 _fulfilmentItemRepository.SaveFulfilmentItem(item);
             }
-        }
 
-       
+            return newFulfilment.FulfilmentId;
+        }
 
         private List<Tuple<DateTime, DateTime>> GetRequestChunkedDates(FulfilmentEntity lastFulfilment, int queryDateInterval)
         {
@@ -295,10 +293,8 @@ namespace arx.Extract.BackgroundTasks.Tasks
             return result;
         }
 
-        private FulfilmentItemEntity CreateNewFulfilmentItem(JobItemEntity jobItem,
-            FulfilmentEntity lastFulfilment,
-            Tuple<DateTime, DateTime> requestDateInterval,
-            string baseUrl)
+        private FulfilmentItemEntity CreateNewFulfilmentItem(JobItemEntity jobItem, FulfilmentEntity lastFulfilment,
+            Tuple<DateTime, DateTime> requestDateInterval, string baseUrl)
         {
             FulfilmentItemEntity fulfilmentItem = new FulfilmentItemEntity()
             {
@@ -315,7 +311,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             return fulfilmentItem;
         }
 
-        private static string ConstructRequestUrl(Tuple<DateTime, DateTime> requestDateInterval, string baseUrl, FulfilmentItemEntity fulfilmentItem)
+        private string ConstructRequestUrl(Tuple<DateTime, DateTime> requestDateInterval, string baseUrl, FulfilmentItemEntity fulfilmentItem)
         {
             UrlParams urlParams = new UrlParams()
             {
@@ -334,7 +330,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
         {
             return _fulfilmentRepository.SaveFulfilment(new FulfilmentEntity()
             {
-                JobId = job.JobId,
+                JobName = job.UniqueName,
                 FulfilmentId = Guid.NewGuid(),
                 Type = job.Type,
                 JobStartedDate = DateTime.UtcNow
@@ -347,7 +343,31 @@ namespace arx.Extract.BackgroundTasks.Tasks
             if (_subjectRepo.GetAll().Result.Count() == 0)
             {
                 _logger.LogInformation("Seeding Subject Table.");
-                _subjectRepo.Seed();
+
+                if (_subjectRepo.SeedSubjects())
+                    _logger.LogInformation($"Successfullly Inserted Seed data to  {_subjectRepo.TableName()} Table.");
+                else
+                    _logger.LogDebug($"Error inserting Seed data to  {_subjectRepo.TableName()}  Table");
+            }
+
+            //Seed Jobs if Empty
+            if (_jobRepository.HasSeed() == false)
+            {
+                _logger.LogInformation("Seeding Job Table.");
+                if (_jobRepository.SeedJobs())
+                    _logger.LogInformation($"Successfullly Inserted Seed data to {_jobRepository.TableName()} Table.");
+                else
+                    _logger.LogDebug($"Error inserting Seed data to  {_jobRepository.TableName()}  Table");
+            }
+
+            //Seed JobItems if Empty
+            if (_jobItemRepository.HasSeed() == false)
+            {
+                _logger.LogInformation("Seeding Job Table.");
+                if (_jobRepository.SeedJobs())
+                    _logger.LogInformation($"Successfullly Inserted Seed data to {_jobItemRepository.TableName()} Table.");
+                else
+                    _logger.LogDebug($"Error inserting Seed data to  {_jobItemRepository.TableName()} Table");
             }
         }
     }
