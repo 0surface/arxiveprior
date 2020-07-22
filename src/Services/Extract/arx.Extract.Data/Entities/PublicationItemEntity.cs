@@ -1,10 +1,12 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using arx.Extract.Data.Common;
+using arx.Extract.Types;
+using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 
 namespace arx.Extract.Data.Entities
 {
-    public class PublicationItemEntity : TableEntity
+    public class PublicationItemEntity : TableEntity, IPublicationItem
     {
         public string ArxivId { get; set; } //T
         public string CanonicalArxivId { get; set; }
@@ -17,14 +19,34 @@ namespace arx.Extract.Data.Entities
         public string Comment { get; set; }
 
         public string PrimarySubjectCode { get; set; }
-        public List<string> SubjectCodes { get; set; }
+        
+        
         public string JournalReference { get; set; }
         public string Doi { get; set; }
 
         public string PdfLink { get; set; }
         public string DoiLink { get; set; }
 
-        public string Authors { get; set; }
+        [EntityJsonPropertyConverter]
+        public List<string> SubjectCodes { get; set; }
+
+        [EntityJsonPropertyConverter]
+        public List<AuthorItem> Authors { get; set; }
+
+
+        public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
+        {
+            var results = base.WriteEntity(operationContext);
+            EntityJsonPropertyConverter.Serialize(this, results);
+            return results;
+        }
+
+        public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
+        {
+            base.ReadEntity(properties, operationContext);
+            EntityJsonPropertyConverter.Deserialize(this, properties);
+        }
+
     }
 
 }
