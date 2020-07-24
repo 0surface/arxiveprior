@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -129,10 +130,11 @@ namespace arx.Extract.BackgroundTasks.Tasks
             FulfilmentEntity lastFulfilment = _fulfilmentRepository.GetLastFulfilment(job.UniqueName);
 
             _logger.LogInformation($"Creating new Fulfilment record from Job {job.UniqueName}");
-
-
             int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));
+
             FulfilmentEntity newFulfilment = CreateNewFulfilment(job, lastFulfilment, minQueryDateInterval);
+            _logger.LogInformation($"Created New Fulfilment {newFulfilment.JobName} -[{newFulfilment.FulfilmentId}] -  @{newFulfilment.JobStartedDate}");
+            _logger.LogInformation($"New Fulfilment -[{newFulfilment.FulfilmentId}] - QueryFrom [{newFulfilment.QueryFromDate}] to [{newFulfilment.QueryToDate}]");
 
             if (newFulfilment.FulfilmentId == null)
             {
@@ -143,54 +145,68 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             foreach (var jobItem in jobItems)
             {
-                List<Tuple<DateTime, DateTime>> requestDateIntervlas =
-                    GetRequestChunkedDates(lastFulfilment, jobItem.QueryDateInterval);
+                List<Tuple<DateTime, DateTime>> requestDateIntervals = GetRequestChunkedDates(lastFulfilment, jobItem.QueryDateInterval);
 
-                foreach (var interval in requestDateIntervlas)
+                foreach (var interval in requestDateIntervals)
                 {
-                    newfulfilmentItems.Add(CreateNewFulfilmentItem(jobItem, lastFulfilment, interval, job.QueryBaseUrl));
+                    newfulfilmentItems.Add(CreateNewFulfilmentItem(jobItem, interval, job.QueryBaseUrl, newFulfilment.FulfilmentId));
                 }
             }
 
             List<FulfilmentItemEntity> fulfilmentItems = _fulfilmentItemRepository.SaveFulfilmentItems(newfulfilmentItems);
 
-            //Run Http Request, transform, persist operations per fulfilment Item
+            if (fulfilmentItems.Count > 0)
+            {
+                _logger.LogInformation($"Created [{fulfilmentItems.Count}] New Fulfilment Items from Fulfilment {newFulfilment.FulfilmentId} - @{DateTime.UtcNow}");
+            }
+            else
+            {
+                _logger.LogError($"Error persisting [{fulfilmentItems.Count}] New Fulfilment Items from Fulfilment {newFulfilment.FulfilmentId} - @{DateTime.UtcNow}");
+                //TODO: retry logic if Table Storage Insert failed.
+            }
 
-            foreach (var item in fulfilmentItems)
+            Stopwatch stopwatch = new Stopwatch();
+            //Run Http Request, transform, persist operations per fulfilment Item
+            foreach (var fulfilmentItem in fulfilmentItems)
             {
                 List<ArxivItem> allResults = new List<ArxivItem>();
-                item.JobItemStartDate = DateTime.UtcNow;
 
-                //Make initial http request
-                ArxivItem initialItems = new ArxivItem();
-                HttpResponseMessage initialResponse;
-                (initialResponse, initialItems) = _archiveFetch.GetArxivItems(item.Url).Result;
+                fulfilmentItem.JobItemStartDate = DateTime.UtcNow;
 
-                item.HttpRequestIsSuccess = initialResponse.IsSuccessStatusCode;
-                var headerAgeTimeSpan = initialResponse?.Headers?.Age;
-                item.FetchTimeSpan += headerAgeTimeSpan.HasValue ? headerAgeTimeSpan.Value.TotalMilliseconds : 0.00;
+                //Make initial http request to external website/API          
+                stopwatch.Start();
+                var (initialResponse, initialItems) = _archiveFetch.GetArxivItems(fulfilmentItem.Url).Result;
+                stopwatch.Stop();
 
-                item.HttpRequestCount++;
-                //Add reponse to result list
+                //Save http request time elapsed.
+                fulfilmentItem.HttpRequestIsSuccess = initialResponse.IsSuccessStatusCode;
+                fulfilmentItem.FetchTimeSpan = stopwatch.ElapsedMilliseconds;
+                stopwatch.Reset();
+
+                fulfilmentItem.HttpRequestCount++;
+
+                //Add response to results list
                 allResults.Add(initialItems);
 
-                int total = initialItems.totalResults;
+                int totalAvialable = initialItems.totalResults;
                 int fetched = initialItems.itemsPerPage;
-                string initialUrl = item.Url;
+                string initialUrl = fulfilmentItem.Url;
 
-                item.TotalResults = total;
-                item.ResultSizePerHttpRequest = initialItems.itemsPerPage;
+                fulfilmentItem.TotalResults = totalAvialable;
+                fulfilmentItem.ResultSizePerHttpRequest = initialItems.itemsPerPage;
 
-                if (fetched < total)
+                if (fetched < totalAvialable)
                 {
+                    _logger.LogInformation($"FulfilmentItem {fulfilmentItem.ItemUId} - Only fetched[{fetched}] out of [{totalAvialable}]. Making further Paged Http Requests...");
+
                     //Calculate the number of requests required to fetch all items for the initial query
-                    int requests = (int)Math.Floor((double)(fetched / total)) - 1;
+                    int requests = (int)Math.Floor((double)(fetched / totalAvialable)) - 1;
 
                     //Get delay value from settings/Environment
                     int delay = _settings.ArxivApiPagingRequestDelay;
 
                     //Record delay value
-                    item.DelayBetweenHttpRequests = delay;
+                    fulfilmentItem.DelayBetweenHttpRequests = delay;
 
                     for (int i = 0; i < requests; i++)
                     {
@@ -203,70 +219,133 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         //Add next start index to request url
                         string pagedUrl = $"{initialUrl}&start={currentStartIndex}";
 
-                        ArxivItem pagedItems = new ArxivItem();
-                        HttpResponseMessage pagedResponse;
-                        (pagedResponse, pagedItems) = _archiveFetch.GetArxivItems(pagedUrl).Result;
+                        _logger.LogInformation($"fulfilmentItem {fulfilmentItem.ItemUId} - Making paged Http request no [{i + 1}]");
+                        stopwatch.Start();
+                        var (pagedResponse, pagedItems) = _archiveFetch.GetArxivItems(pagedUrl).Result;
+                        stopwatch.Stop();
 
-                        item.FetchTimeSpan += pagedResponse.Headers.Age.Value.TotalMilliseconds;
-                        item.HttpRequestCount++;
-
-                        if (item.HttpRequestIsSuccess)
-                        {
-                            item.HttpRequestIsSuccess = pagedResponse.IsSuccessStatusCode;
-                        }
+                        //Add meta data
+                        fulfilmentItem.FetchTimeSpan += stopwatch.ElapsedMilliseconds;
+                        stopwatch.Reset();
+                        fulfilmentItem.HttpRequestCount++;
+                        fulfilmentItem.HttpRequestIsSuccess = pagedResponse.IsSuccessStatusCode;
 
                         //Add reponse to result list
                         allResults.Add(pagedItems);
                     }
                 }
 
-                //Recored time taken handling Http requests
-                item.FetchTimeSpan = (item.JobItemStartDate - DateTime.UtcNow).TotalMilliseconds;
-
-                int totalEntries = allResults?.Sum(x => x.itemsPerPage) ?? 0;
-                item.TotalResults = totalEntries;
-                newFulfilment.TotalCount += totalEntries;
-
-                if (item.TotalResults > 0)
+                //Re-Set FetchTimeSpan as time taken handling Http requests, if there have been Paged/more than one requests.
+                if (fulfilmentItem.DelayBetweenHttpRequests > 0)
                 {
-                    //Trasform entries to Publications
+                    fulfilmentItem.FetchTimeSpan = (fulfilmentItem.JobItemStartDate - DateTime.UtcNow).TotalMilliseconds;
+                }
+
+                fulfilmentItem.TotalResults = allResults?.Sum(x => x.EntryList?.Count) ?? 0;
+                newFulfilment.TotalCount += fulfilmentItem.TotalResults;
+
+                //Tranform and Persist to Storage
+                if (fulfilmentItem.TotalResults < 1)
+                {
+                    _logger.LogInformation($"FulfilmentItem {fulfilmentItem.ItemUId} - returned 0 items.");
+                }
+                else
+                {
                     List<Entry> allArxivEntries = new List<Entry>();
+
+                    //Accumulate all Arxiv Entry values
                     allResults?.ForEach(x => allArxivEntries.AddRange(x.EntryList));
 
-                    //Perform transformations
-                    List<PublicationItem> publications =
-                        _transformService.TransformArxivEntriesToPublications(allArxivEntries);
+                    if (allArxivEntries.Count == 0)
+                    {
+                        fulfilmentItem.DataExtractionIsSuccess = true;
+                    }
+                    else
+                    {
+                        //Perform transformations
+                        var publications = _transformService.TransformArxivEntriesToPublications(allArxivEntries);
 
-                    //Persist to database
-                    item.DataExtractionIsSuccess = publications.Count == allArxivEntries.Count;
+                        //Set type transformaiton success
+                        fulfilmentItem.DataExtractionIsSuccess = (publications.Count == allArxivEntries.Count);
 
-                    //Persist publications to Storage - Batch insert
-                    await _publicationRepository.BatchSavePublications(_mapper.Map<List<PublicationItemEntity>>(publications));
+                        //Set fulfilment Ids
+                        var entityList = _mapper.Map<List<PublicationItemEntity>>(publications);
+                        entityList?.ForEach(e =>
+                        {
+                            e.FulfilmentId = newFulfilment.FulfilmentId.ToString();
+                            e.FulFilmentItemId = fulfilmentItem.ItemUId.ToString();
+                        });
+
+                        //Persist publications to Storage - Batch insert
+                        int saved = await _publicationRepository.BatchSavePublications(entityList);
+                        
+                        if (saved == 0)
+                        {
+                            _logger.LogError($"FulfilmentItem {fulfilmentItem.ItemUId} - persisted 0 publications to Storage");
+                        }
+                    }
                 }
 
                 //Record process completion Time, interval               
-                item.JobItemCompletedDate = DateTime.UtcNow;
-                item.TotalProcessingInMilliseconds = (item.JobItemStartDate - item.JobItemCompletedDate).TotalMilliseconds;
+                fulfilmentItem.JobItemCompletedDate = DateTime.UtcNow;
+                fulfilmentItem.TotalProcessingInMilliseconds = 
+                    (fulfilmentItem.JobItemStartDate - fulfilmentItem.JobItemCompletedDate).TotalMilliseconds;
 
                 //Save to fulfilment Item to database
-                _fulfilmentItemRepository.SaveFulfilmentItem(item);
+                var savedItem = _fulfilmentItemRepository.SaveFulfilmentItem(fulfilmentItem);
+
+                //Log Fulfilment Item summary
+                if (savedItem != null)
+                {
+                    _logger.LogInformation($@"FulfilmentItem [{fulfilmentItem.ItemUId}] - SubjectCode[{fulfilmentItem.QuerySubjectCode}] - 
+                                        Started @{fulfilmentItem.JobItemStartDate} - Completed @{fulfilmentItem.JobItemCompletedDate} 
+                                        - Fetched ={fulfilmentItem.TotalResults}");
+                }
+                else
+                {
+                    _logger.LogError($@"Error Saving FulfilmentItem [{fulfilmentItem.ItemUId}] - SubjectCode[{fulfilmentItem.QuerySubjectCode}] - 
+                                        Started @{fulfilmentItem.JobItemStartDate} - Completed @{fulfilmentItem.JobItemCompletedDate} 
+                                        - Fetched ={fulfilmentItem.TotalResults}");
+                }
             }
 
             //Save new Fulilment record values
             newFulfilment.PartialSuccess = fulfilmentItems.Any(x => x.HttpRequestIsSuccess == true)
-               || fulfilmentItems.Any(x => x.DataExtractionIsSuccess = true);
+               && fulfilmentItems.Any(x => x.DataExtractionIsSuccess = true);
 
             newFulfilment.CompleteSuccess = fulfilmentItems.All(x => x.HttpRequestIsSuccess == true)
                 && fulfilmentItems.All(x => x.DataExtractionIsSuccess = true);
 
             newFulfilment.JobCompletedDate = DateTime.UtcNow;
+            
 
             //Persist to Storage
-            await _fulfilmentRepository.SaveFulfilment(newFulfilment);
+            var savedNew = await _fulfilmentRepository.SaveFulfilment(newFulfilment);
+
+            if (savedNew != null)
+            {
+                _logger.LogInformation($@"Fulfilment {newFulfilment.JobName} -[{newFulfilment.FulfilmentId}] - 
+                                    Completed @{newFulfilment.JobCompletedDate} - Total Count = {newFulfilment.TotalCount} -
+                                    From [{ newFulfilment.QueryFromDate}] To [{ newFulfilment.QueryToDate}]");
+            }
+            else
+            {
+                _logger.LogInformation($@"Error Saving - Fulfilment {newFulfilment.JobName} -[{newFulfilment.FulfilmentId}] - 
+                                    Completed @{newFulfilment.JobCompletedDate} - Total Count = {newFulfilment.TotalCount} -
+                                    From [{ newFulfilment.QueryFromDate}] To [{ newFulfilment.QueryToDate}]");
+            }
 
             return newFulfilment.FulfilmentId;
         }
 
+        /// <summary>
+        /// Returns a list of From, To datetime tuple values.
+        /// Returns a list of calcualted  From, To date tuple values, if the given query Date interval compared to the last fulfilment interval is not optimal.
+        /// Otherwise resturns one set of (From,To) dates callcuated from the given queryDate Interval.
+        /// </summary>
+        /// <param name="lastFulfilment">FulfilmentEntity</param>
+        /// <param name="queryDateInterval">int</param>
+        /// <returns>List<Tuple<DateTime, DateTime>></returns>
         private List<Tuple<DateTime, DateTime>> GetRequestChunkedDates(FulfilmentEntity lastFulfilment, int queryDateInterval)
         {
             /* Tuple(FromDate,ToDate) */
@@ -306,12 +385,11 @@ namespace arx.Extract.BackgroundTasks.Tasks
             return result;
         }
 
-        private FulfilmentItemEntity CreateNewFulfilmentItem(JobItemEntity jobItem, FulfilmentEntity lastFulfilment,
-            Tuple<DateTime, DateTime> requestDateInterval, string baseUrl)
+        private FulfilmentItemEntity CreateNewFulfilmentItem(JobItemEntity jobItem, Tuple<DateTime, DateTime> requestDateInterval, string baseUrl, Guid newFulfilmentId)
         {
             FulfilmentItemEntity fulfilmentItem = new FulfilmentItemEntity()
             {
-                FulfilmentId = (lastFulfilment != null) ? lastFulfilment.FulfilmentId : Guid.NewGuid(), //PK
+                FulfilmentId = newFulfilmentId, //PK
                 ItemUId = Guid.NewGuid(), //RK
                 JobItemId = jobItem.JobItemId,
                 QuerySubjectCode = jobItem.QuerySubjectCode,
@@ -372,15 +450,15 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             if (lastFulfilment == null || lastFulfilment.QueryFromDate == DateTime.MinValue)
             {
-                queryToDate = DateTime.UtcNow.AddDays(-2);
-                queryFromDate = queryToDate.AddDays(-1 * queryDateInterval);
+                queryToDate = DateTime.UtcNow.AddDays(-2).Date;
+                queryFromDate = queryToDate.AddDays(-1 * queryDateInterval).Date;
                 return (queryDateInterval, queryFromDate, queryToDate);
             }
 
             TimeSpan? span = (lastFulfilment?.QueryToDate - lastFulfilment?.QueryFromDate);
             int lastFulfilmentSpanDays = span.HasValue ? Math.Abs(span.Value.Days) : 0;
-            queryToDate = lastFulfilment.QueryFromDate.AddDays(-1);
-            queryFromDate = queryToDate.AddDays(-1 * lastFulfilmentSpanDays);
+            queryToDate = lastFulfilment.QueryFromDate.AddDays(-1).Date;
+            queryFromDate = queryToDate.AddDays(-1 * lastFulfilmentSpanDays).Date;
 
             return (lastFulfilmentSpanDays, queryFromDate, queryToDate);
         }
