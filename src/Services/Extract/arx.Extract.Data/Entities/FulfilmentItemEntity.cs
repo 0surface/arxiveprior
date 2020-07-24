@@ -14,7 +14,7 @@ namespace arx.Extract.Data.Entities
         public int ItemsPerRequest { get; set; }
         public string Url { get; set; }
 
-        public DateTime JobItemStartDate { get; set; }
+        public DateTime JobItemStartDate { get; set; } 
         public DateTime JobItemCompletedDate { get; set; }
         public double TotalProcessingInMilliseconds { get; set; }
         public bool HttpRequestIsSuccess { get; set; }

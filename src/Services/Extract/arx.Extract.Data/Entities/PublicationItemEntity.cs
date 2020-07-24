@@ -38,6 +38,8 @@ namespace arx.Extract.Data.Entities
         {
             var results = base.WriteEntity(operationContext);
             EntityJsonPropertyConverter.Serialize(this, results);
+            this.PartitionKey = this.PrimarySubjectCode;
+            this.RowKey = this.ArxivId;
             return results;
         }
 
