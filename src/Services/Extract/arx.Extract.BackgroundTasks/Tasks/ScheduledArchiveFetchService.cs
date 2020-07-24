@@ -83,7 +83,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             {
                 _logger.LogDebug($"ScheduledArchiveFetchService background task is doing background work. [{DateTime.UtcNow}]");
 
-                RunArchiveExtrationService(stoppingToken);
+                await RunArchiveExtrationService(stoppingToken);
 
                 _logger.LogInformation($"_settings.PostFetchWaitTime : {_settings.PostFetchWaitTime}");
 
@@ -97,11 +97,11 @@ namespace arx.Extract.BackgroundTasks.Tasks
             await Task.CompletedTask;
         }
 
-        private void RunArchiveExtrationService(CancellationToken stoppingToken)
+        private async Task  RunArchiveExtrationService(CancellationToken stoppingToken)
         {
             _logger.LogDebug("Running Scheduled Archive Service.");
 
-            var newFulfilmentId = ExecuteExtraction(stoppingToken);
+            var newFulfilmentId = await ExecuteExtraction(stoppingToken);
 
 
             var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfilmentId.ToString());
@@ -113,7 +113,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             _eventBus.Publish(extractionCompletedEvent);
         }
 
-        private Guid ExecuteExtraction(CancellationToken stoppingToken)
+        private async Task<Guid> ExecuteExtraction(CancellationToken stoppingToken)
         {
             _logger.LogDebug("Reading Metadata to determine archive task parameters.");
 
@@ -130,10 +130,13 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             _logger.LogInformation($"Creating new Fulfilment record from Job {job.UniqueName}");
 
-            FulfilmentEntity newFulfilment = CreateNewFulfilment(job, lastFulfilment);
+
+            int minQueryDateInterval = (int) Math.Floor(jobItems.Average(x => x.QueryDateInterval));
+            FulfilmentEntity newFulfilment = CreateNewFulfilment(job, lastFulfilment, minQueryDateInterval);
+
             if (newFulfilment.FulfilmentId == null)
             {
-                //TODO: retry logic
+                //TODO: retry logic if Table Storage Insert failed.
             }
 
             List<FulfilmentItemEntity> newfulfilmentItems = new List<FulfilmentItemEntity>();
@@ -164,7 +167,8 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 (initialResponse, initialItems) = _archiveFetch.GetArxivItems(item.Url).Result;
 
                 item.HttpRequestIsSuccess = initialResponse.IsSuccessStatusCode;
-                item.FetchTimeSpan += initialResponse.Headers.Age.Value.TotalMilliseconds;
+                var headerAgeTimeSpan = initialResponse?.Headers?.Age;
+                item.FetchTimeSpan += headerAgeTimeSpan.HasValue ? headerAgeTimeSpan.Value.TotalMilliseconds : 0.00;
 
                 item.HttpRequestCount++;
                 //Add reponse to result list
@@ -191,7 +195,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                     for (int i = 0; i < requests; i++)
                     {
                         //Apply delay, as per the request by Arxiv.org api access policy.
-                        Task.Delay(delay * 1000);
+                        await Task.Delay(delay * 1000);
 
                         //Calculate current start index value
                         int currentStartIndex = (i + 1) * fetched + 1;
@@ -237,7 +241,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                     item.DataExtractionIsSuccess = publications.Count == allArxivEntries.Count;
 
                     //Persist publications to Storage - Batch insert
-                    _publicationRepository.BatchSavePublications(_mapper.Map<List<PublicationItemEntity>>(publications));
+                    await _publicationRepository.BatchSavePublications(_mapper.Map<List<PublicationItemEntity>>(publications));
                 }
 
                 //Record process completion Time, interval               
@@ -258,7 +262,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             newFulfilment.JobCompletedDate = DateTime.UtcNow;
 
             //Persist to Storage
-            _fulfilmentRepository.SaveFulfilment(newFulfilment);
+            await _fulfilmentRepository.SaveFulfilment(newFulfilment);
 
             return newFulfilment.FulfilmentId;
         }
@@ -267,12 +271,26 @@ namespace arx.Extract.BackgroundTasks.Tasks
         {
             /* Tuple(FormDate,ToDate) */
             List<Tuple<DateTime, DateTime>> result = new List<Tuple<DateTime, DateTime>>();
+            DateTime nextToDate;
+            DateTime nextFromDate;
+            TimeSpan? span;
+            int lastSpanDays = 0;
 
-            TimeSpan? span = (lastFulfilment?.QueryToDate - lastFulfilment?.QueryFromDate);
-            int lastSpanDays = span.HasValue ? span.Value.Days : 0;
-
-            DateTime nextToDate = lastFulfilment.QueryFromDate.AddDays(-1);
-            DateTime nextFromDate = nextToDate.AddDays(-1 * queryDateInterval);
+            if (lastFulfilment == null)
+            {
+                //First Fulfilment record
+                nextToDate = DateTime.UtcNow.AddDays(-2);
+                nextFromDate = nextToDate.AddDays(-1 * queryDateInterval);
+                span = (nextToDate - nextFromDate);
+                lastSpanDays = span.HasValue ? span.Value.Days : 0;
+            }
+            else
+            {
+                span = (lastFulfilment?.QueryToDate - lastFulfilment?.QueryFromDate);
+                lastSpanDays = span.HasValue ? span.Value.Days : 0;
+                nextToDate = lastFulfilment.QueryFromDate.AddDays(-1);
+                nextFromDate = nextToDate.AddDays(-1 * queryDateInterval);
+            }
 
             if (queryDateInterval >= lastSpanDays)
             {
@@ -310,14 +328,18 @@ namespace arx.Extract.BackgroundTasks.Tasks
         {
             FulfilmentItemEntity fulfilmentItem = new FulfilmentItemEntity()
             {
-                FulfilmentId = lastFulfilment.FulfilmentId, //PK
+                FulfilmentId = (lastFulfilment != null) ? lastFulfilment.FulfilmentId : Guid.NewGuid(), //PK
                 ItemUId = Guid.NewGuid(), //RK
                 JobItemId = jobItem.JobItemId,
                 QuerySubjectCode = jobItem.QuerySubjectCode,
                 QuerySubjectGroup = jobItem.QuerySubjectGroup,
-                ItemsPerRequest = jobItem.ItemsPerRequest
+                ItemsPerRequest = jobItem.ItemsPerRequest,
+                JobItemStartDate = new DateTime(1970, 01, 01),
+                JobItemCompletedDate = new DateTime(1970, 01, 01),
             };
 
+            fulfilmentItem.PartitionKey = fulfilmentItem.FulfilmentId.ToString();
+            fulfilmentItem.RowKey = fulfilmentItem.ItemUId.ToString();
             fulfilmentItem.Url = ConstructRequestUrl(requestDateInterval, baseUrl, fulfilmentItem);
 
             return fulfilmentItem;
@@ -338,15 +360,36 @@ namespace arx.Extract.BackgroundTasks.Tasks
             return UrlMaker.RequestUrlForItemsBetweenDates(urlParams);
         }
 
-        private FulfilmentEntity CreateNewFulfilment(JobEntity job, FulfilmentEntity lastFulfilment)
+        private FulfilmentEntity CreateNewFulfilment(JobEntity job, FulfilmentEntity lastFulfilment, int averageQueryDateInterval)
         {
-            return _fulfilmentRepository.SaveFulfilment(new FulfilmentEntity()
+            FulfilmentEntity item = new FulfilmentEntity()
             {
                 JobName = job.UniqueName,
                 FulfilmentId = Guid.NewGuid(),
                 Type = job.Type,
-                JobStartedDate = DateTime.UtcNow
-            });
+                JobStartedDate = DateTime.UtcNow,
+                JobCompletedDate = new DateTime(1970, 01, 01)
+            };
+
+            item.PartitionKey = item.JobName;
+
+            item.RowKey = item.FulfilmentId.ToString();
+
+            if(lastFulfilment == null)
+            {
+                item.QueryFromDate = item.QueryFromDate = DateTime.UtcNow.AddDays(-2);
+                item.QueryToDate = item.QueryFromDate.AddDays(-1 * averageQueryDateInterval);
+            }
+            else
+            {
+                TimeSpan? span = (lastFulfilment?.QueryToDate - lastFulfilment?.QueryFromDate);
+                int lastFulfilmentSpanDays = span.HasValue ? span.Value.Days : 0;
+
+                item.QueryToDate = lastFulfilment.QueryFromDate.AddDays(-1);
+                item.QueryFromDate = item.QueryToDate.AddDays(-1 * lastFulfilmentSpanDays);
+            }
+
+            return _fulfilmentRepository.SaveFulfilment(item).Result;
         }
 
         private void ServiceSetup()

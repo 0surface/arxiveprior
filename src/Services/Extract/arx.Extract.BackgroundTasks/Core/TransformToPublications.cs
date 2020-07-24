@@ -70,10 +70,8 @@ namespace arx.Extract.BackgroundTasks.Core
 
                 pub.Authors = _mapper.Map<List<AuthorItem>>(item.Authors);
             }
-            catch (Exception)
-            {
-                return null;
-            }
+            catch (Exception) { }
+
             return pub;
         }
     }
