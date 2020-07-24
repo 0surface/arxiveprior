@@ -104,7 +104,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             var newFulfilmentId = await ExecuteExtraction(stoppingToken);
 
-
             var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfilmentId.ToString());
 
             _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
@@ -272,6 +271,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         var entityList = _mapper.Map<List<PublicationItemEntity>>(publications);
                         entityList?.ForEach(e =>
                         {
+                            e.PartitionKey = newFulfilment.FulfilmentId.ToString();
                             e.FulfilmentId = newFulfilment.FulfilmentId.ToString();
                             e.FulFilmentItemId = fulfilmentItem.ItemUId.ToString();
                         });
@@ -288,25 +288,19 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                 //Record process completion Time, interval               
                 fulfilmentItem.JobItemCompletedDate = DateTime.UtcNow;
-                fulfilmentItem.TotalProcessingInMilliseconds = 
-                    (fulfilmentItem.JobItemStartDate - fulfilmentItem.JobItemCompletedDate).TotalMilliseconds;
+                fulfilmentItem.TotalProcessingInMilliseconds =
+                    (fulfilmentItem.JobItemCompletedDate - fulfilmentItem.JobItemStartDate).TotalMilliseconds;
 
                 //Save to fulfilment Item to database
                 var savedItem = _fulfilmentItemRepository.SaveFulfilmentItem(fulfilmentItem);
 
                 //Log Fulfilment Item summary
+                string logFulfilmentItem = $"FulfilmentItem [{fulfilmentItem.ItemUId}] - SubjectCode[{fulfilmentItem.QuerySubjectCode}] - Started @{fulfilmentItem.JobItemStartDate} - Completed @{fulfilmentItem.JobItemCompletedDate} - Fetched ={fulfilmentItem.TotalResults}";
+               
                 if (savedItem != null)
-                {
-                    _logger.LogInformation($@"FulfilmentItem [{fulfilmentItem.ItemUId}] - SubjectCode[{fulfilmentItem.QuerySubjectCode}] - 
-                                        Started @{fulfilmentItem.JobItemStartDate} - Completed @{fulfilmentItem.JobItemCompletedDate} 
-                                        - Fetched ={fulfilmentItem.TotalResults}");
-                }
+                    _logger.LogInformation(logFulfilmentItem);
                 else
-                {
-                    _logger.LogError($@"Error Saving FulfilmentItem [{fulfilmentItem.ItemUId}] - SubjectCode[{fulfilmentItem.QuerySubjectCode}] - 
-                                        Started @{fulfilmentItem.JobItemStartDate} - Completed @{fulfilmentItem.JobItemCompletedDate} 
-                                        - Fetched ={fulfilmentItem.TotalResults}");
-                }
+                    _logger.LogError($"Error Saving {logFulfilmentItem}");
             }
 
             //Save new Fulilment record values
@@ -324,15 +318,11 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             if (savedNew != null)
             {
-                _logger.LogInformation($@"Fulfilment {newFulfilment.JobName} -[{newFulfilment.FulfilmentId}] - 
-                                    Completed @{newFulfilment.JobCompletedDate} - Total Count = {newFulfilment.TotalCount} -
-                                    From [{ newFulfilment.QueryFromDate}] To [{ newFulfilment.QueryToDate}]");
+                _logger.LogInformation($"Fulfilment {newFulfilment.JobName} -[{newFulfilment.FulfilmentId}] - Completed @{newFulfilment.JobCompletedDate} - Total Count = {newFulfilment.TotalCount} - From [{ newFulfilment.QueryFromDate}] To [{ newFulfilment.QueryToDate}]");
             }
             else
             {
-                _logger.LogInformation($@"Error Saving - Fulfilment {newFulfilment.JobName} -[{newFulfilment.FulfilmentId}] - 
-                                    Completed @{newFulfilment.JobCompletedDate} - Total Count = {newFulfilment.TotalCount} -
-                                    From [{ newFulfilment.QueryFromDate}] To [{ newFulfilment.QueryToDate}]");
+                _logger.LogInformation($@"Error Saving - Fulfilment {newFulfilment.JobName} -[{newFulfilment.FulfilmentId}] - Completed @{newFulfilment.JobCompletedDate} - Total Count = {newFulfilment.TotalCount} - From [{ newFulfilment.QueryFromDate}] To [{ newFulfilment.QueryToDate}]");
             }
 
             return newFulfilment.FulfilmentId;
@@ -418,7 +408,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 QueryBaseUrl = baseUrl
             };
 
-            return UrlMaker.RequestUrlForItemsBetweenDates(urlParams);
+            return UrlMaker.FulfilmentUrlBetweenDates(urlParams);
         }
 
         private FulfilmentEntity CreateNewFulfilment(JobEntity job, FulfilmentEntity lastFulfilment, int averageQueryDateInterval)

@@ -24,25 +24,18 @@ namespace arx.Extract.Data.Repository
             Reference.CreateIfNotExists();
         }
 
-        public Task<int> BatchSavePublications(List<PublicationItemEntity> publications)
+        public async Task<int> BatchSavePublications(List<PublicationItemEntity> publications)
         {
-            int resultCount = 0;
-            var partitionKeys = publications.Select(x => x.PartitionKey).Distinct().ToList();
-
-            foreach (var key in partitionKeys)
+            try
             {
-                var batchOperation = new TableBatchOperation();
-
-                publications
-                    .Where(j => j.PartitionKey == key)
-                    .ToList()
-                    .ForEach(e => batchOperation.InsertOrReplace(e));
-
-                var inserted = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(Reference, batchOperation, null);
-
-                if (inserted != null) resultCount++;
+                var result = await Insert(publications);
+                return result.Count();
             }
-            return Task.FromResult(resultCount);
+            catch (Exception)
+            {
+            }
+
+            return 0;
         }
 
         public Task<List<PublicationItemEntity>> GetBetweenDates(DateTime fromDate, DateTime toDate)
@@ -52,11 +45,12 @@ namespace arx.Extract.Data.Repository
 
         public async Task<List<PublicationItemEntity>> GetSubjectInclusiveBetweenDates(string subjectCode, DateTime updatedFromDate, DateTime updatedToDate)
         {
+            var t = typeof(PublicationItemEntity);
             var conditions = new List<QueryFilterCondition>()
             {
-                new QueryFilterCondition(string.Empty, "PartitionKey", QueryComparisons.Equal, subjectCode),
-                new QueryFilterCondition("datetime", "UpdatedDate", QueryComparisons.GreaterThanOrEqual, updatedFromDate),
-                new QueryFilterCondition("datetime", "UpdatedDate", QueryComparisons.LessThanOrEqual, updatedToDate),
+                new QueryFilterCondition(string.Empty, t.GetProperty("PrimarySubjectCode").Name, QueryComparisons.Equal, subjectCode),
+                new QueryFilterCondition("datetime", t.GetProperty("UpdatedDate").Name, QueryComparisons.GreaterThanOrEqual, updatedFromDate),
+                new QueryFilterCondition("datetime", t.GetProperty("UpdatedDate").Name, QueryComparisons.LessThanOrEqual, updatedToDate),
             };
 
             var tableQuery = QueryFilterUtil.AndQueryFilters<PublicationItemEntity>(conditions);
@@ -65,6 +59,7 @@ namespace arx.Extract.Data.Repository
 
             return response
                     ?.OrderByDescending(x => x.UpdatedDate)
+                    ?.ThenBy(x => x.PrimarySubjectCode)
                     ?.ToList()
                     ?? new List<PublicationItemEntity>();
         }

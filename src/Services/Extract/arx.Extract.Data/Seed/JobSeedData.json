@@ -12,6 +12,12 @@
     "QueryBaseUrl": "http://export.arxiv.org/api/query?search_query="
   },
   {
+    "Type": "Archive",
+    "UniqueName": "arxarchivev2",
+    "Description": "Archive subject code queries between dates extractions",
+    "QueryBaseUrl": "http://export.arxiv.org/api/query?search_query="
+  },
+  {
     "Type": "Seed",
     "UniqueName": "seedv1",
     "Description": "Extract from limited numbers days or weeks in the past upto present",

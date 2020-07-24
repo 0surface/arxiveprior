@@ -9,8 +9,7 @@ namespace arx.Extract.BackgroundTasks
     {
         public BackgroundTasksAutoMapperProfile()
         {
-            CreateMap<PublicationItem, PublicationItemEntity>()
-                .ForMember(m => m.PartitionKey, opt => opt.MapFrom(n => n.PrimarySubjectCode))
+            CreateMap<PublicationItem, PublicationItemEntity>()                
                 .ForMember(m => m.RowKey, opt => opt.MapFrom(n => n.ArxivId));
             CreateMap<PublicationItemEntity, PublicationItem>();
             CreateMap<Author, AuthorItem>().ReverseMap();

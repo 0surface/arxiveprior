@@ -1238,5 +1238,133 @@
     "QuerySubjectGroup": "econ",
     "ItemsPerRequest": 500,
     "QueryDateInterval": 3
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "astro-ph",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "cond-mat",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "gr-qc",
+    "QuerySubjectGroup": "gr-qc",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "hep",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "math-ph",
+    "QuerySubjectGroup": "math-ph",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "nlin",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "nucl",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "physics",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "quant-ph",
+    "QuerySubjectGroup": "quant-ph",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "math",
+    "ItemsPerRequest": 1000,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "cs",
+    "ItemsPerRequest": 1500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "q-bio",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "q-fin",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "stat",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "eess",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
+  },
+  {
+    "JobName": "arxarchivev2",
+    "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
+    "QuerySubjectCode": "",
+    "QuerySubjectGroup": "econ",
+    "ItemsPerRequest": 500,
+    "QueryDateInterval": 5
   }
 ]
