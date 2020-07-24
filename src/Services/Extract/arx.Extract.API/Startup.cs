@@ -1,3 +1,6 @@
+using arx.Extract.API.Services;
+using arx.Extract.Data.Repository;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -15,11 +18,13 @@ namespace arx.Extract.API
         }
 
         public IConfiguration Configuration { get; }
-
+                
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddCustomSwagger();
+            services.AddCustomSwagger()
+                    .AddConfiguredAutoMapper()
+                    .AddPublicationService(Configuration.GetSection("Settings"));
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -60,6 +65,35 @@ namespace arx.Extract.API
                 });
             });
             return services;
+        }
+
+        public static IServiceCollection AddPublicationService(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["PublicationTableName"];
+
+            services.AddScoped<IPublicationsService>(opt =>
+            {
+                return new PublicationsService(new PublicationRepository(storageConnectionString, tableName), ConfigureAutoMapper());
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddConfiguredAutoMapper(this IServiceCollection services)
+        {
+            services.AddSingleton(ConfigureAutoMapper());
+            return services;
+        }
+
+        public static IMapper ConfigureAutoMapper()
+        {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ApiAutoMapperProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            return mapper;
         }
 
         #endregion Service Collection
