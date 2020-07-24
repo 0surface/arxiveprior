@@ -1,10 +1,10 @@
 ﻿using arx.Extract.Data.Common;
 using arx.Extract.Data.Entities;
-using arx.Extract.Types;
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace arx.Extract.Data.Repository
 {
@@ -12,8 +12,8 @@ namespace arx.Extract.Data.Repository
     {
         FulfilmentEntity GetLastFulfilment(string jobName);
         List<FulfilmentItemEntity> GetFulfilmentItems(string JobRecordId);
-        FulfilmentEntity SaveFulfilment(FulfilmentEntity jobRecord);      
-        
+        Task<FulfilmentEntity> SaveFulfilment(FulfilmentEntity jobRecord);
+
     }
     public class FulfilmentRepository : TableStorage, IFulfilmentRepository
     {
@@ -42,19 +42,19 @@ namespace arx.Extract.Data.Repository
                         .FirstOrDefault();
         }
 
-        public FulfilmentEntity SaveFulfilment(FulfilmentEntity fulfilment)
+        public async Task<FulfilmentEntity> SaveFulfilment(FulfilmentEntity fulfilment)
         {
             try
             {
-                var response = InsertOrReplace(fulfilment).Result;
+                var response = await InsertOrReplace(fulfilment);
                 return (FulfilmentEntity)response.Result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
         }
 
-        
+
     }
 }

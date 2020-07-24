@@ -2,7 +2,7 @@
 using arx.Extract.Data.Entities;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Net;
 
 namespace arx.Extract.Data.Repository
 {
@@ -24,7 +24,23 @@ namespace arx.Extract.Data.Repository
 
         public List<FulfilmentItemEntity> SaveFulfilmentItems(List<FulfilmentItemEntity> newFulfilmentItems)
         {
-            throw new NotImplementedException();
+            List<FulfilmentItemEntity> entities = new List<FulfilmentItemEntity>();
+            try
+            {
+                foreach (var item in newFulfilmentItems)
+                {
+                    var tableResult = InsertOrReplace(item).Result;
+
+                    if (tableResult.HttpStatusCode >= (int)HttpStatusCode.OK
+                        && tableResult.HttpStatusCode < (int)HttpStatusCode.Ambiguous)
+                    {
+                        entities.Add((FulfilmentItemEntity)tableResult.Result);
+                    }
+                }
+            }
+            catch (Exception) { }
+
+            return entities;
         }
 
         public FulfilmentItemEntity SaveFulfilmentItem(FulfilmentItemEntity fulfilmentItem)
@@ -36,7 +52,6 @@ namespace arx.Extract.Data.Repository
             }
             catch (Exception)
             {
-
                 return null;
             }
         }

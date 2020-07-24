@@ -38,13 +38,13 @@ namespace arx.Extract.Types
         public string Comment { get; set; }
 
         public string PrimarySubjectCode { get; set; }
-        public List<string> SubjectCodes { get; set; }
+        public List<string> SubjectCodes { get; set; } = new List<string>();
         public string JournalReference { get; set; }
         public string Doi { get; set; }
 
         public string PdfLink { get; set; }
         public string DoiLink { get; set; }
 
-        public List<AuthorItem> Authors { get; set; }
+        public List<AuthorItem> Authors { get; set; } = new List<AuthorItem>();
     }
 }
