@@ -8,7 +8,10 @@ namespace arx.Extract.Data.Entities
 {
     public class PublicationItemEntity : TableEntity, IPublicationItem
     {
-        public string ArxivId { get; set; } //T
+        public string FulfilmentId { get; set; }//PK
+        public string ArxivId { get; set; } //T , RK
+
+        public string FulFilmentItemId { get; set; }
         public string CanonicalArxivId { get; set; }
         public string VersionTag { get; set; } //T
         public DateTime PublishedDate { get; set; }
@@ -38,7 +41,7 @@ namespace arx.Extract.Data.Entities
         {
             var results = base.WriteEntity(operationContext);
             EntityJsonPropertyConverter.Serialize(this, results);
-            this.PartitionKey = this.PrimarySubjectCode;
+            this.PartitionKey = this.FulfilmentId;
             this.RowKey = this.ArxivId;
             return results;
         }
