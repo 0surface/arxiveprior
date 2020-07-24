@@ -9,6 +9,7 @@ using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.OData.Edm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -269,55 +270,38 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
         private List<Tuple<DateTime, DateTime>> GetRequestChunkedDates(FulfilmentEntity lastFulfilment, int queryDateInterval)
         {
-            /* Tuple(FormDate,ToDate) */
+            /* Tuple(FromDate,ToDate) */
             List<Tuple<DateTime, DateTime>> result = new List<Tuple<DateTime, DateTime>>();
-            DateTime nextToDate;
-            DateTime nextFromDate;
-            TimeSpan? span;
-            int lastSpanDays = 0;
 
-            if (lastFulfilment == null)
-            {
-                //First Fulfilment record
-                nextToDate = DateTime.UtcNow.AddDays(-2);
-                nextFromDate = nextToDate.AddDays(-1 * queryDateInterval);
-                span = (nextToDate - nextFromDate);
-                lastSpanDays = span.HasValue ? span.Value.Days : 0;
-            }
-            else
-            {
-                span = (lastFulfilment?.QueryToDate - lastFulfilment?.QueryFromDate);
-                lastSpanDays = span.HasValue ? span.Value.Days : 0;
-                nextToDate = lastFulfilment.QueryFromDate.AddDays(-1);
-                nextFromDate = nextToDate.AddDays(-1 * queryDateInterval);
-            }
+            var (lastSpanDays, nextFromDate, nextToDate) = CalculateQueryDates(lastFulfilment, queryDateInterval);
 
+            /* queryDateInterval is optimal */
             if (queryDateInterval >= lastSpanDays)
-            {
-                /* queryDateInterval is optimal */
+            {  
                 result.Add(new Tuple<DateTime, DateTime>(nextFromDate, nextToDate));
+                return result;
             }
-            else if (queryDateInterval < lastSpanDays)
+
+            /* lastSpanDays is too big, needs to be chuncked. Requires more than one set of (from, to) query dates / fulfilment items */
+
+            int mod = lastSpanDays % queryDateInterval;
+            int chunkSize = (int)Math.Floor((double)lastSpanDays / queryDateInterval);
+            int chunks = mod != 0 ? ((queryDateInterval - mod) / lastSpanDays) + 1 : queryDateInterval / lastSpanDays;
+
+            /* Create Query date interval Chucks*/
+            for (int i = 0; i < chunks; i++)
             {
-                /* lastSpanDays is too big, needs to be chuncked.
-                 * Requires more than 1 fulfilment items */
-                int mod = lastSpanDays % queryDateInterval;
-                int chunkSize = (int)Math.Floor((double)lastSpanDays / queryDateInterval);
-                int chunks = mod != 0 ? ((queryDateInterval - mod) / lastSpanDays) + 1 : queryDateInterval / lastSpanDays;
+                var toDate = i == 0 ? nextToDate : result[i].Item1.AddDays(-1);
+                var fromDate = toDate.AddDays(-1 * chunkSize);
+                result.Add(new Tuple<DateTime, DateTime>(fromDate, toDate));
+            }
 
-                for (int i = 0; i < chunks; i++)
-                {
-                    var toDate = i == 0 ? nextToDate : result[i].Item1.AddDays(-1);
-                    var fromDate = toDate.AddDays(-1 * chunkSize);
-                    result.Add(new Tuple<DateTime, DateTime>(fromDate, toDate));
-                }
-
-                if (mod != 0)
-                {
-                    var lastToDate = result.Last().Item1.AddDays(-1);
-                    var lastFromDate = lastToDate.AddDays(-1 * mod);
-                    result.Add(new Tuple<DateTime, DateTime>(lastFromDate, lastToDate));
-                }
+            /* If chunk count is an odd number, add the last Query date interval Chuck */
+            if (mod != 0)
+            {
+                var lastToDate = result.Last().Item1.AddDays(-1);
+                var lastFromDate = lastToDate.AddDays(-1 * mod);
+                result.Add(new Tuple<DateTime, DateTime>(lastFromDate, lastToDate));
             }
 
             return result;
@@ -372,24 +356,34 @@ namespace arx.Extract.BackgroundTasks.Tasks
             };
 
             item.PartitionKey = item.JobName;
-
             item.RowKey = item.FulfilmentId.ToString();
 
-            if(lastFulfilment == null)
-            {
-                item.QueryFromDate = item.QueryFromDate = DateTime.UtcNow.AddDays(-2);
-                item.QueryToDate = item.QueryFromDate.AddDays(-1 * averageQueryDateInterval);
-            }
-            else
-            {
-                TimeSpan? span = (lastFulfilment?.QueryToDate - lastFulfilment?.QueryFromDate);
-                int lastFulfilmentSpanDays = span.HasValue ? span.Value.Days : 0;
+            var (_, fromDate, toDate) = CalculateQueryDates(lastFulfilment, averageQueryDateInterval);
 
-                item.QueryToDate = lastFulfilment.QueryFromDate.AddDays(-1);
-                item.QueryFromDate = item.QueryToDate.AddDays(-1 * lastFulfilmentSpanDays);
-            }
+            item.QueryFromDate = fromDate;
+            item.QueryToDate = toDate;
 
             return _fulfilmentRepository.SaveFulfilment(item).Result;
+        }
+
+        private static (int, DateTime, DateTime) CalculateQueryDates(FulfilmentEntity lastFulfilment, int queryDateInterval)
+        {
+            DateTime queryFromDate;
+            DateTime queryToDate;
+
+            if (lastFulfilment == null || lastFulfilment.QueryFromDate == DateTime.MinValue)
+            {
+                queryToDate = DateTime.UtcNow.AddDays(-2);
+                queryFromDate = queryToDate.AddDays(-1 * queryDateInterval);
+                return (queryDateInterval, queryFromDate, queryToDate);
+            }
+
+            TimeSpan? span = (lastFulfilment?.QueryToDate - lastFulfilment?.QueryFromDate);
+            int lastFulfilmentSpanDays = span.HasValue ? Math.Abs(span.Value.Days) : 0;
+            queryToDate = lastFulfilment.QueryFromDate.AddDays(-1);
+            queryFromDate = queryToDate.AddDays(-1 * lastFulfilmentSpanDays);
+
+            return (lastFulfilmentSpanDays, queryFromDate, queryToDate);
         }
 
         private void ServiceSetup()
