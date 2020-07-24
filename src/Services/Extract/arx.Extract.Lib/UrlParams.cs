@@ -5,6 +5,7 @@ namespace arx.Extract.Lib
     public class UrlParams
     {
         public string SubjectCode { get; set; }
+        public string SubjectGroupCode { get; set; }
         public DateTime QueryFromDate { get; set; }
         public DateTime QueryToDate { get; set; }
         public int ItemsPerRequest { get; set; }
@@ -12,3 +13,4 @@ namespace arx.Extract.Lib
         public string QueryBaseUrl { get; set; }
     }
 }
+

@@ -1,4 +1,5 @@
-﻿using arx.Extract.Data.Entities;
+﻿using arx.Extract.Data.Common;
+using arx.Extract.Data.Entities;
 using arx.Extract.Data.Extensions;
 using arx.Extract.Data.Seed;
 using Microsoft.Azure.Cosmos.Table;
@@ -10,48 +11,45 @@ namespace arx.Extract.Data.Repository
 {
     public interface ISubjectRepository
     {
-        Task<IEnumerable<SubjectEntity>> All();
-        bool Seed();
+        Task<IEnumerable<SubjectEntity>> GetAll();
+        Task<IEnumerable<SubjectEntity>> GetSubjectsByGroupCode(string groupCode);
+        Task<IEnumerable<SubjectEntity>> GetSubjectsByCode(string code);
+        bool SeedSubjects();
+        string TableName();
     }
-    public class SubjectRepository : ISubjectRepository
+    public class SubjectRepository : TableStorage, ISubjectRepository
     {
-        private readonly string _connectionString;
-        private readonly string _tableName;
-        private CloudTable subjectTable = null;
-        public SubjectRepository()
+        public SubjectRepository(string connectionString, string tableName) : base(tableName, connectionString)
         {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_connectionString);
-            var tableClient = storageAccount.CreateCloudTableClient();
-            subjectTable = tableClient.GetTableReference(_tableName);
-            subjectTable.CreateIfNotExists();
-        }
-        public SubjectRepository(string connectionString, string tableName)
-        {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
-            var tableClient = storageAccount.CreateCloudTableClient();
-            subjectTable = tableClient.GetTableReference(tableName);
-            subjectTable.CreateIfNotExists();
-            _connectionString = connectionString;
-            _tableName = tableName;
+            Reference.CreateIfNotExists();
         }
 
-        public async Task<IEnumerable<SubjectEntity>> All()
+        public async Task<IEnumerable<SubjectEntity>> GetAll()
+            => await Query<SubjectEntity>(new TableQuery<SubjectEntity>());
+
+        public async Task<IEnumerable<SubjectEntity>> GetSubjectsByCode(string code)
+            => await QueryByRow<SubjectEntity>(code);
+
+        public async Task<IEnumerable<SubjectEntity>> GetSubjectsByGroupCode(string groupCode)
         {
-            var query = new TableQuery<SubjectEntity>();
+            var conditions = new List<QueryFilterCondition>()
+            { new QueryFilterCondition(string.Empty, "GroupCode", QueryComparisons.Equal, groupCode) };
 
-            var entities = subjectTable.ExecuteQuery(query);
+            var tableQuery = QueryFilterUtil.AndQueryFilters<SubjectEntity>(conditions);
 
-            return await Task.FromResult(entities);
+            return await Query(tableQuery);
         }
 
-        public bool Seed()
+        public bool SeedSubjects()
         {
             var entities = SeedReader.ReadSubjects();
             var batchOperation = new TableBatchOperation();
             entities.ToList().ForEach(e => batchOperation.InsertOrReplace(e));
-            var result = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(subjectTable, batchOperation, null);
+            var result = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(Reference, batchOperation, null);
 
             return result.Count == entities.Count();
         }
+
+        public string TableName() => Name;
     }
 }

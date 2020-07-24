@@ -18,8 +18,30 @@
             string start = urlParams?.QueryFromDate.ToString("yyyyMMddHHmm");
             string end = urlParams?.QueryToDate.ToString("yyyyMMddHHmm");
             string dateQueryString = $"+AND+submittedDate:[{start}+TO+{end}]";
+            string startIndex = urlParams?.StartIndex == 0 ? "" : $"&start={urlParams?.StartIndex}";
 
-            return $"{baseUrl}{subjectQuery}{dateQueryString}{maxResultsQuery}";
+            return $"{baseUrl}{subjectQuery}{dateQueryString}{startIndex}{maxResultsQuery}";
+        }
+
+        public static string FulfilmentUrlBetweenDates(UrlParams urlParams)
+        {
+            string maxResultsQuery = urlParams.ItemsPerRequest > 0 ?
+                                       $"&max_results={urlParams.ItemsPerRequest}"
+                                      : "0";
+            string baseUrl = string.IsNullOrEmpty(urlParams.QueryBaseUrl) ?
+                                string.Empty
+                                : "http://export.arxiv.org/api/query?search_query=";
+
+            string subjectQuery = string.IsNullOrEmpty(urlParams.SubjectCode) ?
+                                $"cat:{urlParams.SubjectGroupCode}*" :
+                                $"cat:{urlParams.SubjectCode}";
+
+            string start = urlParams?.QueryFromDate.ToString("yyyyMMddHHmm");
+            string end = urlParams?.QueryToDate.ToString("yyyyMMddHHmm");
+            string dateQueryString = $"+AND+submittedDate:[{start}+TO+{end}]";
+            string startIndex = urlParams?.StartIndex == 0 ? "" : $"&start={urlParams?.StartIndex}";
+
+            return $"{baseUrl}{subjectQuery}{dateQueryString}{startIndex}{maxResultsQuery}";
         }
     }
 }

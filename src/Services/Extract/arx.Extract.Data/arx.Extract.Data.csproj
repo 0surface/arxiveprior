@@ -5,10 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Seed\JobItemSeedData.json" />
+    <None Remove="Seed\JobSeedData.json" />
     <None Remove="Seed\SubjectSeedData.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Seed\JobItemSeedData.json" />
+    <EmbeddedResource Include="Seed\JobSeedData.json" />
     <EmbeddedResource Include="Seed\SubjectSeedData.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -16,6 +20,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\arx.Extract.Types\arx.Extract.Types.csproj" />
   </ItemGroup>
 
 </Project>
