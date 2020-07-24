@@ -9,7 +9,6 @@ using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.OData.Edm;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,7 +97,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             await Task.CompletedTask;
         }
 
-        private async Task  RunArchiveExtrationService(CancellationToken stoppingToken)
+        private async Task RunArchiveExtrationService(CancellationToken stoppingToken)
         {
             _logger.LogDebug("Running Scheduled Archive Service.");
 
@@ -132,7 +131,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             _logger.LogInformation($"Creating new Fulfilment record from Job {job.UniqueName}");
 
 
-            int minQueryDateInterval = (int) Math.Floor(jobItems.Average(x => x.QueryDateInterval));
+            int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));
             FulfilmentEntity newFulfilment = CreateNewFulfilment(job, lastFulfilment, minQueryDateInterval);
 
             if (newFulfilment.FulfilmentId == null)
@@ -277,7 +276,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             /* queryDateInterval is optimal */
             if (queryDateInterval >= lastSpanDays)
-            {  
+            {
                 result.Add(new Tuple<DateTime, DateTime>(nextFromDate, nextToDate));
                 return result;
             }
