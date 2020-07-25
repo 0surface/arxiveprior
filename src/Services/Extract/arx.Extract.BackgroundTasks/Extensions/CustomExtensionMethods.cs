@@ -149,24 +149,24 @@ namespace arx.Extract.BackgroundTasks.Extensions
             return services;
         }
 
-        public static IServiceCollection AddFulfilmentRepository(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddFulfillmentRepository(this IServiceCollection services, IConfiguration configuration)
         {
             var storageConnectionString = configuration["StorageConnectionString"];
-            var tableName = configuration["FulfilmentTableName"];
-            services.AddSingleton<IFulfilmentRepository>(opt =>
+            var tableName = configuration["FulfillmentTableName"];
+            services.AddSingleton<IFulfillmentRepository>(opt =>
             {
-                return new FulfilmentRepository(storageConnectionString, tableName);
+                return new FulfillmentRepository(storageConnectionString, tableName);
             });
             return services;
         }
 
-        public static IServiceCollection AddFulfilmentItemRepository(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddFulfillmentItemRepository(this IServiceCollection services, IConfiguration configuration)
         {
             var storageConnectionString = configuration["StorageConnectionString"];
-            var tableName = configuration["FulfilmentItemTableName"];
-            services.AddSingleton<IFulfilmentItemRepository>(opt =>
+            var tableName = configuration["FulfillmentItemTableName"];
+            services.AddSingleton<IFulfillmentItemRepository>(opt =>
             {
-                return new FulfilmentItemRepository(storageConnectionString, tableName);
+                return new FulfillmentItemRepository(storageConnectionString, tableName);
             });
             return services;
         }

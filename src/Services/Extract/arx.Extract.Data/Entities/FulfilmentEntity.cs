@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 namespace arx.Extract.Data.Entities
 {
-    public class FulfilmentEntity : TableEntity, IFulfilment
+    public class FulfillmentEntity : TableEntity, IFulfillment
     { 
         public string JobName { get; set; } //PK
-        public Guid FulfilmentId { get; set; } //RK
+        public Guid FulfillmentId { get; set; } //RK
         [EntityEnumPropertyConverter]
         public ExtractTypeEnum Type { get; set; }        
         public DateTime QueryFromDate { get; set; }

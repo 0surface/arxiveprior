@@ -2,9 +2,9 @@
 
 namespace arx.Extract.Types
 {
-    public interface IFulfilmentItem 
+    public interface IFulfillmentItem 
     {
-         Guid FulfilmentId { get; set; } //PK
+         Guid FulfillmentId { get; set; } //PK
          Guid ItemUId { get; set; }//RK
          Guid JobItemId { get; set; }
          string QuerySubjectCode { get; set; }
@@ -25,9 +25,9 @@ namespace arx.Extract.Types
     }
 
 
-    public class FulfilmentItem : IFulfilmentItem
+    public class FulfillmentItem : IFulfillmentItem
     {
-        public Guid FulfilmentId { get; set; } //PK
+        public Guid FulfillmentId { get; set; } //PK
         public Guid ItemUId { get; set; }//RK
         public Guid JobItemId { get; set; }
         public string QuerySubjectCode { get; set; }

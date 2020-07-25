@@ -8,33 +8,33 @@ using System.Threading.Tasks;
 
 namespace arx.Extract.Data.Repository
 {
-    public interface IFulfilmentRepository
+    public interface IFulfillmentRepository
     {
-        FulfilmentEntity GetLastFulfilment(string jobName);
-        List<FulfilmentItemEntity> GetFulfilmentItems(string JobRecordId);
-        Task<FulfilmentEntity> SaveFulfilment(FulfilmentEntity jobRecord);
+        FulfillmentEntity GetLastFulfillment(string jobName);
+        List<FulfillmentItemEntity> GetFulfillmentItems(string JobRecordId);
+        Task<FulfillmentEntity> SaveFulfillment(FulfillmentEntity jobRecord);
 
     }
-    public class FulfilmentRepository : TableStorage, IFulfilmentRepository
+    public class FulfillmentRepository : TableStorage, IFulfillmentRepository
     {
-        public FulfilmentRepository(string connectionString, string tableName) : base(tableName, connectionString)
+        public FulfillmentRepository(string connectionString, string tableName) : base(tableName, connectionString)
         {
             Reference.CreateIfNotExists();
         }
 
-        public List<FulfilmentItemEntity> GetFulfilmentItems(string JobRecordId)
+        public List<FulfillmentItemEntity> GetFulfillmentItems(string JobRecordId)
         {
             throw new NotImplementedException();
         }
 
-        public FulfilmentEntity GetLastFulfilment(string jobName)
+        public FulfillmentEntity GetLastFulfillment(string jobName)
         {
             var conditions = new List<QueryFilterCondition>()
             {
                 new QueryFilterCondition(string.Empty, "PartitionKey", QueryComparisons.Equal, jobName)
             };
 
-            var tableQuery = QueryFilterUtil.AndQueryFilters<FulfilmentEntity>(conditions);
+            var tableQuery = QueryFilterUtil.AndQueryFilters<FulfillmentEntity>(conditions);
 
             return Query(tableQuery)
                         .Result
@@ -42,12 +42,12 @@ namespace arx.Extract.Data.Repository
                         .FirstOrDefault();
         }
 
-        public async Task<FulfilmentEntity> SaveFulfilment(FulfilmentEntity fulfilment)
+        public async Task<FulfillmentEntity> SaveFulfillment(FulfillmentEntity fulfillment)
         {
             try
             {
-                var response = await InsertOrReplace(fulfilment);
-                return (FulfilmentEntity)response.Result;
+                var response = await InsertOrReplace(fulfillment);
+                return (FulfillmentEntity)response.Result;
             }
             catch (Exception)
             {

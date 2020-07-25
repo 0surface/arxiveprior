@@ -12,8 +12,8 @@
         public string PublicationTableName { get; set; }
         public string JobTableName { get; set; }
         public string JobItemTableName { get; set; }
-        public string FulfilmentTableName { get; set; }
-        public string FulfilmentItemTableName { get; set; }
+        public string FulfillmentTableName { get; set; }
+        public string FulfillmentItemTableName { get; set; }
 
         public string ExtractionMode { get; set; }
         public string ArchiveJobName { get; set; }

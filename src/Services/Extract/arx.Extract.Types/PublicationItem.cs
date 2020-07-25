@@ -5,8 +5,8 @@ namespace arx.Extract.Types
 {
     public interface IPublicationItem
     {
-        string FulfilmentId { get; set; }//PK        
-        string FulFilmentItemId { get; set; }
+        string FulfillmentId { get; set; }//PK        
+        string FulFillmentItemId { get; set; }
         
         string ArxivId { get; set; } //T
         string CanonicalArxivId { get; set; }
@@ -31,8 +31,8 @@ namespace arx.Extract.Types
     }
     public class PublicationItem : IPublicationItem
     {        
-        public string FulfilmentId { get; set; }//PK        
-        public string FulFilmentItemId { get; set; }
+        public string FulfillmentId { get; set; }//PK        
+        public string FulFillmentItemId { get; set; }
 
         public string ArxivId { get; set; } //T
         public string CanonicalArxivId { get; set; }
