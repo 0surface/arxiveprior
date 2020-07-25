@@ -36,6 +36,15 @@ namespace arx.Extract.Data.Entities
         [EntityJsonPropertyConverter]
         public List<AuthorItem> Authors { get; set; }
 
+        [EntityJsonPropertyConverter]
+        public List<AuthorItem> AuthorSpillOverListOne { get; set; }
+        [EntityJsonPropertyConverter]
+        public List<AuthorItem> AuthorSpillOverListTwo { get; set; }
+
+        [EntityJsonPropertyConverter]
+        public List<AuthorItem> AuthorSpillOverListThree { get; set; }
+
+        public bool AuthorListTruncated { get; set; }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {
@@ -49,9 +58,8 @@ namespace arx.Extract.Data.Entities
         public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
         {
             base.ReadEntity(properties, operationContext);
-            EntityJsonPropertyConverter.Deserialize(this, properties);
+            EntityJsonPropertyConverter.Deserialize(this, properties);           
         }
-
     }
 
 }

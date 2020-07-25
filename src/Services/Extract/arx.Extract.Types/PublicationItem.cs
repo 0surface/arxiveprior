@@ -5,6 +5,9 @@ namespace arx.Extract.Types
 {
     public interface IPublicationItem
     {
+        string FulfilmentId { get; set; }//PK        
+        string FulFilmentItemId { get; set; }
+        
         string ArxivId { get; set; } //T
         string CanonicalArxivId { get; set; }
         string VersionTag { get; set; } //T
@@ -24,9 +27,13 @@ namespace arx.Extract.Types
         string DoiLink { get; set; }
 
         List<AuthorItem> Authors { get; set; }
+        bool AuthorListTruncated { get; set; }
     }
     public class PublicationItem : IPublicationItem
-    {
+    {        
+        public string FulfilmentId { get; set; }//PK        
+        public string FulFilmentItemId { get; set; }
+
         public string ArxivId { get; set; } //T
         public string CanonicalArxivId { get; set; }
         public string VersionTag { get; set; } //T
@@ -45,6 +52,8 @@ namespace arx.Extract.Types
         public string PdfLink { get; set; }
         public string DoiLink { get; set; }
 
+        public bool AuthorListTruncated { get; set; }
         public List<AuthorItem> Authors { get; set; } = new List<AuthorItem>();
+        
     }
 }
