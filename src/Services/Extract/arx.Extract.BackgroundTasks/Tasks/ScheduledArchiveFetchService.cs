@@ -456,9 +456,9 @@ namespace arx.Extract.BackgroundTasks.Tasks
         private void ServiceSetup()
         {
             //Seed Subjects if empty
-            if (_subjectRepo.GetAll().Result.Count() == 0)
+            if (_subjectRepo.HasSeed() == false)
             {
-                _logger.LogInformation("Seeding Subject Table.");
+                _logger.LogInformation($"Seeding {_subjectRepo.TableName()} Table.");
 
                 if (_subjectRepo.SeedSubjects())
                     _logger.LogInformation($"Successfullly Inserted Seed data to  {_subjectRepo.TableName()} Table.");
@@ -469,7 +469,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             //Seed Jobs if Empty
             if (_jobRepository.HasSeed() == false)
             {
-                _logger.LogInformation("Seeding Job Table.");
+                _logger.LogInformation($"Seeding {_jobRepository.TableName()}  Table.");
                 if (_jobRepository.SeedJobs())
                     _logger.LogInformation($"Successfullly Inserted Seed data to {_jobRepository.TableName()} Table.");
                 else
@@ -479,7 +479,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             //Seed JobItems if Empty
             if (_jobItemRepository.HasSeed() == false)
             {
-                _logger.LogInformation("Seeding Job Table.");
+                _logger.LogInformation($"Seeding {_jobItemRepository.TableName()}  Table.");
                 if (_jobItemRepository.SeedJobItems())
                     _logger.LogInformation($"Successfullly Inserted Seed data to {_jobItemRepository.TableName()} Table.");
                 else
