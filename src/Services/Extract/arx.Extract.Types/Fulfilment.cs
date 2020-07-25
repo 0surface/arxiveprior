@@ -12,6 +12,7 @@ namespace arx.Extract.Types
 
          DateTime JobStartedDate { get; set; }
          DateTime JobCompletedDate { get; set; }
+         double ProcessingTimeInSeconds { get; set; }
          int TotalCount { get; set; }
          bool PartialSuccess { get; set; }
          bool CompleteSuccess { get; set; }
@@ -26,6 +27,7 @@ namespace arx.Extract.Types
 
         public DateTime JobStartedDate { get; set; }
         public DateTime JobCompletedDate { get; set; }
+        public double ProcessingTimeInSeconds { get; set; }
         public int TotalCount { get; set; }
         public bool PartialSuccess { get; set; }
         public bool CompleteSuccess { get; set; }

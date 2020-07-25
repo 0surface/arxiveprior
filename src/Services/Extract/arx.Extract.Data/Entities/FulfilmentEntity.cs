@@ -20,6 +20,7 @@ namespace arx.Extract.Data.Entities
         public int TotalCount { get; set; }
         public bool PartialSuccess { get; set; }
         public bool CompleteSuccess { get; set; }
+        public double ProcessingTimeInSeconds { get; set; }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {

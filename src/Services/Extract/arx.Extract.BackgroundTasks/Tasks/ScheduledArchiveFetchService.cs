@@ -310,8 +310,8 @@ namespace arx.Extract.BackgroundTasks.Tasks
             newFulfilment.CompleteSuccess = fulfilmentItems.All(x => x.HttpRequestIsSuccess == true)
                 && fulfilmentItems.All(x => x.DataExtractionIsSuccess = true);
 
-            newFulfilment.JobCompletedDate = DateTime.UtcNow;
-            
+            newFulfilment.JobCompletedDate = DateTime.UtcNow;            
+            newFulfilment.ProcessingTimeInSeconds = (newFulfilment.JobCompletedDate - newFulfilment.JobStartedDate).TotalSeconds;
 
             //Persist to Storage
             var savedNew = await _fulfilmentRepository.SaveFulfilment(newFulfilment);
