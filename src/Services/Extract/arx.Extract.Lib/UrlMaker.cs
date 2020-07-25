@@ -23,7 +23,7 @@
             return $"{baseUrl}{subjectQuery}{dateQueryString}{startIndex}{maxResultsQuery}";
         }
 
-        public static string FulfilmentUrlBetweenDates(UrlParams urlParams)
+        public static string FulfillmentUrlBetweenDates(UrlParams urlParams)
         {
             string maxResultsQuery = urlParams.ItemsPerRequest > 0 ?
                                        $"&max_results={urlParams.ItemsPerRequest}"

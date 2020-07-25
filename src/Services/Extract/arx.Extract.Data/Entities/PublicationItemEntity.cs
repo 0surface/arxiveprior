@@ -8,10 +8,10 @@ namespace arx.Extract.Data.Entities
 {
     public class PublicationItemEntity : TableEntity, IPublicationItem
     {
-        public string FulfilmentId { get; set; }//PK
+        public string FulfillmentId { get; set; }//PK
         public string ArxivId { get; set; } //T , RK
 
-        public string FulFilmentItemId { get; set; }
+        public string FulFillmentItemId { get; set; }
         public string CanonicalArxivId { get; set; }
         public string VersionTag { get; set; } //T
         public DateTime PublishedDate { get; set; }
@@ -36,12 +36,21 @@ namespace arx.Extract.Data.Entities
         [EntityJsonPropertyConverter]
         public List<AuthorItem> Authors { get; set; }
 
+        [EntityJsonPropertyConverter]
+        public List<AuthorItem> AuthorSpillOverListOne { get; set; }
+        [EntityJsonPropertyConverter]
+        public List<AuthorItem> AuthorSpillOverListTwo { get; set; }
+
+        [EntityJsonPropertyConverter]
+        public List<AuthorItem> AuthorSpillOverListThree { get; set; }
+
+        public bool AuthorListTruncated { get; set; }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)
         {
             var results = base.WriteEntity(operationContext);
             EntityJsonPropertyConverter.Serialize(this, results);
-            this.PartitionKey = this.FulfilmentId;
+            this.PartitionKey = this.FulfillmentId;
             this.RowKey = this.ArxivId;
             return results;
         }
@@ -49,9 +58,8 @@ namespace arx.Extract.Data.Entities
         public override void ReadEntity(IDictionary<string, EntityProperty> properties, OperationContext operationContext)
         {
             base.ReadEntity(properties, operationContext);
-            EntityJsonPropertyConverter.Deserialize(this, properties);
+            EntityJsonPropertyConverter.Deserialize(this, properties);           
         }
-
     }
 
 }

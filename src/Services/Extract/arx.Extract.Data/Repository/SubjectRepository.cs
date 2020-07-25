@@ -16,6 +16,7 @@ namespace arx.Extract.Data.Repository
         Task<IEnumerable<SubjectEntity>> GetSubjectsByCode(string code);
         bool SeedSubjects();
         string TableName();
+        bool HasSeed();
     }
     public class SubjectRepository : TableStorage, ISubjectRepository
     {
@@ -49,6 +50,8 @@ namespace arx.Extract.Data.Repository
 
             return result.Count == entities.Count();
         }
+
+        public bool HasSeed() => HasAnyPartitionKey();
 
         public string TableName() => Name;
     }

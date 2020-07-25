@@ -30,8 +30,8 @@ namespace arx.Extract.BackgroundTasks
                             .AddSubjectRepository(settings)
                             .AddJobRepository(settings)
                             .AddJobItemRepository(settings)
-                            .AddFulfilmentRepository(settings)
-                            .AddFulfilmentItemRepository(settings)
+                            .AddFulfillmentRepository(settings)
+                            .AddFulfillmentItemRepository(settings)
                             .AddPublicationRepository(settings)
                             .AddArchiveFetch()
                             .AddTransformService();

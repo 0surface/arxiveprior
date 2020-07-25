@@ -6,35 +6,35 @@ using System.Net;
 
 namespace arx.Extract.Data.Repository
 {
-    public interface IFulfilmentItemRepository
+    public interface IFulfillmentItemRepository
     {
-        FulfilmentItemEntity SaveFulfilmentItem(FulfilmentItemEntity fulfilmentItem);
-        List<FulfilmentItemEntity> SaveFulfilmentItems(List<FulfilmentItemEntity> newFulfilmentItems);
+        FulfillmentItemEntity SaveFulfillmentItem(FulfillmentItemEntity fulfillmentItem);
+        List<FulfillmentItemEntity> SaveFulfillmentItems(List<FulfillmentItemEntity> newFulfillmentItems);
     }
-    public class FulfilmentItemRepository : TableStorage, IFulfilmentItemRepository
+    public class FulfillmentItemRepository : TableStorage, IFulfillmentItemRepository
     {
-        public FulfilmentItemRepository(string connectionString, string tableName) : base(tableName, connectionString)
+        public FulfillmentItemRepository(string connectionString, string tableName) : base(tableName, connectionString)
         {
             Reference.CreateIfNotExists();
         }
-        public List<FulfilmentItemEntity> GetFulfilmentItems(List<FulfilmentItemEntity> newFulfilmentItems)
+        public List<FulfillmentItemEntity> GetFulfillmentItems(List<FulfillmentItemEntity> newFulfillmentItems)
         {
             throw new NotImplementedException();
         }
 
-        public List<FulfilmentItemEntity> SaveFulfilmentItems(List<FulfilmentItemEntity> newFulfilmentItems)
+        public List<FulfillmentItemEntity> SaveFulfillmentItems(List<FulfillmentItemEntity> newFulfillmentItems)
         {
-            List<FulfilmentItemEntity> entities = new List<FulfilmentItemEntity>();
+            List<FulfillmentItemEntity> entities = new List<FulfillmentItemEntity>();
             try
             {
-                foreach (var item in newFulfilmentItems)
+                foreach (var item in newFulfillmentItems)
                 {
                     var tableResult = InsertOrReplace(item).Result;
 
                     if (tableResult.HttpStatusCode >= (int)HttpStatusCode.OK
                         && tableResult.HttpStatusCode < (int)HttpStatusCode.Ambiguous)
                     {
-                        entities.Add((FulfilmentItemEntity)tableResult.Result);
+                        entities.Add((FulfillmentItemEntity)tableResult.Result);
                     }
                 }
             }
@@ -43,12 +43,12 @@ namespace arx.Extract.Data.Repository
             return entities;
         }
 
-        public FulfilmentItemEntity SaveFulfilmentItem(FulfilmentItemEntity fulfilmentItem)
+        public FulfillmentItemEntity SaveFulfillmentItem(FulfillmentItemEntity fulfillmentItem)
         {
             try
             {
-                var response = InsertOrReplace(fulfilmentItem).Result;
-                return (FulfilmentItemEntity)response.Result;
+                var response = InsertOrReplace(fulfillmentItem).Result;
+                return (FulfillmentItemEntity)response.Result;
             }
             catch (Exception)
             {
