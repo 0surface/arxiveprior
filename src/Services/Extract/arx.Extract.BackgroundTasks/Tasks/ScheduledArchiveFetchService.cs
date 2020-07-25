@@ -111,7 +111,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             //TODO: Publish to eventBus
             _eventBus.Publish(extractionCompletedEvent);
-        }
+          }
 
         private async Task<Guid> ExecuteExtraction(CancellationToken stoppingToken)
         {
