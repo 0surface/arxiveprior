@@ -16,6 +16,7 @@
         public string FulfillmentItemTableName { get; set; }
 
         public string ExtractionMode { get; set; }
+        public bool ArchiveModeIsActive { get; set; }
         public string ArchiveJobName { get; set; }
         public string SeedJobName { get; set; }
         public string JournalJobName { get; set; }

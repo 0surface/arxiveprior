@@ -71,11 +71,12 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             stoppingToken.Register(() => _logger.LogDebug("#1 ScheduledArchiveFetchService background task is stopping."));
 
-            var extractionMode = _settings.ExtractionMode;
+            bool  archiveModeIsActive = _settings.ArchiveModeIsActive;
 
-            if (extractionMode != ExtractTypeEnum.Archive.ToString())
+            if (archiveModeIsActive)
             {
-                _logger.LogInformation($"Stopping {this.GetType().Name} because current Extraction Mode is : {extractionMode}");
+                _logger.LogInformation($"Stopping {this.GetType().Name} because current Archive Extraction Mode is NOT Active.");
+
                 await StopAsync(stoppingToken);
             }
 
