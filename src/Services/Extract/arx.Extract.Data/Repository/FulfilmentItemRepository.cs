@@ -44,7 +44,10 @@ namespace arx.Extract.Data.Repository
                     }
                 }
             }
-            catch (Exception) { }
+            catch (Exception) 
+            { 
+                return null; 
+            }
 
             return entities;
         }

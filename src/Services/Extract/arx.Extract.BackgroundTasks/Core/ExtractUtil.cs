@@ -109,7 +109,7 @@ namespace arx.Extract.BackgroundTasks.Core
             return result;
         }
 
-        public static FulfillmentItemEntity CreateNewFulfillmentItem(JobItemEntity jobItem, ExtractQueryDates requestDateInterval, string baseUrl, Guid newFulfillmentId)
+        public static FulfillmentItemEntity MakeNewFulfillmentItem(JobItemEntity jobItem, ExtractQueryDates requestDateInterval, string baseUrl, Guid newFulfillmentId)
         {
             FulfillmentItemEntity fulfillmentItem = new FulfillmentItemEntity()
             {
