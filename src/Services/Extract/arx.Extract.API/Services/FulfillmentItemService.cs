@@ -9,7 +9,7 @@ namespace arx.Extract.API.Services
 {
     public interface IFulfillmentItemService
     {
-        Task<List<FulfillmentItem>> GetItems(string fulfillmentId)
+        Task<List<FulfillmentItem>> GetItems(string fulfillmentId);
     }
     public class FulfillmentItemService : IFulfillmentItemService
     {
