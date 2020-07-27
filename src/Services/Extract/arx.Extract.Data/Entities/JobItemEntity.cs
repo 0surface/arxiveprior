@@ -12,5 +12,6 @@ namespace arx.Extract.Data.Entities
         public string QuerySubjectGroup { get; set; }
         public int ItemsPerRequest { get; set; }
         public int QueryDateInterval { get; set; }
+        public DateTime ArchiveTerminationDate { get; set; }
     }
 }
