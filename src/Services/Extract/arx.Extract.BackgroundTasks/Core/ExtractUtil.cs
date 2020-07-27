@@ -3,7 +3,6 @@ using arx.Extract.Lib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace arx.Extract.BackgroundTasks.Core
 {
@@ -156,7 +155,7 @@ namespace arx.Extract.BackgroundTasks.Core
 
             return item;
         }
-        
+
         public static string ConstructRequestUrl(ExtractQueryDates queryDates, string baseUrl, FulfillmentItemEntity fulfillmentItem)
         {
             UrlParams urlParams = new UrlParams()

@@ -46,7 +46,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             IArchiveFetch archiveFetch,
             ITransformService transformService)
         {
-            _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));            
+            _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));
             _mapper = mapper;
             _eventBus = eventBus;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -73,7 +73,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex,$"{this.GetType().Name} - An Unhandled exception was thrown");
+                _logger.LogCritical(ex, $"{this.GetType().Name} - An Unhandled exception was thrown");
             }
             finally
             {
@@ -82,9 +82,9 @@ namespace arx.Extract.BackgroundTasks.Tasks
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
-        {  
+        {
             _logger.LogDebug($"{this.GetType().Name} Background Task is stopping.");
-            await base.StopAsync(cancellationToken);            
+            await base.StopAsync(cancellationToken);
         }
 
         private async Task DoWork(CancellationToken stoppingToken)
@@ -137,12 +137,12 @@ namespace arx.Extract.BackgroundTasks.Tasks
             }
 
             FulfillmentEntity lastFulfillment = _fulfillmentRepository.GetLastSuccessfulFulfillment(job.UniqueName).Result;
-                       
+
             int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));
 
             FulfillmentEntity newFulfillment = ExtractUtil.MakeNewFulfillment(job, lastFulfillment, minQueryDateInterval);
 
-             newFulfillment = _fulfillmentRepository.SaveFulfillment(newFulfillment).Result;
+            newFulfillment = _fulfillmentRepository.SaveFulfillment(newFulfillment).Result;
 
             if (newFulfillment == null)
             {
@@ -150,7 +150,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy")
                         , newFulfillment.QueryToDate.ToString("dd MMMM yyyy"));
                 await StopAsync(stoppingToken);
-            } 
+            }
             else if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, newFulfillment.QueryToDate))
             {
                 _logger.LogInformation("Stopping Service. Query Date window From [{0}] To [{1}] has passed Archive Terminate Date [{2}]",
@@ -356,7 +356,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             return newFulfillment.FulfillmentId.ToString();
         }
-        
+
         /// <summary>
         /// Adds Seed data to Storage, if Table's are empty.
         /// Used to Seed job template data for services.

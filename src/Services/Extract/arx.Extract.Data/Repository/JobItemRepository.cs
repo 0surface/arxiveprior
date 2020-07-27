@@ -3,7 +3,6 @@ using arx.Extract.Data.Entities;
 using arx.Extract.Data.Extensions;
 using arx.Extract.Data.Seed;
 using Microsoft.Azure.Cosmos.Table;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,7 +32,7 @@ namespace arx.Extract.Data.Repository
         public bool SeedJobItems()
         {
             IEnumerable<JobItemEntity> entities = SeedReader.ReadJobItems();
-                        
+
             bool batchSuccess = true;
 
             //Insert each jobItem Collection as a batch segemented by Partition Key
