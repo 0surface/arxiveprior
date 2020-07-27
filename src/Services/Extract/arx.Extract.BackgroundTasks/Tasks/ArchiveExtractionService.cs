@@ -158,18 +158,20 @@ namespace arx.Extract.BackgroundTasks.Tasks
             else
             {
                 _logger.LogInformation("New Fulfillment [{0}]-[{1}] - Query From [{2}] To [{3}] - Started @ {4}",
-                                    newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy")
-                                    , newFulfillment.QueryToDate.ToString("dd MMMM yyyy"), newFulfillment.JobStartedDate);
+                                    newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy"),
+                                    newFulfillment.QueryToDate.ToString("dd MMMM yyyy"), newFulfillment.JobStartedDate);
 
                 List<FulfillmentItemEntity> newFulfillmentItems = new List<FulfillmentItemEntity>();
 
                 foreach (var jobItem in jobItems)
                 {
-                    List<ExtractQueryDates> requestDateIntervals = ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval);
-
-                    foreach (var interval in requestDateIntervals)
+                    //For an optimal configuration, the loop below will only be executed once.
+                    foreach (var interval in ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval))
                     {
-                        newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
+                        if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, interval.QueryToDate)) 
+                        {
+                            newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
+                        }
                     }
                 }
 
