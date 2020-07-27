@@ -21,4 +21,5 @@ services:
   arx.Extract.BackgroundTasks:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_ENVIRONMENT=Development
       - Settings__StorageConnectionString=${ARX_AZURE_EXTRACT_STORAGE_CS}
