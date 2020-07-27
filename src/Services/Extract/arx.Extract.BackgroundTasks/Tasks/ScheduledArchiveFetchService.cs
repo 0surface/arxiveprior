@@ -187,30 +187,30 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 //Add response to results list
                 allResults.Add(initialItems);
 
-                int totalAvialable = initialItems.totalResults;
+                int totalAvailable = initialItems.totalResults;
                 int fetched = initialItems.itemsPerPage;
                 string initialUrl = fulfillmentItem.Url;
 
-                fulfillmentItem.TotalResults = totalAvialable;
-                fulfillmentItem.ResultSizePerHttpRequest = initialItems.itemsPerPage;
+                fulfillmentItem.TotalResults = fetched < totalAvailable ? fetched : totalAvailable;
+                fulfillmentItem.ResultSizePerHttpRequest = fetched;
 
-                if (fetched < totalAvialable)
+                if (fetched < totalAvailable)
                 {
-                    _logger.LogInformation($"FulfillmentItem {fulfillmentItem.ItemUId} - Only fetched[{fetched}] out of [{totalAvialable}]. Making further Paged Http Requests...");
+                    _logger.LogInformation($"FulfillmentItem {fulfillmentItem.ItemUId} - Only fetched[{fetched}] out of [{totalAvailable}]. Making further Paged Http Requests...");
 
                     //Calculate the number of requests required to fetch all items for the initial query
-                    int requests = (int)Math.Floor((double)(fetched / totalAvialable)) - 1;
+                    int requests = CalculatePagedRequestCount(totalAvailable, fetched);
 
                     //Get delay value from settings/Environment
                     int delay = _settings.ArxivApiPagingRequestDelay;
 
                     //Record delay value
-                    fulfillmentItem.DelayBetweenHttpRequests = delay;
+                    fulfillmentItem.DelayBetweenHttpRequests = delay * 1000;
 
                     for (int i = 0; i < requests; i++)
                     {
                         //Apply delay, as per the request by Arxiv.org api access policy.
-                        await Task.Delay(delay * 1000);
+                        await Task.Delay(fulfillmentItem.DelayBetweenHttpRequests);
 
                         //Calculate current start index value
                         int currentStartIndex = (i + 1) * fetched + 1;
@@ -231,16 +231,17 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                         //Add reponse to result list
                         allResults.Add(pagedItems);
+
+                        fulfillmentItem.TotalResults += pagedItems?.EntryList?.Count ?? 0;
                     }
                 }
 
                 //Re-Set FetchTimeSpan as time taken handling Http requests, if there have been Paged/more than one requests.
                 if (fulfillmentItem.DelayBetweenHttpRequests > 0)
                 {
-                    fulfillmentItem.FetchTimeSpan = (fulfillmentItem.JobItemStartDate - DateTime.UtcNow).TotalMilliseconds;
+                    fulfillmentItem.FetchTimeSpan = (DateTime.UtcNow - fulfillmentItem.JobItemStartDate).TotalMilliseconds;
                 }
 
-                fulfillmentItem.TotalResults = allResults?.Sum(x => x.EntryList?.Count) ?? 0;
                 newFulfillment.TotalCount += fulfillmentItem.TotalResults;
 
                 //Tranform and Persist to Storage
@@ -326,6 +327,23 @@ namespace arx.Extract.BackgroundTasks.Tasks
             }
 
             return newFulfillment.FulfillmentId;
+        }
+
+        private static int CalculatePagedRequestCount(int totalAvailable, int fetched)
+        {
+            if(fetched == 0) 
+                return 1;
+
+            int yetToFetch = (totalAvailable - fetched);
+
+            if ((yetToFetch / fetched) < 1) 
+                return 1;
+
+            int requests =  (int)Math.Floor((double)(yetToFetch / fetched));
+
+            if (yetToFetch % fetched > 0) requests++;
+
+            return requests;
         }
 
         /// <summary>
