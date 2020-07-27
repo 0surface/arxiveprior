@@ -126,7 +126,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 //TODO:Retry, fail logic
             }
 
-            FulfillmentEntity lastFulfillment = _fulfillmentRepository.GetLastFulfillment(job.UniqueName).Result;
+            FulfillmentEntity lastFulfillment = _fulfillmentRepository.GetLastSuccessfulFulfillment(job.UniqueName).Result;
 
             _logger.LogInformation($"Creating new Fulfillment record from Job {job.UniqueName}");
             int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));

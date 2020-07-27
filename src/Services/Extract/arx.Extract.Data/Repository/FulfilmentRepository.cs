@@ -14,7 +14,7 @@ namespace arx.Extract.Data.Repository
 
         Task<List<FulfillmentEntity>> GetFulfillments(string jobName);
         Task<List<FulfillmentEntity>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate);
-        Task<FulfillmentEntity> GetLastFulfillment(string jobName);
+        Task<FulfillmentEntity> GetLastSuccessfulFulfillment(string jobName);
         Task<List<FulfillmentEntity>> GetFailedFulfillments(string jobName);
     }
     public class FulfillmentRepository : TableStorage, IFulfillmentRepository
@@ -64,11 +64,12 @@ namespace arx.Extract.Data.Repository
                     ?? new List<FulfillmentEntity>();
         }
 
-        public async Task<FulfillmentEntity> GetLastFulfillment(string jobName)
+        public async Task<FulfillmentEntity> GetLastSuccessfulFulfillment(string jobName)
         {
             var response = await QueryByPartition<FulfillmentEntity>(jobName);
 
             return response
+                    ?.Where(x => x.CompleteSuccess == true)
                     ?.OrderByDescending(x => x.JobCompletedDate)
                     ?.FirstOrDefault() ?? null;
         }
