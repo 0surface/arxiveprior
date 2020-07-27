@@ -296,7 +296,8 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 var savedItem = _fulfillmentItemRepository.SaveFulfillmentItem(fulfillmentItem);
 
                 //Log fulfillment Item summary
-                string logFulfillmentItem = $"FulfillmentItem [{fulfillmentItem.ItemUId}] - SubjectCode[{fulfillmentItem.QuerySubjectCode}] - Started @{fulfillmentItem.JobItemStartDate} - Completed @{fulfillmentItem.JobItemCompletedDate} - Fetched ={fulfillmentItem.TotalResults}";
+                string activeCode = string.IsNullOrEmpty(fulfillmentItem.QuerySubjectCode) ? fulfillmentItem.QuerySubjectGroup : fulfillmentItem.QuerySubjectCode;
+                string logFulfillmentItem = $"FulfillmentItem [{fulfillmentItem.ItemUId}] - Subject Query [{activeCode}] - Started @{fulfillmentItem.JobItemStartDate} - Completed @{fulfillmentItem.JobItemCompletedDate} - Fetched ={fulfillmentItem.TotalResults}";
                
                 if (savedItem != null)
                     _logger.LogInformation(logFulfillmentItem);
