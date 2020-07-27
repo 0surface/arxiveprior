@@ -84,7 +84,7 @@ namespace arx.Extract.API.Controllers
             return Json(result);
         }
 
-        [HttpGet("last")]
+        [HttpGet("failed")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
