@@ -11,6 +11,9 @@ namespace arx.Extract.API
         {
             CreateMap<PublicationItemEntity, PublicationItem>()
                 .ForMember(m => m.Authors, opt => opt.MapFrom<AuthorListAggregateResolver>());
+
+            CreateMap<FulfillmentEntity, Fulfillment>();
+            CreateMap<FulfillmentItemEntity, FulfillmentItem>();
         }
 
         public class AuthorListAggregateResolver : IValueResolver<PublicationItemEntity, PublicationItem, List<AuthorItem>>
