@@ -166,5 +166,14 @@ namespace arx.Extract.BackgroundTasks.Core
 
             return UrlMaker.FulfillmentUrlBetweenDates(urlParams);
         }
+
+        public static bool HasPassedTerminationDate(DateTime terminationDate, DateTime toDate)
+        {
+            if (terminationDate == null || terminationDate == DateTime.MinValue ||
+                toDate == null || toDate == DateTime.MinValue)
+                return true;
+
+            return (toDate - terminationDate).Days < 0;
+        }
     }
 }

@@ -148,6 +148,12 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy")
                         , newFulfillment.QueryToDate.ToString("dd MMMM yyyy"));
                 await StopAsync(stoppingToken);
+            } 
+            else if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, newFulfillment.QueryToDate))
+            {
+                _logger.LogInformation("Stopping Service. Query Date window From [{0}] To [{1}] has passed Archive Terminate Date [{2}]",
+                    _settings.ArchiveTerminateDate, newFulfillment.QueryFromDate, newFulfillment.QueryToDate);
+                await StopAsync(stoppingToken);
             }
             else
             {
