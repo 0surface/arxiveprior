@@ -65,15 +65,15 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             await DoWork(stoppingToken);
         }
+
         private async Task DoWork(CancellationToken stoppingToken)
         {
-            ServiceSetup();
+            ServiceSeedSetup();
 
-            stoppingToken.Register(() => _logger.LogDebug("#1 ScheduledArchiveFetchService background task is stopping."));
+            stoppingToken.Register(() => _logger.LogDebug("#1 ArchiveExtractionService background task is stopping."));
 
-            bool  archiveModeIsActive = _settings.ArchiveModeIsActive;
 
-            if (archiveModeIsActive)
+            if (_settings.ArchiveModeIsActive)
             {
                 _logger.LogInformation($"Stopping {this.GetType().Name} because current Archive Extraction Mode is NOT Active.");
 
@@ -84,7 +84,14 @@ namespace arx.Extract.BackgroundTasks.Tasks
             {
                 _logger.LogDebug($"ScheduledArchiveFetchService background task is doing background work. [{DateTime.UtcNow}]");
 
-                await RunArchiveExtrationService(stoppingToken);
+                string newFulfillmentId = await RunArchiveExtraction(stoppingToken);
+
+                var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfillmentId);
+
+                _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
+                                        extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
+
+                _eventBus.Publish(extractionCompletedEvent);
 
                 _logger.LogInformation($"_settings.PostFetchWaitTime : {_settings.PostFetchWaitTime}");
 
@@ -98,22 +105,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             await Task.CompletedTask;
         }
 
-        private async Task RunArchiveExtrationService(CancellationToken stoppingToken)
-        {
-            _logger.LogDebug("Running Scheduled Archive Service.");
-
-            var newFulfillmentId = await ExecuteExtraction(stoppingToken);
-
-            var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfillmentId.ToString());
-
-            _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
-                                    extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
-
-            //TODO: Publish to eventBus
-            _eventBus.Publish(extractionCompletedEvent);
-        }
-
-        private async Task<Guid> ExecuteExtraction(CancellationToken stoppingToken)
+        private async Task<string> RunArchiveExtraction(CancellationToken stoppingToken)
         {
             _logger.LogDebug("Reading Metadata to determine archive task parameters.");
 
@@ -131,7 +123,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             _logger.LogInformation($"Creating new Fulfillment record from Job {job.UniqueName}");
             int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));
 
-            FulfillmentEntity newFulfillment = CreateNewFulfillment(job, lastFulfillment, minQueryDateInterval);
+            FulfillmentEntity newFulfillment = ExtractUtil.MakeNewFulfillment(job, lastFulfillment, minQueryDateInterval);
             _logger.LogInformation($"Created New Fulfillment {newFulfillment.JobName} -[{newFulfillment.FulfillmentId}] -  @{newFulfillment.JobStartedDate}");
             _logger.LogInformation($"New Fulfillment -[{newFulfillment.FulfillmentId}] - QueryFrom [{newFulfillment.QueryFromDate}] to [{newFulfillment.QueryToDate}]");
 
@@ -144,11 +136,11 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             foreach (var jobItem in jobItems)
             {
-                List<Tuple<DateTime, DateTime>> requestDateIntervals = GetRequestChunkedDates(lastFulfillment, jobItem.QueryDateInterval);
+                List<ExtractQueryDates> requestDateIntervals = ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval);
 
                 foreach (var interval in requestDateIntervals)
                 {
-                    newFulfillmentItems.Add(CreateNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
+                    newFulfillmentItems.Add(ExtractUtil.CreateNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
                 }
             }
 
@@ -199,7 +191,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                     _logger.LogInformation($"FulfillmentItem {fulfillmentItem.ItemUId} - Only fetched[{fetched}] out of [{totalAvailable}]. Making further Paged Http Requests...");
 
                     //Calculate the number of requests required to fetch all items for the initial query
-                    int requests = CalculatePagedRequestCount(totalAvailable, fetched);
+                    int requests = ExtractUtil.CalculatePagedRequestCount(totalAvailable, fetched);
 
                     //Get delay value from settings/Environment
                     int delay = _settings.ArxivApiPagingRequestDelay;
@@ -327,152 +319,14 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 _logger.LogInformation($@"Error Saving - Fulfillment {newFulfillment.JobName} -[{newFulfillment.FulfillmentId}] - Completed @{newFulfillment.JobCompletedDate} - Total Count = {newFulfillment.TotalCount} - From [{ newFulfillment.QueryFromDate}] To [{ newFulfillment.QueryToDate}]");
             }
 
-            return newFulfillment.FulfillmentId;
+            return newFulfillment.FulfillmentId.ToString();
         }
-
-        private static int CalculatePagedRequestCount(int totalAvailable, int fetched)
-        {
-            if (fetched == 0)
-                return 1;
-
-            int yetToFetch = (totalAvailable - fetched);
-
-            if ((yetToFetch / fetched) < 1)
-                return 1;
-
-            int requests = (int)Math.Floor((double)(yetToFetch / fetched));
-
-            if (yetToFetch % fetched > 0) requests++;
-
-            return requests;
-        }
-
+        
         /// <summary>
-        /// Returns a list of From, To datetime tuple values.
-        /// Returns a list of calcualted  From, To date tuple values, if the given query Date interval compared to the last fulfillment interval is not optimal.
-        /// Otherwise resturns one set of (From,To) dates callcuated from the given queryDate Interval.
+        /// Adds Seed data to Storage, if Table's are empty.
+        /// Used to Seed job template data for services.
         /// </summary>
-        /// <param name="lastFulfillment">FulfillmentEntity</param>
-        /// <param name="queryDateInterval">int</param>
-        /// <returns>List<Tuple<DateTime, DateTime>></returns>
-        private List<Tuple<DateTime, DateTime>> GetRequestChunkedDates(FulfillmentEntity lastFulfillment, int queryDateInterval)
-        {
-            /* Tuple(FromDate,ToDate) */
-            List<Tuple<DateTime, DateTime>> result = new List<Tuple<DateTime, DateTime>>();
-
-            var (lastSpanDays, nextFromDate, nextToDate) = CalculateQueryDates(lastFulfillment, queryDateInterval);
-
-            /* queryDateInterval is optimal */
-            if (queryDateInterval >= lastSpanDays)
-            {
-                result.Add(new Tuple<DateTime, DateTime>(nextFromDate, nextToDate));
-                return result;
-            }
-
-            /* lastSpanDays is too big, needs to be chuncked. Requires more than one set of (from, to) query dates / fulfillment items */
-
-            int mod = lastSpanDays % queryDateInterval;
-            int chunkSize = (int)Math.Floor((double)lastSpanDays / queryDateInterval);
-            int chunks = mod != 0 ? ((queryDateInterval - mod) / lastSpanDays) + 1 : queryDateInterval / lastSpanDays;
-
-            /* Create Query date interval Chucks*/
-            for (int i = 0; i < chunks; i++)
-            {
-                var toDate = i == 0 ? nextToDate : result[i].Item1.AddDays(-1);
-                var fromDate = toDate.AddDays(-1 * chunkSize);
-                result.Add(new Tuple<DateTime, DateTime>(fromDate, toDate));
-            }
-
-            /* If chunk count is an odd number, add the last Query date interval Chuck */
-            if (mod != 0)
-            {
-                var lastToDate = result.Last().Item1.AddDays(-1);
-                var lastFromDate = lastToDate.AddDays(-1 * mod);
-                result.Add(new Tuple<DateTime, DateTime>(lastFromDate, lastToDate));
-            }
-
-            return result;
-        }
-
-        private FulfillmentItemEntity CreateNewFulfillmentItem(JobItemEntity jobItem, Tuple<DateTime, DateTime> requestDateInterval, string baseUrl, Guid newFulfillmentId)
-        {
-            FulfillmentItemEntity fulfillmentItem = new FulfillmentItemEntity()
-            {
-                FulfillmentId = newFulfillmentId, //PK
-                ItemUId = Guid.NewGuid(), //RK
-                JobItemId = jobItem.JobItemId,
-                QuerySubjectCode = jobItem.QuerySubjectCode,
-                QuerySubjectGroup = jobItem.QuerySubjectGroup,
-                ItemsPerRequest = jobItem.ItemsPerRequest,
-                JobItemStartDate = new DateTime(1970, 01, 01),
-                JobItemCompletedDate = new DateTime(1970, 01, 01),
-            };
-
-            fulfillmentItem.PartitionKey = fulfillmentItem.FulfillmentId.ToString();
-            fulfillmentItem.RowKey = fulfillmentItem.ItemUId.ToString();
-            fulfillmentItem.Url = ConstructRequestUrl(requestDateInterval, baseUrl, fulfillmentItem);
-
-            return fulfillmentItem;
-        }
-
-        private string ConstructRequestUrl(Tuple<DateTime, DateTime> requestDateInterval, string baseUrl, FulfillmentItemEntity fulfillmentItem)
-        {
-            UrlParams urlParams = new UrlParams()
-            {
-                SubjectCode = fulfillmentItem.QuerySubjectCode,
-                SubjectGroupCode = fulfillmentItem.QuerySubjectGroup,
-                QueryFromDate = requestDateInterval.Item1,
-                QueryToDate = requestDateInterval.Item2,
-                ItemsPerRequest = fulfillmentItem.ItemsPerRequest,
-                QueryBaseUrl = baseUrl
-            };
-
-            return UrlMaker.FulfillmentUrlBetweenDates(urlParams);
-        }
-
-        private FulfillmentEntity CreateNewFulfillment(JobEntity job, FulfillmentEntity lastFulfillment, int averageQueryDateInterval)
-        {
-            FulfillmentEntity item = new FulfillmentEntity()
-            {
-                JobName = job.UniqueName,
-                FulfillmentId = Guid.NewGuid(),
-                Type = job.Type,
-                JobStartedDate = DateTime.UtcNow,
-                JobCompletedDate = new DateTime(1970, 01, 01)
-            };
-
-            item.PartitionKey = item.JobName;
-            item.RowKey = item.FulfillmentId.ToString();
-
-            var (_, fromDate, toDate) = CalculateQueryDates(lastFulfillment, averageQueryDateInterval);
-
-            item.QueryFromDate = fromDate;
-            item.QueryToDate = toDate;
-
-            return _fulfillmentRepository.SaveFulfillment(item).Result;
-        }
-
-        private static (int, DateTime, DateTime) CalculateQueryDates(FulfillmentEntity lastFulfillment, int queryDateInterval)
-        {
-            DateTime queryFromDate;
-            DateTime queryToDate;
-
-            if (lastFulfillment == null || lastFulfillment.QueryFromDate == DateTime.MinValue)
-            {
-                queryToDate = DateTime.UtcNow.AddDays(-2).Date;
-                queryFromDate = queryToDate.AddDays(-1 * queryDateInterval).Date;
-                return (queryDateInterval, queryFromDate, queryToDate);
-            }
-
-            TimeSpan? span = (lastFulfillment?.QueryToDate - lastFulfillment?.QueryFromDate);
-            int lastFulfillmentSpanDays = span.HasValue ? Math.Abs(span.Value.Days) : 0;
-            queryToDate = lastFulfillment.QueryFromDate.AddDays(-1).Date;
-            queryFromDate = queryToDate.AddDays(-1 * lastFulfillmentSpanDays).Date;
-
-            return (lastFulfillmentSpanDays, queryFromDate, queryToDate);
-        }
-
-        private void ServiceSetup()
+        private void ServiceSeedSetup()
         {
             //Seed Subjects if empty
             if (_subjectRepo.HasSeed() == false)
