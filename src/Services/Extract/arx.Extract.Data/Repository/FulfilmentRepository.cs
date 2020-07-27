@@ -41,7 +41,7 @@ namespace arx.Extract.Data.Repository
         {
             var response = await QueryByPartition<FulfillmentEntity>(jobName);
 
-            return response?.ToList();
+            return response?.ToList() ?? new List<FulfillmentEntity>();
         }
 
         public async Task<List<FulfillmentEntity>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate)
@@ -70,7 +70,7 @@ namespace arx.Extract.Data.Repository
 
             return response
                     ?.OrderByDescending(x => x.JobCompletedDate)
-                    ?.FirstOrDefault();
+                    ?.FirstOrDefault() ?? null;
         }
 
         public async Task<List<FulfillmentEntity>> GetFailedFulfillments(string jobName)
