@@ -10,36 +10,18 @@ namespace arx.Extract.Data.Repository
 {
     public interface IFulfillmentRepository
     {
-        FulfillmentEntity GetLastFulfillment(string jobName);
-        List<FulfillmentItemEntity> GetFulfillmentItems(string JobRecordId);
         Task<FulfillmentEntity> SaveFulfillment(FulfillmentEntity jobRecord);
-
+        
+        Task<List<FulfillmentEntity>> GetFulfillments(string jobName);
+        Task<List<FulfillmentEntity>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate);
+        Task<FulfillmentEntity> GetLastFulfillment(string jobName);
+        Task<List<FulfillmentEntity>> GetFailedFulfillments(string jobName);
     }
     public class FulfillmentRepository : TableStorage, IFulfillmentRepository
     {
         public FulfillmentRepository(string connectionString, string tableName) : base(tableName, connectionString)
         {
             Reference.CreateIfNotExists();
-        }
-
-        public List<FulfillmentItemEntity> GetFulfillmentItems(string JobRecordId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public FulfillmentEntity GetLastFulfillment(string jobName)
-        {
-            var conditions = new List<QueryFilterCondition>()
-            {
-                new QueryFilterCondition(string.Empty, "PartitionKey", QueryComparisons.Equal, jobName)
-            };
-
-            var tableQuery = QueryFilterUtil.AndQueryFilters<FulfillmentEntity>(conditions);
-
-            return Query(tableQuery)
-                        .Result
-                        .OrderByDescending(x => x.JobCompletedDate)
-                        .FirstOrDefault();
         }
 
         public async Task<FulfillmentEntity> SaveFulfillment(FulfillmentEntity fulfillment)
@@ -55,6 +37,59 @@ namespace arx.Extract.Data.Repository
             }
         }
 
+        public async  Task<List<FulfillmentEntity>> GetFulfillments(string jobName)
+        {
+            var response = await QueryByPartition<FulfillmentEntity>(jobName);
 
+            return response?.ToList();
+        }
+
+        public async Task<List<FulfillmentEntity>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate)
+        {
+            var t = typeof(FulfillmentEntity);
+            var conditions = new List<QueryFilterCondition>()
+            {
+                new QueryFilterCondition (string.Empty, t.GetProperty("JobName").Name, QueryComparisons.Equal, jobName),
+                new QueryFilterCondition ("datetime", t.GetProperty("QueryFromDate").Name, QueryComparisons.GreaterThanOrEqual, queryFromDate),
+                new QueryFilterCondition ("datetime", t.GetProperty("QueryToDate").Name, QueryComparisons.LessThanOrEqual, queryToDate),
+            };
+
+            var tableQuery = QueryFilterUtil.AndQueryFilters<FulfillmentEntity>(conditions);
+
+            var response = await Query(tableQuery);
+
+            return response
+                    ?.OrderByDescending(x => x.QueryFromDate)
+                    ?.ToList()
+                    ?? new List<FulfillmentEntity>();
+        }
+
+        public async Task<FulfillmentEntity> GetLastFulfillment(string jobName)
+        {
+            var response = await QueryByPartition<FulfillmentEntity>(jobName);
+
+            return response
+                    ?.OrderByDescending(x => x.JobCompletedDate)
+                    ?.FirstOrDefault();
+        }
+
+        public async Task<List<FulfillmentEntity>> GetFailedFulfillments(string jobName)
+        {
+            var t = typeof(FulfillmentEntity);
+            var conditions = new List<QueryFilterCondition>()
+            {
+                new QueryFilterCondition (string.Empty, t.GetProperty("JobName").Name, QueryComparisons.Equal, jobName),
+                new QueryFilterCondition ("bool", t.GetProperty("CompleteSuccess").Name, QueryComparisons.Equal, false)
+            };
+
+            var tableQuery = QueryFilterUtil.AndQueryFilters<FulfillmentEntity>(conditions);
+
+            var response = await Query(tableQuery);
+
+            return response
+                    ?.OrderByDescending(x => x.JobCompletedDate)
+                    ?.ToList()
+                    ?? new List<FulfillmentEntity>();
+        }
     }
 }
