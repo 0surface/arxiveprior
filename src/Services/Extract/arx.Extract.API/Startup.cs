@@ -26,7 +26,8 @@ namespace arx.Extract.API
             services.AddCustomSwagger()
                     .AddConfiguredAutoMapper()
                     .AddPublicationService(serviceConfig)
-                    .AddFulfillmentService(serviceConfig);
+                    .AddFulfillmentService(serviceConfig)
+                    .AddFulfillmentItemService(serviceConfig);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -89,6 +90,18 @@ namespace arx.Extract.API
             services.AddScoped<IFulfillmentService>(opt =>
             {
                 return new FulfillmentService(new FulfillmentRepository(storageConnectionString, tableName), ConfigureAutoMapper());
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddFulfillmentItemService(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["FulfillmentItemTableName"];
+
+            services.AddScoped<IFulfillmentItemService>(opt =>
+            {
+                return new FulfillmentItemService(new FulfillmentItemRepository(storageConnectionString, tableName), ConfigureAutoMapper());
             });
             return services;
         }
