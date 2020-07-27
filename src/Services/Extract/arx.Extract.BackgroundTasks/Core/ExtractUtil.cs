@@ -3,7 +3,6 @@ using arx.Extract.Lib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace arx.Extract.BackgroundTasks.Core
 {
@@ -74,36 +73,41 @@ namespace arx.Extract.BackgroundTasks.Core
         {
             /* Tuple(FromDate,ToDate) */
             List<ExtractQueryDates> result = new List<ExtractQueryDates>();
-
-            var (lastSpanDays, nextFromDate, nextToDate) = CalculateArchiveQueryDates(lastFulfillment, queryDateInterval);
-
-            /* queryDateInterval is optimal */
-            if (queryDateInterval >= lastSpanDays)
+            try
             {
-                result.Add(new ExtractQueryDates(nextFromDate, nextToDate));
-                return result;
+                var (lastSpanDays, nextFromDate, nextToDate) = CalculateArchiveQueryDates(lastFulfillment, queryDateInterval);
+
+                /* queryDateInterval is optimal */
+                if (queryDateInterval >= lastSpanDays)
+                {
+                    result.Add(new ExtractQueryDates(nextFromDate, nextToDate));
+                    return result;
+                }
+
+                /* lastSpanDays is too big, needs to be chuncked. Requires more than one set of (from, to) query dates / fulfillment items */
+
+                int mod = lastSpanDays % queryDateInterval;
+                int chunkSize = (int)Math.Floor((double)lastSpanDays / queryDateInterval);
+                int chunks = mod != 0 ? ((queryDateInterval - mod) / lastSpanDays) + 1 : queryDateInterval / lastSpanDays;
+
+                /* Create Query date interval Chucks*/
+                for (int i = 0; i < chunks; i++)
+                {
+                    var toDate = i == 0 ? nextToDate : result[i].QueryFromDate.AddDays(-1);
+                    var fromDate = toDate.AddDays(-1 * chunkSize);
+                    result.Add(new ExtractQueryDates(nextFromDate, nextToDate));
+                }
+
+                /* If chunk count is an odd number, add the last Query date interval Chuck */
+                if (mod != 0)
+                {
+                    var lastToDate = result.Last().QueryFromDate.AddDays(-1);
+                    var lastFromDate = lastToDate.AddDays(-1 * mod);
+                    result.Add(new ExtractQueryDates(lastFromDate, lastToDate));
+                }
             }
-
-            /* lastSpanDays is too big, needs to be chuncked. Requires more than one set of (from, to) query dates / fulfillment items */
-
-            int mod = lastSpanDays % queryDateInterval;
-            int chunkSize = (int)Math.Floor((double)lastSpanDays / queryDateInterval);
-            int chunks = mod != 0 ? ((queryDateInterval - mod) / lastSpanDays) + 1 : queryDateInterval / lastSpanDays;
-
-            /* Create Query date interval Chucks*/
-            for (int i = 0; i < chunks; i++)
+            catch (Exception)
             {
-                var toDate = i == 0 ? nextToDate : result[i].QueryFromDate.AddDays(-1);
-                var fromDate = toDate.AddDays(-1 * chunkSize);
-                result.Add(new ExtractQueryDates(nextFromDate, nextToDate));
-            }
-
-            /* If chunk count is an odd number, add the last Query date interval Chuck */
-            if (mod != 0)
-            {
-                var lastToDate = result.Last().QueryFromDate.AddDays(-1);
-                var lastFromDate = lastToDate.AddDays(-1 * mod);
-                result.Add(new ExtractQueryDates(lastFromDate, lastToDate));
             }
 
             return result;
@@ -151,7 +155,7 @@ namespace arx.Extract.BackgroundTasks.Core
 
             return item;
         }
-        
+
         public static string ConstructRequestUrl(ExtractQueryDates queryDates, string baseUrl, FulfillmentItemEntity fulfillmentItem)
         {
             UrlParams urlParams = new UrlParams()
@@ -165,6 +169,15 @@ namespace arx.Extract.BackgroundTasks.Core
             };
 
             return UrlMaker.FulfillmentUrlBetweenDates(urlParams);
+        }
+
+        public static bool HasPassedTerminationDate(DateTime terminationDate, DateTime toDate)
+        {
+            if (terminationDate == null || terminationDate == DateTime.MinValue ||
+                toDate == null || toDate == DateTime.MinValue)
+                return true;
+
+            return (toDate - terminationDate).Days < 0;
         }
     }
 }

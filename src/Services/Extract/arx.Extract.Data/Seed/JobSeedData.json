@@ -7,12 +7,6 @@
   },
   {
     "Type": "Archive",
-    "UniqueName": "arxarchivev1",
-    "Description": "Archive between dates extractions",
-    "QueryBaseUrl": "http://export.arxiv.org/api/query?search_query="
-  },
-  {
-    "Type": "Archive",
     "UniqueName": "arxarchivev2",
     "Description": "Archive subject code queries between dates extractions",
     "QueryBaseUrl": "http://export.arxiv.org/api/query?search_query="

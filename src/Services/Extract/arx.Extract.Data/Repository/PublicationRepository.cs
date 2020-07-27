@@ -1,6 +1,5 @@
 ﻿using arx.Extract.Data.Common;
 using arx.Extract.Data.Entities;
-using arx.Extract.Data.Extensions;
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
@@ -11,11 +10,9 @@ namespace arx.Extract.Data.Repository
 {
     public interface IPublicationRepository
     {
-        Task<int> BatchSavePublications(List<PublicationItemEntity> publications);
-        Task<List<PublicationItemEntity>> GetBetweenDates(DateTime fromDate, DateTime toDate);
+        Task<int> BatchSavePublications(List<PublicationItemEntity> publications);    
+        
         Task<List<PublicationItemEntity>> GetSubjectInclusiveBetweenDates(string subjectCode, DateTime fromDate, DateTime toDate);
-        Task<List<PublicationItemEntity>> GetSubjectGroupBetweenDates(string subjectGroupCode, DateTime fromDate, DateTime toDate);
-
         Task<List<PublicationItemEntity>> GetByFulfilmentId(string fulfillmentId);
     }
 
@@ -35,14 +32,8 @@ namespace arx.Extract.Data.Repository
             }
             catch (Exception)
             {
+                return 0;
             }
-
-            return 0;
-        }
-
-        public Task<List<PublicationItemEntity>> GetBetweenDates(DateTime fromDate, DateTime toDate)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<List<PublicationItemEntity>> GetSubjectInclusiveBetweenDates(string subjectCode, DateTime updatedFromDate, DateTime updatedToDate)
@@ -64,11 +55,6 @@ namespace arx.Extract.Data.Repository
                     ?.ThenBy(x => x.PrimarySubjectCode)
                     ?.ToList()
                     ?? new List<PublicationItemEntity>();
-        }
-
-        public Task<List<PublicationItemEntity>> GetSubjectGroupBetweenDates(string subjectGroupCode, DateTime fromDate, DateTime toDate)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<List<PublicationItemEntity>> GetByFulfilmentId(string fulfillmentId)

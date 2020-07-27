@@ -6,11 +6,12 @@ namespace arx.Extract.Types
     {
         string JobName { get; set; }//PK
         Guid JobItemId { get; set; }
-        
+
         string QuerySubjectCode { get; set; }
         string QuerySubjectGroup { get; set; }
         int ItemsPerRequest { get; set; }
-         int QueryDateInterval { get; set; }
+        int QueryDateInterval { get; set; }
+        DateTime ArchiveTerminationDate { get; set; }
     }
 
     public class JobItem : IJobItem
@@ -21,5 +22,6 @@ namespace arx.Extract.Types
         public string QuerySubjectGroup { get; set; }
         public int ItemsPerRequest { get; set; }
         public int QueryDateInterval { get; set; }
+        public DateTime ArchiveTerminationDate { get; set; }
     }
 }

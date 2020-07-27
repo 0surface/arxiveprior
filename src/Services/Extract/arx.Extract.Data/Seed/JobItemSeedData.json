@@ -1,1251 +1,12 @@
 [
   {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "astro-ph.GA",
-    "QuerySubjectGroup": "astro-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "astro-ph.CO",
-    "QuerySubjectGroup": "astro-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "astro-ph.EP",
-    "QuerySubjectGroup": "astro-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "astro-ph.HE",
-    "QuerySubjectGroup": "astro-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "astro-ph.IM",
-    "QuerySubjectGroup": "astro-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "astro-ph.SR",
-    "QuerySubjectGroup": "astro-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.dis-nn",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.mtrl-sci",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.mes-hall",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.other",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.quant-gas",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.soft",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.stat-mech",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.str-el",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cond-mat.supr-con",
-    "QuerySubjectGroup": "cond-mat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "gr-qc",
-    "QuerySubjectGroup": "gr-qc",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "hep-ex",
-    "QuerySubjectGroup": "hep-ex",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "hep-lat",
-    "QuerySubjectGroup": "hep-lat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "hep-ph",
-    "QuerySubjectGroup": "hep-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "hep-th",
-    "QuerySubjectGroup": "hep-th",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math-ph",
-    "QuerySubjectGroup": "math-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "nlin.AO",
-    "QuerySubjectGroup": "nlin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "nlin.CG",
-    "QuerySubjectGroup": "nlin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "nlin.CD",
-    "QuerySubjectGroup": "nlin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "nlin.SI",
-    "QuerySubjectGroup": "nlin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "nlin.PS",
-    "QuerySubjectGroup": "nlin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "nucl-ex",
-    "QuerySubjectGroup": "nucl-ex",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "nucl-th",
-    "QuerySubjectGroup": "nucl-th",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.acc-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.app-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.ao-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.atom-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.atm-clus",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.bio-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.chem-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.class-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.comp-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.data-an",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.flu-dyn",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.gen-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.geo-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.hist-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.ins-det",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.med-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.optics",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.ed-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.soc-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.plasm-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.pop-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "physics.space-ph",
-    "QuerySubjectGroup": "physics",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "quant-ph",
-    "QuerySubjectGroup": "quant-ph",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.AG",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.AT",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.AP",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.CT",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.CA",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.CO",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.AC",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.CV",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.DG",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.DS",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.FA",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.GM",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.GN",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.GT",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.GR",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.HO",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.IT",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.KT",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.LO",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.MP",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.MG",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.NT",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.NA",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.OA",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.OC",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.PR",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.QA",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.RT",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.RA",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.SP",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.ST",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "math.SG",
-    "QuerySubjectGroup": "math",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.AI",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.CL",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.CC",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.CE",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.CG",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.GT",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.CV",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.CY",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.CR",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.DS",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.DB",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.DL",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.DM",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.DC",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.ET",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.FL",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.GL",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.GR",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.AR",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.HC",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.IR",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.IT",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.LO",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.LG",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.MS",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.MA",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.MM",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.NI",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.NE",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.NA",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.OS",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.OH",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.PF",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.PL",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.RO",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.SI",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.SE",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.SD",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.SC",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "cs.SY",
-    "QuerySubjectGroup": "cs",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.BM",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.CB",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.GN",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.MN",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.NC",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.OT",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.PE",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.QM",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.SC",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-bio.TO",
-    "QuerySubjectGroup": "q-bio",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.CP",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.EC",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.GN",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.MF",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.PM",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.PR",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.RM",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.ST",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "q-fin.TR",
-    "QuerySubjectGroup": "q-fin",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "stat.AP",
-    "QuerySubjectGroup": "stat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "stat.CO",
-    "QuerySubjectGroup": "stat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "stat.ML",
-    "QuerySubjectGroup": "stat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "stat.ME",
-    "QuerySubjectGroup": "stat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "stat.OT",
-    "QuerySubjectGroup": "stat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "stat.TH",
-    "QuerySubjectGroup": "stat",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "eess.AS",
-    "QuerySubjectGroup": "eess",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "eess.IV",
-    "QuerySubjectGroup": "eess",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "eess.SP",
-    "QuerySubjectGroup": "eess",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "eess.SY",
-    "QuerySubjectGroup": "eess",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "econ.EM",
-    "QuerySubjectGroup": "econ",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "econ.GN",
-    "QuerySubjectGroup": "econ",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
-    "JobName": "arxarchivev1",
-    "JobItemId": "a03a2c27-0fae-4852-9801-190b04abd990",
-    "QuerySubjectCode": "econ.TH",
-    "QuerySubjectGroup": "econ",
-    "ItemsPerRequest": 500,
-    "QueryDateInterval": 3
-  },
-  {
     "JobName": "arxarchivev2",
     "JobItemId": "e251f653-ea5b-4721-921e-c44dca928f5d",
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "astro-ph",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1992/04/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1253,7 +14,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "cond-mat",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1992/04/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1261,7 +23,8 @@
     "QuerySubjectCode": "gr-qc",
     "QuerySubjectGroup": "gr-qc",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1992/07/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1269,7 +32,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "hep",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1991/07/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1277,7 +41,8 @@
     "QuerySubjectCode": "math-ph",
     "QuerySubjectGroup": "math-ph",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1992/12/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1285,7 +50,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "nlin",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1991/12/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1293,7 +59,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "nucl",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1992/09/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1301,7 +68,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "physics",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1994/03/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1309,7 +77,8 @@
     "QuerySubjectCode": "quant-ph",
     "QuerySubjectGroup": "quant-ph",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1992/10/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1317,7 +86,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "math",
     "ItemsPerRequest": 1000,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1991/10/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1325,7 +95,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "cs",
     "ItemsPerRequest": 1500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1991/08/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1333,7 +104,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "q-bio",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1991/07/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1341,7 +113,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "q-fin",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1997/02/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1349,7 +122,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "stat",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "1994/06/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1357,7 +131,8 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "eess",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "2010/10/01"
   },
   {
     "JobName": "arxarchivev2",
@@ -1365,6 +140,7 @@
     "QuerySubjectCode": "",
     "QuerySubjectGroup": "econ",
     "ItemsPerRequest": 500,
-    "QueryDateInterval": 5
+    "QueryDateInterval": 5,
+    "ArchiveTerminationDate": "2007/07/01"
   }
 ]

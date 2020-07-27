@@ -46,7 +46,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             IArchiveFetch archiveFetch,
             ITransformService transformService)
         {
-            _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));            
+            _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));
             _mapper = mapper;
             _eventBus = eventBus;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -73,7 +73,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex,$"{this.GetType().Name} - An Unhandled exception was thrown");
+                _logger.LogCritical(ex, $"{this.GetType().Name} - An Unhandled exception was thrown");
             }
             finally
             {
@@ -82,9 +82,9 @@ namespace arx.Extract.BackgroundTasks.Tasks
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
-        {  
+        {
             _logger.LogDebug($"{this.GetType().Name} Background Task is stopping.");
-            await base.StopAsync(cancellationToken);            
+            await base.StopAsync(cancellationToken);
         }
 
         private async Task DoWork(CancellationToken stoppingToken)
@@ -105,17 +105,19 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation($"Waiting For [{_settings.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
-
                     string newFulfillmentId = await RunArchiveExtraction(stoppingToken);
 
-                    var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfillmentId);
+                    if (!string.IsNullOrEmpty(newFulfillmentId))
+                    {
+                        var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfillmentId);
 
-                    _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
-                                            extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
+                        _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
+                                                extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
 
-                    _eventBus.Publish(extractionCompletedEvent);
+                        _eventBus.Publish(extractionCompletedEvent);
+                    }
 
+                    _logger.LogInformation($"Waiting For [{_settings.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
                     await Task.Delay(_settings.PostFetchWaitTime, stoppingToken);
                 }
             }
@@ -135,12 +137,12 @@ namespace arx.Extract.BackgroundTasks.Tasks
             }
 
             FulfillmentEntity lastFulfillment = _fulfillmentRepository.GetLastSuccessfulFulfillment(job.UniqueName).Result;
-                       
+
             int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));
 
             FulfillmentEntity newFulfillment = ExtractUtil.MakeNewFulfillment(job, lastFulfillment, minQueryDateInterval);
 
-             newFulfillment = _fulfillmentRepository.SaveFulfillment(newFulfillment).Result;
+            newFulfillment = _fulfillmentRepository.SaveFulfillment(newFulfillment).Result;
 
             if (newFulfillment == null)
             {
@@ -149,21 +151,29 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         , newFulfillment.QueryToDate.ToString("dd MMMM yyyy"));
                 await StopAsync(stoppingToken);
             }
+            else if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, newFulfillment.QueryToDate))
+            {
+                _logger.LogInformation("Stopping Service. Query Date window From [{0}] To [{1}] has passed Archive Terminate Date [{2}]",
+                    _settings.ArchiveTerminateDate, newFulfillment.QueryFromDate, newFulfillment.QueryToDate);
+                await StopAsync(stoppingToken);
+            }
             else
             {
                 _logger.LogInformation("New Fulfillment [{0}]-[{1}] - Query From [{2}] To [{3}] - Started @ {4}",
-                                    newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy")
-                                    , newFulfillment.QueryToDate.ToString("dd MMMM yyyy"), newFulfillment.JobStartedDate);
+                                    newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy"),
+                                    newFulfillment.QueryToDate.ToString("dd MMMM yyyy"), newFulfillment.JobStartedDate);
 
                 List<FulfillmentItemEntity> newFulfillmentItems = new List<FulfillmentItemEntity>();
 
                 foreach (var jobItem in jobItems)
                 {
-                    List<ExtractQueryDates> requestDateIntervals = ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval);
-
-                    foreach (var interval in requestDateIntervals)
+                    //For an optimal configuration, the loop below will only be executed once.
+                    foreach (var interval in ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval))
                     {
-                        newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
+                        if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, interval.QueryToDate) == false)
+                        {
+                            newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
+                        }
                     }
                 }
 
@@ -346,7 +356,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             return newFulfillment.FulfillmentId.ToString();
         }
-        
+
         /// <summary>
         /// Adds Seed data to Storage, if Table's are empty.
         /// Used to Seed job template data for services.

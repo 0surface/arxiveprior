@@ -3,7 +3,6 @@ using arx.Extract.Data.Entities;
 using arx.Extract.Data.Extensions;
 using arx.Extract.Data.Seed;
 using Microsoft.Azure.Cosmos.Table;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,12 +31,12 @@ namespace arx.Extract.Data.Repository
 
         public bool SeedJobItems()
         {
-            int resultCount = 0;
             IEnumerable<JobItemEntity> entities = SeedReader.ReadJobItems();
-            var partitionKeys = entities.Select(x => x.PartitionKey).Distinct();
 
-            //Insert each jobItem Collection as a batch by Partition Key
-            foreach (var key in partitionKeys)
+            bool batchSuccess = true;
+
+            //Insert each jobItem Collection as a batch segemented by Partition Key
+            foreach (var key in entities.Select(x => x.PartitionKey).Distinct())
             {
                 var batchOperation = new TableBatchOperation();
 
@@ -48,9 +47,13 @@ namespace arx.Extract.Data.Repository
 
                 var inserted = BatchInsertExtensions.ExecuteBatchAsLimitedBatches(Reference, batchOperation, null);
 
-                if (inserted != null) resultCount++;
+                if (batchSuccess)
+                {
+                    batchSuccess = inserted?.All(r => r.HttpStatusCode < 400) ?? false;
+                }
             }
-            return resultCount == entities.Count();
+
+            return batchSuccess;
         }
         public bool HasSeed() => HasAnyPartitionKey();
         public string TableName() => Name;
