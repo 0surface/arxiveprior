@@ -127,7 +127,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             JobEntity job = _jobRepository.GetJob(ExtractTypeEnum.Archive, _settings.ArchiveJobName);
 
-            List<JobItemEntity> jobItems = _jobItemRepository.GetJobItems(job.UniqueName);
+            List<JobItemEntity> jobItems = _jobItemRepository.GetJobItems(job?.UniqueName);
 
             if (jobItems == null || jobItems.Count == 0)
             {
