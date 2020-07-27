@@ -23,7 +23,7 @@ namespace arx.Extract.BackgroundTasks
                 .ConfigureServices((hostContext, services) =>
                 {
                     IConfiguration settings = hostContext.Configuration.GetSection("settings");
-                    services.AddHostedService<ScheduledArchiveService>();
+                    services.AddHostedService<ArchiveExtractionService>();
                     services.Configure<BackgroundTaskSettings>(settings);
                     services.AddEventBus(settings)
                             .AddAutoMapper(typeof(Program))

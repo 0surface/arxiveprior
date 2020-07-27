@@ -13,18 +13,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace arx.Extract.BackgroundTasks.Tasks
 {
-    public class ScheduledArchiveService : BackgroundService
+    public class ArchiveExtractionService : BackgroundService
     {
         private readonly BackgroundTaskSettings _settings;
         private readonly IMapper _mapper;
         private readonly IEventBus _eventBus;
-        private readonly ILogger<ScheduledArchiveService> _logger;
+        private readonly ILogger<ArchiveExtractionService> _logger;
         private readonly ISubjectRepository _subjectRepo;
         private readonly IJobRepository _jobRepository;
         private readonly IJobItemRepository _jobItemRepository;
@@ -34,10 +33,10 @@ namespace arx.Extract.BackgroundTasks.Tasks
         private readonly IArchiveFetch _archiveFetch;
         private readonly ITransformService _transformService;
 
-        public ScheduledArchiveService(IOptions<BackgroundTaskSettings> settings,
+        public ArchiveExtractionService(IOptions<BackgroundTaskSettings> settings,
             IMapper mapper,
             IEventBus eventBus,
-            ILogger<ScheduledArchiveService> logger,
+            ILogger<ArchiveExtractionService> logger,
             ISubjectRepository subjectRepo,
             IJobRepository jobRepository,
             IJobItemRepository jobItemRepository,
@@ -111,7 +110,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             //TODO: Publish to eventBus
             _eventBus.Publish(extractionCompletedEvent);
-          }
+        }
 
         private async Task<Guid> ExecuteExtraction(CancellationToken stoppingToken)
         {
@@ -279,7 +278,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                         //Persist publications to Storage - Batch insert
                         int saved = await _publicationRepository.BatchSavePublications(entityList);
-                        
+
                         if (saved == 0)
                         {
                             _logger.LogError($"FulfillmentItem {fulfillmentItem.ItemUId} - persisted 0 publications to Storage");
@@ -298,7 +297,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 //Log fulfillment Item summary
                 string activeCode = string.IsNullOrEmpty(fulfillmentItem.QuerySubjectCode) ? fulfillmentItem.QuerySubjectGroup : fulfillmentItem.QuerySubjectCode;
                 string logFulfillmentItem = $"FulfillmentItem [{fulfillmentItem.ItemUId}] - Subject Query [{activeCode}] - Started @{fulfillmentItem.JobItemStartDate} - Completed @{fulfillmentItem.JobItemCompletedDate} - Fetched ={fulfillmentItem.TotalResults}";
-               
+
                 if (savedItem != null)
                     _logger.LogInformation(logFulfillmentItem);
                 else
@@ -312,7 +311,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             newFulfillment.CompleteSuccess = FulfillmentItems.All(x => x.HttpRequestIsSuccess == true)
                 && FulfillmentItems.All(x => x.DataExtractionIsSuccess = true);
 
-            newFulfillment.JobCompletedDate = DateTime.UtcNow;            
+            newFulfillment.JobCompletedDate = DateTime.UtcNow;
             newFulfillment.ProcessingTimeInSeconds = (newFulfillment.JobCompletedDate - newFulfillment.JobStartedDate).TotalSeconds;
 
             //Persist to Storage
@@ -332,15 +331,15 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
         private static int CalculatePagedRequestCount(int totalAvailable, int fetched)
         {
-            if(fetched == 0) 
+            if (fetched == 0)
                 return 1;
 
             int yetToFetch = (totalAvailable - fetched);
 
-            if ((yetToFetch / fetched) < 1) 
+            if ((yetToFetch / fetched) < 1)
                 return 1;
 
-            int requests =  (int)Math.Floor((double)(yetToFetch / fetched));
+            int requests = (int)Math.Floor((double)(yetToFetch / fetched));
 
             if (yetToFetch % fetched > 0) requests++;
 
