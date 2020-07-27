@@ -15,6 +15,8 @@ namespace arx.Extract.Data.Repository
         Task<List<PublicationItemEntity>> GetBetweenDates(DateTime fromDate, DateTime toDate);
         Task<List<PublicationItemEntity>> GetSubjectInclusiveBetweenDates(string subjectCode, DateTime fromDate, DateTime toDate);
         Task<List<PublicationItemEntity>> GetSubjectGroupBetweenDates(string subjectGroupCode, DateTime fromDate, DateTime toDate);
+
+        Task<List<PublicationItemEntity>> GetByFulfilmentId(string fulfillmentId);
     }
 
     public class PublicationRepository : TableStorage, IPublicationRepository
@@ -67,6 +69,17 @@ namespace arx.Extract.Data.Repository
         public Task<List<PublicationItemEntity>> GetSubjectGroupBetweenDates(string subjectGroupCode, DateTime fromDate, DateTime toDate)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<PublicationItemEntity>> GetByFulfilmentId(string fulfillmentId)
+        {
+            var response = await QueryByPartition<PublicationItemEntity>(fulfillmentId);
+
+            return response
+                   ?.OrderByDescending(x => x.UpdatedDate)
+                   ?.ThenBy(x => x.PrimarySubjectCode)
+                   ?.ToList()
+                   ?? new List<PublicationItemEntity>();
         }
     }
 }

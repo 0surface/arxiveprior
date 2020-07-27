@@ -2,12 +2,15 @@
 using arx.Extract.Data.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace arx.Extract.Data.Repository
 {
     public interface IFulfillmentItemRepository
     {
+        Task<List<FulfillmentItemEntity>> GetFulfillmentItems(string fulfillmentId);
         FulfillmentItemEntity SaveFulfillmentItem(FulfillmentItemEntity fulfillmentItem);
         List<FulfillmentItemEntity> SaveFulfillmentItems(List<FulfillmentItemEntity> newFulfillmentItems);
     }
@@ -17,9 +20,12 @@ namespace arx.Extract.Data.Repository
         {
             Reference.CreateIfNotExists();
         }
-        public List<FulfillmentItemEntity> GetFulfillmentItems(List<FulfillmentItemEntity> newFulfillmentItems)
+
+        public async Task<List<FulfillmentItemEntity>> GetFulfillmentItems(string fulfillmentId)
         {
-            throw new NotImplementedException();
+            var response = await QueryByPartition<FulfillmentItemEntity>(fulfillmentId);
+
+            return response?.ToList() ?? new List<FulfillmentItemEntity>();
         }
 
         public List<FulfillmentItemEntity> SaveFulfillmentItems(List<FulfillmentItemEntity> newFulfillmentItems)

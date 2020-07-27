@@ -40,5 +40,26 @@ namespace arx.Extract.API.Controllers
 
             return Json(result);
         }
+
+        [HttpGet("fulfillmentid")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> GetPublicationsByFulfilmentId(string fulfilmentId)
+        {
+            if(string.IsNullOrEmpty(fulfilmentId))
+                return StatusCode((int)HttpStatusCode.BadRequest);
+
+            var result = await _service.GetByFulfilmentId(fulfilmentId);
+
+            if (result == null)
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+
+            if (result.Count == 0)
+                return NoContent();
+
+            return Json(result);
+        }
     }
 }

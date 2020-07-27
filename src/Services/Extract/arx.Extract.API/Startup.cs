@@ -21,10 +21,13 @@ namespace arx.Extract.API
                 
         public void ConfigureServices(IServiceCollection services)
         {
+            var serviceConfig = Configuration.GetSection("Settings");
             services.AddControllers();
             services.AddCustomSwagger()
                     .AddConfiguredAutoMapper()
-                    .AddPublicationService(Configuration.GetSection("Settings"));
+                    .AddPublicationService(serviceConfig)
+                    .AddFulfillmentService(serviceConfig)
+                    .AddFulfillmentItemService(serviceConfig);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -75,6 +78,30 @@ namespace arx.Extract.API
             services.AddScoped<IPublicationsService>(opt =>
             {
                 return new PublicationsService(new PublicationRepository(storageConnectionString, tableName), ConfigureAutoMapper());
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddFulfillmentService(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["FulfillmentTableName"];
+
+            services.AddScoped<IFulfillmentService>(opt =>
+            {
+                return new FulfillmentService(new FulfillmentRepository(storageConnectionString, tableName), ConfigureAutoMapper());
+            });
+            return services;
+        }
+
+        public static IServiceCollection AddFulfillmentItemService(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var tableName = configuration["FulfillmentItemTableName"];
+
+            services.AddScoped<IFulfillmentItemService>(opt =>
+            {
+                return new FulfillmentItemService(new FulfillmentItemRepository(storageConnectionString, tableName), ConfigureAutoMapper());
             });
             return services;
         }
