@@ -35,9 +35,8 @@ namespace arx.Extract.Data.Repository
             }
             catch (Exception)
             {
+                return 0;
             }
-
-            return 0;
         }
 
         public Task<List<PublicationItemEntity>> GetBetweenDates(DateTime fromDate, DateTime toDate)

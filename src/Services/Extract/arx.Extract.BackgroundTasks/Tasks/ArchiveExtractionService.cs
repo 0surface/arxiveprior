@@ -105,17 +105,19 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    _logger.LogInformation($"Waiting For [{_settings.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
-
                     string newFulfillmentId = await RunArchiveExtraction(stoppingToken);
 
-                    var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfillmentId);
+                    if (!string.IsNullOrEmpty(newFulfillmentId))
+                    {
+                        var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfillmentId);
 
-                    _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
-                                            extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
+                        _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
+                                                extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
 
-                    _eventBus.Publish(extractionCompletedEvent);
+                        _eventBus.Publish(extractionCompletedEvent);
+                    }
 
+                    _logger.LogInformation($"Waiting For [{_settings.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
                     await Task.Delay(_settings.PostFetchWaitTime, stoppingToken);
                 }
             }
@@ -168,7 +170,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                     //For an optimal configuration, the loop below will only be executed once.
                     foreach (var interval in ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval))
                     {
-                        if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, interval.QueryToDate)) 
+                        if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, interval.QueryToDate) == false)
                         {
                             newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
                         }
