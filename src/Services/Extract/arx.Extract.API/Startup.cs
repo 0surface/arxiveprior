@@ -21,9 +21,10 @@ namespace arx.Extract.API
                 
         public void ConfigureServices(IServiceCollection services)
         {
-            var serviceConfig = Configuration.GetSection("Settings");
+            IConfiguration serviceConfig = Configuration.GetSection("Settings");
             services.AddControllers();
-            services.AddCustomSwagger()
+            services.Configure<ExtractApiConfigurationSettings>(serviceConfig)
+                    .AddCustomSwagger()
                     .AddConfiguredAutoMapper()
                     .AddPublicationService(serviceConfig)
                     .AddFulfillmentService(serviceConfig)

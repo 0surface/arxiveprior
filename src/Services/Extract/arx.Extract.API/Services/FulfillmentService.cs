@@ -11,7 +11,7 @@ namespace arx.Extract.API.Services
     {
         Task<List<Fulfillment>> GetFulfillments(string jobName);
         Task<List<Fulfillment>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate);
-        Task<Fulfillment> GetLastFulfillment(string jobName);
+        Task<Fulfillment> GetLastSuccessfulFulfillment(string jobName);
         Task<List<Fulfillment>> GetFailedFulfillments(string jobName);
     }
 
@@ -54,11 +54,11 @@ namespace arx.Extract.API.Services
             }
         }
 
-        public async Task<Fulfillment> GetLastFulfillment(string jobName)
+        public async Task<Fulfillment> GetLastSuccessfulFulfillment(string jobName)
         {
             try
             {
-                var result = await _fulfillmentRepo.GetLastFulfillment(jobName);
+                var result = await _fulfillmentRepo.GetLastSuccessfulFulfillment(jobName);
 
                 return result != null ? _mapper.Map<Fulfillment>(result) : new Fulfillment();
             }

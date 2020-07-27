@@ -39,7 +39,7 @@ namespace arx.Extract.API.Controllers
             return Json(result);
         }
 
-        [HttpGet("last")]
+        [HttpGet("lastsuccess")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -49,7 +49,7 @@ namespace arx.Extract.API.Controllers
             if (string.IsNullOrEmpty(jobName))
                 return StatusCode((int)HttpStatusCode.BadRequest);
 
-            var result = await _fulfillmentService.GetLastFulfillment(jobName);
+            var result = await _fulfillmentService.GetLastSuccessfulFulfillment(jobName);
 
             if (result == null)
                 return StatusCode((int)HttpStatusCode.InternalServerError);
