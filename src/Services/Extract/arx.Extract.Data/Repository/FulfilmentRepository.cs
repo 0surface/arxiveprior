@@ -11,7 +11,7 @@ namespace arx.Extract.Data.Repository
     public interface IFulfillmentRepository
     {
         Task<FulfillmentEntity> SaveFulfillment(FulfillmentEntity jobRecord);
-        
+
         Task<List<FulfillmentEntity>> GetFulfillments(string jobName);
         Task<List<FulfillmentEntity>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate);
         Task<FulfillmentEntity> GetLastFulfillment(string jobName);
@@ -37,7 +37,7 @@ namespace arx.Extract.Data.Repository
             }
         }
 
-        public async  Task<List<FulfillmentEntity>> GetFulfillments(string jobName)
+        public async Task<List<FulfillmentEntity>> GetFulfillments(string jobName)
         {
             var response = await QueryByPartition<FulfillmentEntity>(jobName);
 

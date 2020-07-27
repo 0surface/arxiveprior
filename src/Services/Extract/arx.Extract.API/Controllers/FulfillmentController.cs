@@ -2,8 +2,6 @@
 using arx.Extract.Types;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -27,9 +25,9 @@ namespace arx.Extract.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetFulfillments(string jobName)
         {
-            if(string.IsNullOrEmpty(jobName))
+            if (string.IsNullOrEmpty(jobName))
                 return StatusCode((int)HttpStatusCode.BadRequest);
-            
+
             var result = await _fulfillmentService.GetFulfillments(jobName);
 
             if (result == null)
@@ -69,7 +67,7 @@ namespace arx.Extract.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate)
         {
-            if (string.IsNullOrEmpty(jobName) 
+            if (string.IsNullOrEmpty(jobName)
                 || queryFromDate == null || queryFromDate == DateTime.MinValue
                 || queryToDate == null || queryToDate == DateTime.MinValue
                 || queryFromDate > queryToDate)

@@ -3,16 +3,15 @@ using arx.Extract.Types;
 using AutoMapper;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace arx.Extract.API.Services
 {
-    public interface IFulfillmentService 
+    public interface IFulfillmentService
     {
         Task<List<Fulfillment>> GetFulfillments(string jobName);
         Task<List<Fulfillment>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate);
-        Task<Fulfillment> GetLastFulfillment(string jobName);             
+        Task<Fulfillment> GetLastFulfillment(string jobName);
         Task<List<Fulfillment>> GetFailedFulfillments(string jobName);
     }
 
@@ -40,7 +39,7 @@ namespace arx.Extract.API.Services
                 return null;
             }
         }
-        
+
         public async Task<List<Fulfillment>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate)
         {
             try
