@@ -21,7 +21,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
     public class ArchiveExtractionService : BackgroundService
     {
         private readonly BackgroundTaskSettings _settings;
-        private readonly IMapper _mapper;
         private readonly IEventBus _eventBus;
         private readonly ILogger<ArchiveExtractionService> _logger;
         private readonly ISubjectRepository _subjectRepo;
@@ -34,7 +33,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
         private readonly ITransformService _transformService;
 
         public ArchiveExtractionService(IOptions<BackgroundTaskSettings> settings,
-            IMapper mapper,
             IEventBus eventBus,
             ILogger<ArchiveExtractionService> logger,
             ISubjectRepository subjectRepo,
@@ -47,7 +45,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
             ITransformService transformService)
         {
             _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));
-            _mapper = mapper;
             _eventBus = eventBus;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _subjectRepo = subjectRepo;
