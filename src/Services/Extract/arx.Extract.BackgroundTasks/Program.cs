@@ -33,8 +33,10 @@ namespace arx.Extract.BackgroundTasks
                             .AddFulfillmentRepository(settings)
                             .AddFulfillmentItemRepository(settings)
                             .AddPublicationRepository(settings)
+                            .AddExtractService()
                             .AddArchiveFetch()
                             .AddTransformService();
+                            
 
                     Console.WriteLine($"host.HostingEnvironment.EnvironmentName : {hostContext.HostingEnvironment.EnvironmentName}");
                 })
