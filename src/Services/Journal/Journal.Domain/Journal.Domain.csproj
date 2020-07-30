@@ -5,8 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="AggregatesModel\" />
-    <Folder Include="SeedWork\" />
+    <Folder Include="AggregatesModel\ArticleAggregate\" />
   </ItemGroup>
 
 </Project>
