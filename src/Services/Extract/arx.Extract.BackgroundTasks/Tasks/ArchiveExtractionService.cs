@@ -1,10 +1,7 @@
 ﻿using arx.Extract.BackgroundTasks.Core;
 using arx.Extract.BackgroundTasks.Events;
-using arx.Extract.Data.Entities;
 using arx.Extract.Data.Repository;
 using arx.Extract.Lib;
-using arx.Extract.Types;
-using AutoMapper;
 using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -27,8 +24,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
         private readonly ISubjectRepository _subjectRepo;
         private readonly IJobRepository _jobRepository;
         private readonly IJobItemRepository _jobItemRepository;
-        private readonly IFulfillmentRepository _fulfillmentRepository;
-        private readonly IFulfillmentItemRepository _fulfillmentItemRepository;
         private readonly IPublicationRepository _publicationRepository;
         private readonly IArchiveFetch _archiveFetch;
         private readonly ITransformService _transformService;
@@ -40,8 +35,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
             ISubjectRepository subjectRepo,
             IJobRepository jobRepository,
             IJobItemRepository jobItemRepository,
-            IFulfillmentRepository fulfillmentRepository,
-            IFulfillmentItemRepository fulfillmentItemRepository,
             IPublicationRepository publicationRepository,
             IArchiveFetch archiveFetch,
             ITransformService transformService)
@@ -53,8 +46,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
             _subjectRepo = subjectRepo;
             _jobRepository = jobRepository;
             _jobItemRepository = jobItemRepository;
-            //_fulfillmentRepository = fulfillmentRepository;
-            //_fulfillmentItemRepository = fulfillmentItemRepository;
             _publicationRepository = publicationRepository;
             _archiveFetch = archiveFetch;
             _transformService = transformService;
@@ -128,7 +119,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             _logger.LogInformation("Reading Archive Task Metadata from Storage...");
 
             var (jobFetchSuccess, job, jobItems) = _extractService.GetArchiveJob();
-            
+
             if (!jobFetchSuccess)
             {
                 _logger.LogCritical("Error fetching Job Archive metadata from Storage");
@@ -138,7 +129,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             {
                 var (_, lastFulfillment) = _extractService.GetLastSuccessfulArchiveFulfillment(job.UniqueName);
 
-                var (createSuccess, newFulfillment, newFulfillmentItems) 
+                var (createSuccess, newFulfillment, newFulfillmentItems)
                     = _extractService.CreateArchiveFulfillmentSaga(job, jobItems, lastFulfillment);
 
                 if (!createSuccess)
@@ -298,7 +289,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                     newFulfillment.ProcessingTimeInSeconds = (newFulfillment.JobCompletedDate - newFulfillment.JobStartedDate).TotalSeconds;
 
                     //Persist to Storage
-                   await  _extractService.UpdateFulfilment(newFulfillment);
+                    await _extractService.UpdateFulfilment(newFulfillment);
                 }
                 return newFulfillment.FulfillmentId.ToString();
             }
