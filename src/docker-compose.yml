@@ -18,3 +18,24 @@ services:
       dockerfile: Services/Extract/arx.Extract.BackgroundTasks/Dockerfile
     depends_on:
       - rabbitmq
+
+  journal.api:
+    image: ${DOCKER_REGISTRY-}journalapi
+    build:
+      context: .
+      dockerfile: Services/Journal/Journal.API/Dockerfile    
+
+  journal.backgroundtasks:
+    image: ${DOCKER_REGISTRY-}journalbackgroundtasks
+    build:
+      context: .
+      dockerfile: Services/Journal/Journal.BackgroundTasks/Dockerfile
+    depends_on:
+      - rabbitmq 
+
+  journal.infrastructure:
+    image: ${DOCKER_REGISTRY-}journalinfrastructure
+    build:
+      context: .
+      dockerfile: Services/Journal/Journal.Infrastructure/Dockerfile
+
