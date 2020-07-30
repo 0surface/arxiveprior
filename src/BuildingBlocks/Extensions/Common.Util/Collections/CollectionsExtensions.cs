@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace System.Collections.Generic
+﻿namespace System.Collections.Generic
 {
     public static class CollectionsExtensions
     {
@@ -11,11 +9,11 @@ namespace System.Collections.Generic
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <param name="value"></param>
-        public static void AddIfNotNull<T>(this IEnumerable<T> list, T value)
+        public static void AddIfNotNull<T>(this List<T> list, T value)
         {
             if (list != null && value != null)
             {
-                list.AddIfNotNull(value);
+                list.Add(value);
             }
         }
     }
