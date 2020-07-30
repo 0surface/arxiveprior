@@ -1,10 +1,7 @@
 ﻿using arx.Extract.BackgroundTasks.Core;
 using arx.Extract.BackgroundTasks.Events;
-using arx.Extract.Data.Entities;
 using arx.Extract.Data.Repository;
 using arx.Extract.Lib;
-using arx.Extract.Types;
-using AutoMapper;
 using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -21,40 +18,34 @@ namespace arx.Extract.BackgroundTasks.Tasks
     public class ArchiveExtractionService : BackgroundService
     {
         private readonly BackgroundTaskSettings _settings;
-        private readonly IMapper _mapper;
         private readonly IEventBus _eventBus;
         private readonly ILogger<ArchiveExtractionService> _logger;
+        private readonly IExtractService _extractService;
         private readonly ISubjectRepository _subjectRepo;
         private readonly IJobRepository _jobRepository;
         private readonly IJobItemRepository _jobItemRepository;
-        private readonly IFulfillmentRepository _fulfillmentRepository;
-        private readonly IFulfillmentItemRepository _fulfillmentItemRepository;
         private readonly IPublicationRepository _publicationRepository;
         private readonly IArchiveFetch _archiveFetch;
         private readonly ITransformService _transformService;
 
         public ArchiveExtractionService(IOptions<BackgroundTaskSettings> settings,
-            IMapper mapper,
             IEventBus eventBus,
             ILogger<ArchiveExtractionService> logger,
+            IExtractService extractService,
             ISubjectRepository subjectRepo,
             IJobRepository jobRepository,
             IJobItemRepository jobItemRepository,
-            IFulfillmentRepository fulfillmentRepository,
-            IFulfillmentItemRepository fulfillmentItemRepository,
             IPublicationRepository publicationRepository,
             IArchiveFetch archiveFetch,
             ITransformService transformService)
         {
             _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));
-            _mapper = mapper;
             _eventBus = eventBus;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _extractService = extractService;
             _subjectRepo = subjectRepo;
             _jobRepository = jobRepository;
             _jobItemRepository = jobItemRepository;
-            _fulfillmentRepository = fulfillmentRepository;
-            _fulfillmentItemRepository = fulfillmentItemRepository;
             _publicationRepository = publicationRepository;
             _archiveFetch = archiveFetch;
             _transformService = transformService;
@@ -125,73 +116,33 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
         private async Task<string> RunArchiveExtraction(CancellationToken stoppingToken)
         {
-            _logger.LogDebug("Reading Metadata to determine archive task parameters.");
+            _logger.LogInformation("Reading Archive Task Metadata from Storage...");
 
-            JobEntity job = _jobRepository.GetJob(ExtractTypeEnum.Archive, _settings.ArchiveJobName);
+            var (jobFetchSuccess, job, jobItems) = _extractService.GetArchiveJob();
 
-            List<JobItemEntity> jobItems = _jobItemRepository.GetJobItems(job?.UniqueName);
-
-            if (jobItems == null || jobItems.Count == 0)
+            if (!jobFetchSuccess)
             {
-                //TODO:Retry, fail logic
-            }
-
-            FulfillmentEntity lastFulfillment = _fulfillmentRepository.GetLastSuccessfulFulfillment(job.UniqueName).Result;
-
-            int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));
-
-            FulfillmentEntity newFulfillment = ExtractUtil.MakeNewFulfillment(job, lastFulfillment, minQueryDateInterval);
-
-            newFulfillment = _fulfillmentRepository.SaveFulfillment(newFulfillment).Result;
-
-            if (newFulfillment == null)
-            {
-                _logger.LogCritical("Error persisting New Fulfilment to Storage - [{0}]-[{1}] - Query From [{2}] To [{3}]",
-                        newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy")
-                        , newFulfillment.QueryToDate.ToString("dd MMMM yyyy"));
-                await StopAsync(stoppingToken);
-            }
-            else if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, newFulfillment.QueryToDate))
-            {
-                _logger.LogInformation("Stopping Service. Query Date window From [{0}] To [{1}] has passed Archive Terminate Date [{2}]",
-                    _settings.ArchiveTerminateDate, newFulfillment.QueryFromDate, newFulfillment.QueryToDate);
+                _logger.LogCritical("Error fetching Job Archive metadata from Storage");
                 await StopAsync(stoppingToken);
             }
             else
             {
-                _logger.LogInformation("New Fulfillment [{0}]-[{1}] - Query From [{2}] To [{3}] - Started @ {4}",
-                                    newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy"),
-                                    newFulfillment.QueryToDate.ToString("dd MMMM yyyy"), newFulfillment.JobStartedDate);
+                var (_, lastFulfillment) = _extractService.GetLastSuccessfulArchiveFulfillment(job.UniqueName);
 
-                List<FulfillmentItemEntity> newFulfillmentItems = new List<FulfillmentItemEntity>();
+                var (createSuccess, newFulfillment, newFulfillmentItems)
+                    = _extractService.CreateArchiveFulfillmentSaga(job, jobItems, lastFulfillment);
 
-                foreach (var jobItem in jobItems)
+                if (!createSuccess)
                 {
-                    //For an optimal configuration, the loop below will only be executed once.
-                    foreach (var interval in ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval))
-                    {
-                        if (ExtractUtil.HasPassedTerminationDate(_settings.ArchiveTerminateDate, interval.QueryToDate) == false)
-                        {
-                            newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
-                        }
-                    }
-                }
-
-                List<FulfillmentItemEntity> fulfillmentItems = _fulfillmentItemRepository.SaveFulfillmentItems(newFulfillmentItems);
-
-                if (fulfillmentItems == null || fulfillmentItems.Count == 0)
-                {
-                    _logger.LogCritical($"Error persisting [{fulfillmentItems.Count}] New Fulfillment Items from Fulfillment to Storage {newFulfillment.FulfillmentId} - @{DateTime.UtcNow}");
                     await StopAsync(stoppingToken);
                 }
                 else
                 {
-                    _logger.LogInformation($"Created [{fulfillmentItems.Count}] New Fulfillment Items from Fulfillment {newFulfillment.FulfillmentId} - @{DateTime.UtcNow}");
-
+                    _logger.LogInformation($"Created [{newFulfillmentItems.Count}] New Fulfillment Items from Fulfillment {newFulfillment.FulfillmentId} - @{DateTime.UtcNow}");
                     Stopwatch stopwatch = new Stopwatch();
 
                     //Run Http Request, transform, persist operations per Fulfillment Item Entry
-                    foreach (var fulfillmentItem in fulfillmentItems)
+                    foreach (var fulfillmentItem in newFulfillmentItems)
                     {
                         List<ArxivItem> allResults = new List<ArxivItem>();
 
@@ -199,7 +150,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                         //Make initial http request to external website/API          
                         stopwatch.Start();
-                        var (initialResponse, initialItems) = _archiveFetch.GetArxivItems(fulfillmentItem.Url).Result;
+                        var (initialResponse, initiaResultItems) = _archiveFetch.GetArxivItems(fulfillmentItem.Url).Result;
                         stopwatch.Stop();
 
                         //Save http request time elapsed.
@@ -210,10 +161,10 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         fulfillmentItem.HttpRequestCount++;
 
                         //Add response to results list
-                        allResults.Add(initialItems);
+                        allResults.Add(initiaResultItems);
 
-                        int totalAvailable = initialItems.totalResults;
-                        int fetched = initialItems.itemsPerPage;
+                        int totalAvailable = initiaResultItems.totalResults;
+                        int fetched = initiaResultItems.itemsPerPage;
                         string initialUrl = fulfillmentItem.Url;
 
                         fulfillmentItem.TotalResults = fetched < totalAvailable ? fetched : totalAvailable;
@@ -288,26 +239,36 @@ namespace arx.Extract.BackgroundTasks.Tasks
                             else
                             {
                                 //Perform transformations
-                                var publications = _transformService.TransformArxivEntriesToPublications(allArxivEntries);
+                                var (success, count, publications) = _transformService.TransformArxivEntriesToPublications(allArxivEntries);
 
                                 //Set type transformaiton success
-                                fulfillmentItem.DataExtractionIsSuccess = (publications.Count == allArxivEntries.Count);
+                                fulfillmentItem.DataExtractionIsSuccess = success;
 
-                                //Set fulfillment Ids
-                                var entityList = _mapper.Map<List<PublicationItemEntity>>(publications);
-                                entityList?.ForEach(e =>
+                                //Log errors in transformation process
+                                if (!success)
                                 {
-                                    e.PartitionKey = newFulfillment.FulfillmentId.ToString();
-                                    e.FulfillmentId = newFulfillment.FulfillmentId.ToString();
-                                    e.FulFillmentItemId = fulfillmentItem.ItemUId.ToString();
-                                });
-
-                                //Persist publications to Storage - Batch insert
-                                int saved = await _publicationRepository.BatchSavePublications(entityList);
-
-                                if (saved == 0)
+                                    _logger.LogError("Fulfillment Item [{0}] - Error Transforming ArxivEntries To Publicationitems. {1}/{2} were successful.",
+                                                        fulfillmentItem.ItemUId, count, allArxivEntries);
+                                }
+                                else
                                 {
-                                    _logger.LogError($"FulfillmentItem {fulfillmentItem.ItemUId} - persisted 0 publications to Storage");
+                                    var (mapIsSuccess, entityList) = _transformService.TransformPublicationItemsToEntity
+                                                                                        (newFulfillment.FulfillmentId.ToString(),
+                                                                                        fulfillmentItem.ItemUId.ToString(),
+                                                                                        publications);
+
+                                    if (!mapIsSuccess)
+                                    {
+                                        _logger.LogCritical("FulfillmentItem {0} - Error Transforming PublicationItems To PublicationItemEntity", fulfillmentItem.ItemUId);
+                                    }
+                                    else
+                                    {
+                                        //Persist publications to Storage - Batch insert
+                                        if (await _publicationRepository.BatchSavePublications(entityList) == 0)
+                                        {
+                                            _logger.LogCritical("FulfillmentItem {0} - FAILED to persist publications to Storage", fulfillmentItem.ItemUId);
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -317,44 +278,23 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         fulfillmentItem.TotalProcessingInMilliseconds =
                             (fulfillmentItem.JobItemCompletedDate - fulfillmentItem.JobItemStartDate).TotalMilliseconds;
 
-                        //Save to fulfillment Item to database
-                        var savedItem = _fulfillmentItemRepository.SaveFulfillmentItem(fulfillmentItem);
-
-                        //Log fulfillment Item summary
-                        string activeCode = string.IsNullOrEmpty(fulfillmentItem.QuerySubjectCode) ? fulfillmentItem.QuerySubjectGroup : fulfillmentItem.QuerySubjectCode;
-                        string logFulfillmentItem = $"FulfillmentItem [{fulfillmentItem.ItemUId}] - Subject Query [{activeCode}] - Started @{fulfillmentItem.JobItemStartDate} - Completed @{fulfillmentItem.JobItemCompletedDate} - Fetched ={fulfillmentItem.TotalResults}";
-
-                        if (savedItem != null)
-                            _logger.LogInformation(logFulfillmentItem);
-                        else
-                            _logger.LogError($"Error Saving {logFulfillmentItem}");
+                        //Persist fulfillment Item to Storage
+                        _extractService.UpdateFulfilmentItem(fulfillmentItem);
                     }
 
-                    //Save new Fulilment record values
-                    newFulfillment.PartialSuccess = fulfillmentItems.Any(x => x.HttpRequestIsSuccess == true)
-                       && fulfillmentItems.Any(x => x.DataExtractionIsSuccess = true);
-
-                    newFulfillment.CompleteSuccess = fulfillmentItems.All(x => x.HttpRequestIsSuccess == true)
-                        && fulfillmentItems.All(x => x.DataExtractionIsSuccess = true);
-
+                    //Set Fulilment record values
                     newFulfillment.JobCompletedDate = DateTime.UtcNow;
+                    newFulfillment.PartialSuccess = newFulfillmentItems.Any(x => x.HttpRequestIsSuccess) && newFulfillmentItems.Any(x => x.DataExtractionIsSuccess);
+                    newFulfillment.CompleteSuccess = newFulfillmentItems.All(x => x.HttpRequestIsSuccess) && newFulfillmentItems.All(x => x.DataExtractionIsSuccess);
                     newFulfillment.ProcessingTimeInSeconds = (newFulfillment.JobCompletedDate - newFulfillment.JobStartedDate).TotalSeconds;
 
                     //Persist to Storage
-                    var savedNew = await _fulfillmentRepository.SaveFulfillment(newFulfillment);
-
-                    if (savedNew != null)
-                    {
-                        _logger.LogInformation($"Fulfillment {newFulfillment.JobName} -[{newFulfillment.FulfillmentId}] - Completed @{newFulfillment.JobCompletedDate} - Total Count = {newFulfillment.TotalCount} - From [{ newFulfillment.QueryFromDate}] To [{ newFulfillment.QueryToDate}]");
-                    }
-                    else
-                    {
-                        _logger.LogInformation($@"Error Saving - Fulfillment {newFulfillment.JobName} -[{newFulfillment.FulfillmentId}] - Completed @{newFulfillment.JobCompletedDate} - Total Count = {newFulfillment.TotalCount} - From [{ newFulfillment.QueryFromDate}] To [{ newFulfillment.QueryToDate}]");
-                    }
+                    await _extractService.UpdateFulfilment(newFulfillment);
                 }
+                return newFulfillment.FulfillmentId.ToString();
             }
 
-            return newFulfillment.FulfillmentId.ToString();
+            return string.Empty;
         }
 
         /// <summary>

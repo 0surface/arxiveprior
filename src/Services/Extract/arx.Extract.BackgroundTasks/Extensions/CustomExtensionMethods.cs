@@ -23,6 +23,7 @@ namespace arx.Extract.BackgroundTasks.Extensions
             services.AddAutoMapper(c => c.AddProfile<BackgroundTasksAutoMapperProfile>(), assemblyMarkerType);
             return services;
         }
+        
         public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
         {
             var subscriptionClientName = configuration["SubscriptionClientName"];
@@ -176,6 +177,12 @@ namespace arx.Extract.BackgroundTasks.Extensions
             services.AddSingleton<IArchiveFetch, ArchiveFetch>();
             return services;
         }
+
+        public static IServiceCollection AddExtractService(this IServiceCollection services)
+        {
+            services.AddScoped<IExtractService, ExtractService>();
+            return services;
+        }        
 
         public static IServiceCollection AddTransformService(this IServiceCollection services)
         {

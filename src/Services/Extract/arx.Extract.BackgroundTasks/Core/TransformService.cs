@@ -1,4 +1,5 @@
-﻿using arx.Extract.Lib;
+﻿using arx.Extract.Data.Entities;
+using arx.Extract.Lib;
 using arx.Extract.Types;
 using AutoMapper;
 using System;
@@ -7,11 +8,6 @@ using System.Linq;
 
 namespace arx.Extract.BackgroundTasks.Core
 {
-    public interface ITransformService
-    {
-        List<PublicationItem> TransformArxivEntriesToPublications(List<Entry> allArxivEntries);
-    }
-
     public class TransformService : ITransformService
     {
         private readonly IMapper _mapper;
@@ -21,23 +17,43 @@ namespace arx.Extract.BackgroundTasks.Core
             _mapper = mapper;
         }
 
-        public List<PublicationItem> TransformArxivEntriesToPublications(List<Entry> allArxivEntries)
+        public (bool, int, List<PublicationItem>) TransformArxivEntriesToPublications(List<Entry> allArxivEntries)
         {
             List<PublicationItem> results = new List<PublicationItem>();
 
             foreach (var entry in allArxivEntries)
             {
-                var publication = MapEntryToPublication(entry);
-                if (publication != null)
-                {
-                    results.Add(publication);
-                }
+                results.AddIfNotNull(EntryToPublication(entry));               
             }
 
-            return results;
+            return (results.Count == allArxivEntries.Count, results?.Count ?? 0 , results);
         }
 
-        private PublicationItem MapEntryToPublication(Entry item)
+        public (bool, List<PublicationItemEntity>) TransformPublicationItemsToEntity(string fulfillmentId, string fulfillmentItemId, List<PublicationItem> publications)
+        {
+            try
+            {
+               //Map
+                List<PublicationItemEntity> entityList 
+                    = _mapper.Map<List<PublicationItemEntity>>(publications);
+
+                //Set fulfillment Ids
+                entityList?.ForEach(e =>
+                {
+                    e.PartitionKey = fulfillmentId;
+                    e.FulfillmentId = fulfillmentId;
+                    e.FulFillmentItemId = fulfillmentItemId;
+                });
+
+                return (true, entityList);
+            }
+            catch (Exception)
+            {
+                return (false, new List<PublicationItemEntity>());
+            }
+        }
+
+        private PublicationItem EntryToPublication(Entry item)
         {
             PublicationItem pub = new PublicationItem();
             try
@@ -70,7 +86,10 @@ namespace arx.Extract.BackgroundTasks.Core
 
                 pub.Authors = _mapper.Map<List<AuthorItem>>(item.Authors);
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+                return null;
+            }
 
             return pub;
         }
