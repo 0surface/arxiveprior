@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace Journal.Domain.SeedWork
@@ -27,5 +28,4 @@ namespace Journal.Domain.SeedWork
 
         public int CompareTo(object other) => Id.CompareTo(((Enumeration)other).Id);
     }
-}
 }

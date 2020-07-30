@@ -46,13 +46,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Util", "BuildingBlocks\Extensions\Common.Util\Common.Util.csproj", "{A57A34F1-F17E-4E9A-B1A1-5425C0FF2DBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Journal.Domain", "Services\Journal\Journal.Domain\Journal.Domain.csproj", "{459E3E26-01CE-4336-948D-FB45036D48B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.Domain", "Services\Journal\Journal.Domain\Journal.Domain.csproj", "{459E3E26-01CE-4336-948D-FB45036D48B2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Journal.API", "Services\Journal\Journal.API\Journal.API.csproj", "{65663453-2072-4A20-8A88-F553E8BE0AA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.API", "Services\Journal\Journal.API\Journal.API.csproj", "{65663453-2072-4A20-8A88-F553E8BE0AA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Journal.BackgroundTasks", "Services\Journal\Journal.BackgroundTasks\Journal.BackgroundTasks.csproj", "{774231D4-6A78-4C3F-90BA-8319654CEBD5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.BackgroundTasks", "Services\Journal\Journal.BackgroundTasks\Journal.BackgroundTasks.csproj", "{774231D4-6A78-4C3F-90BA-8319654CEBD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Journal.Infrastructure", "Services\Journal\Journal.Infrastructure\Journal.Infrastructure.csproj", "{7028B3E8-DCEE-4B72-B803-AE2F272242DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Journal.Infrastructure", "Services\Journal\Journal.Infrastructure\Journal.Infrastructure.csproj", "{7028B3E8-DCEE-4B72-B803-AE2F272242DB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HostExtensions", "HostExtensions", "{344C1C5E-5264-4B05-81B8-58DA6072CB02}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host.Customization", "BuildingBlocks\HostExtensions\Host.Customization\Host.Customization.csproj", "{43826768-ED3D-4F9C-905F-0C5E2FA820E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -116,6 +120,10 @@ Global
 		{7028B3E8-DCEE-4B72-B803-AE2F272242DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7028B3E8-DCEE-4B72-B803-AE2F272242DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7028B3E8-DCEE-4B72-B803-AE2F272242DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43826768-ED3D-4F9C-905F-0C5E2FA820E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43826768-ED3D-4F9C-905F-0C5E2FA820E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43826768-ED3D-4F9C-905F-0C5E2FA820E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43826768-ED3D-4F9C-905F-0C5E2FA820E9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +149,8 @@ Global
 		{65663453-2072-4A20-8A88-F553E8BE0AA2} = {04D22802-1B2D-4FC7-8A0E-0849AD595B57}
 		{774231D4-6A78-4C3F-90BA-8319654CEBD5} = {04D22802-1B2D-4FC7-8A0E-0849AD595B57}
 		{7028B3E8-DCEE-4B72-B803-AE2F272242DB} = {04D22802-1B2D-4FC7-8A0E-0849AD595B57}
+		{344C1C5E-5264-4B05-81B8-58DA6072CB02} = {E4164F44-3079-4DAA-8FC6-C833CFEA9463}
+		{43826768-ED3D-4F9C-905F-0C5E2FA820E9} = {344C1C5E-5264-4B05-81B8-58DA6072CB02}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F51A04B3-2737-4B48-A4D1-959A9BE6F830}

@@ -39,4 +39,5 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
   journal.infrastructure:
-
+    environment:
+      - DOTNET_ENVIRONMENT=Development
