@@ -9,26 +9,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20200730222255_initial.cs" />
-    <Compile Remove="Migrations\20200730222255_initial.Designer.cs" />
-    <Compile Remove="Migrations\20200730222502_initial.cs" />
-    <Compile Remove="Migrations\20200730222502_initial.Designer.cs" />
-    <Compile Remove="Migrations\20200730224035_update_0.1.cs" />
-    <Compile Remove="Migrations\20200730224035_update_0.1.Designer.cs" />
+    <Compile Remove="Infrastructure\**" />
+    <Compile Remove="Migrations\**" />
+    <Content Remove="Infrastructure\**" />
+    <Content Remove="Migrations\**" />
+    <EmbeddedResource Remove="Infrastructure\**" />
+    <EmbeddedResource Remove="Migrations\**" />
+    <None Remove="Infrastructure\**" />
+    <None Remove="Migrations\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Remove="appsettings.json" />
-    <Content Remove="Setup\SubjectSeedData.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Setup\SubjectSeedData.json" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="3.1.1" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="3.1.1" />
+    <PackageReference Include="AutoMapper" Version="10.0.0" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -40,16 +39,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\" />
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Extensions\Common.Util\Common.Util.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\HostExtensions\WebHost.Customization\WebHost.Customization.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBus\EventBus.csproj" />
     <ProjectReference Include="..\Journal.Domain\Journal.Domain.csproj" />
     <ProjectReference Include="..\Journal.Infrastructure\Journal.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Application\Models\Article\" />
+    <Folder Include="Application\Models\Author\" />
+    <Folder Include="Application\Models\ExtractJob\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://json.schemastore.org/appsettings" appsettings_1production_1json__JsonSchema="https://json.schemastore.org/appsettings" /></VisualStudio></ProjectExtensions>

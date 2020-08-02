@@ -9,32 +9,13 @@ namespace Journal.API.Controllers
     [ApiController]
     public class ArticlesController : Controller
     {
-        private readonly ISubjectService _subjectService;
+        private readonly IArticlesService _articlesService;
 
-        public ArticlesController(JournalContext journalContext)
+        public ArticlesController(IArticlesService articlesService)
         {
-            _subjectService = new SubjectService(journalContext);
+            _articlesService = articlesService;
         }
-        //public ArticlesController(SubjectService subjectService)
-        //{
-        //    _subjectService = subjectService;
-        //}
 
-        [HttpGet("subjects")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public IActionResult GetAction()
-        {
-            var result = _subjectService.GetAll();
-
-            if (result == null)
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-
-            if (result.Count == 0)
-                return StatusCode((int)HttpStatusCode.NoContent);
-
-            return Json(result);
-        }
+        
     }
 }
