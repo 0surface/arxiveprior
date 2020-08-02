@@ -1,0 +1,1242 @@
+[
+  {
+    "Code": "astro-phGA",
+    "Name": "Astrophysics of Galaxies",
+    "GroupName": "Astrophysics",
+    "GroupCode": "astro-ph",
+    "Discipline": "Physics",
+    "Description": "Phenomena pertaining to galaxies or the Milky Way. Star clusters, HII regions and planetary nebulae, the interstellar medium, atomic and molecular clouds, dust. Stellar populations. Galactic structure, formation, dynamics. Galactic nuclei, bulges, disks, halo. Active Galactic Nuclei, supermassive black holes, quasars. Gravitational lens systems. The Milky Way and its contents"
+  },
+  {
+    "Code": "astro-ph.CO",
+    "Name": "Cosmology and Nongalactic Astrophysics",
+    "GroupName": "Astrophysics",
+    "GroupCode": "astro-ph",
+    "Discipline": "Physics",
+    "Description": "Phenomenology of early universe, cosmic microwave background, cosmological parameters, primordial element abundances, extragalactic distance scale, large-scale structure of the universe. Groups, superclusters, voids, intergalactic medium. Particle astrophysics: dark energy, dark matter, baryogenesis, leptogenesis, inflationary models, reheating, monopoles, WIMPs, cosmic strings, primordial black holes, cosmological gravitational radiation"
+  },
+  {
+    "Code": "astro-ph.EP",
+    "Name": "Earth and Planetary Astrophysics",
+    "GroupName": "Astrophysics",
+    "GroupCode": "astro-ph",
+    "Discipline": "Physics",
+    "Description": "Interplanetary medium, planetary physics, planetary astrobiology, extrasolar planets, comets, asteroids, meteorites. Structure and formation of the solar system"
+  },
+  {
+    "Code": "astro-ph.HE",
+    "Name": "High Energy Astrophysical Phenomena",
+    "GroupName": "Astrophysics",
+    "GroupCode": "astro-ph",
+    "Discipline": "Physics",
+    "Description": "Cosmic ray production, acceleration, propagation, detection. Gamma ray astronomy and bursts, X-rays, charged particles, supernovae and other explosive phenomena, stellar remnants and accretion systems, jets, microquasars, neutron stars, pulsars, black holes"
+  },
+  {
+    "Code": "astro-ph.IM",
+    "Name": "Instrumentation and Methods for Astrophysics",
+    "GroupName": "Astrophysics",
+    "GroupCode": "astro-ph",
+    "Discipline": "Physics",
+    "Description": "Detector and telescope design, experiment proposals. Laboratory Astrophysics. Methods for data analysis, statistical methods. Software, database design"
+  },
+  {
+    "Code": "astro-ph.SR",
+    "Name": "Solar and Stellar Astrophysics",
+    "GroupName": "Astrophysics",
+    "GroupCode": "astro-ph",
+    "Discipline": "Physics",
+    "Description": "White dwarfs, brown dwarfs, cataclysmic variables. Star formation and protostellar systems, stellar astrobiology, binary and multiple systems of stars, stellar evolution and structure, coronas. Central stars of planetary nebulae. Helioseismology, solar neutrinos, production and detection of gravitational radiation from stellar systems"
+  },
+  {
+    "Code": "cond-mat.dis-nn",
+    "Name": "Disordered Systems and Neural Networks",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Disordered Systems and Neural Networks"
+  },
+  {
+    "Code": "cond-mat.mtrl-sci",
+    "Name": "Materials Science",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Techniques, synthesis, characterization, structure. Structural phase transitions, mechanical properties, phonons. Defects, adsorbates, interfaces"
+  },
+  {
+    "Code": "cond-mat.mes-hall",
+    "Name": "Mesoscale and Nanoscale Physics",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Semiconducting nanostructures: quantum dots, wires, and wells. Single electronics, spintronics, 2d electron gases, quantum Hall effect, nanotubes, graphene, plasmonic nanostructures"
+  },
+  {
+    "Code": "cond-mat.other",
+    "Name": "Other Condensed Matter",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Work in condensed matter that does not fit into the other cond-mat classifications"
+  },
+  {
+    "Code": "cond-mat.quant-gas",
+    "Name": "Quantum Gases",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Ultracold atomic and molecular gases, Bose-Einstein condensation, Feshbach resonances, spinor condensates, optical lattices, quantum simulation with cold atoms and molecules, macroscopic interference phenomena"
+  },
+  {
+    "Code": "cond-mat.soft",
+    "Name": "Soft Condensed Matter",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Membranes, polymers, liquid crystals, glasses, colloids, granular matter"
+  },
+  {
+    "Code": "cond-mat.stat-mech",
+    "Name": "Statistical Mechanics",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Phase transitions, thermodynamics, field theory, non-equilibrium phenomena, renormalization group and scaling, integrable models, turbulence"
+  },
+  {
+    "Code": "cond-mat.str-el",
+    "Name": "Strongly Correlated Electrons",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Quantum magnetism, non-Fermi liquids, spin liquids, quantum criticality, charge density waves, metal-insulator transitions"
+  },
+  {
+    "Code": "cond-mat.supr-con",
+    "Name": "Superconductivity",
+    "GroupName": "Condensed Matter",
+    "GroupCode": "cond-mat",
+    "Discipline": "Physics",
+    "Description": "Superconductivity: theory, models, experiment. Superflow in helium"
+  },
+  {
+    "Code": "gr-qc",
+    "Name": "General Relativity and Quantum Cosmology",
+    "GroupName": "General Relativity and Quantum Cosmology",
+    "GroupCode": "gr-qc",
+    "Discipline": "Physics",
+    "Description": "General Relativity and Quantum Cosmology"
+  },
+  {
+    "Code": "hep-ex",
+    "Name": "High Energy Physics - Experiment",
+    "GroupName": "High Energy Physics - Experiment",
+    "GroupCode": "hep-ex",
+    "Discipline": "Physics",
+    "Description": "High Energy Physics - Experiment"
+  },
+  {
+    "Code": "hep-lat",
+    "Name": "High Energy Physics - Lattice",
+    "GroupName": "High Energy Physics - Lattice",
+    "GroupCode": "hep-lat",
+    "Discipline": "Physics",
+    "Description": "High Energy Physics - Lattice"
+  },
+  {
+    "Code": "hep-ph",
+    "Name": "High Energy Physics - Phenomenology",
+    "GroupName": "High Energy Physics - Phenomenology",
+    "GroupCode": "hep-ph",
+    "Discipline": "Physics",
+    "Description": "High Energy Physics - Phenomenology"
+  },
+  {
+    "Code": "hep-th",
+    "Name": "High Energy Physics - Theory",
+    "GroupName": "High Energy Physics - Theory",
+    "GroupCode": "hep-th",
+    "Discipline": "Physics",
+    "Description": "High Energy Physics - Theory"
+  },
+  {
+    "Code": "math-ph",
+    "Name": "Mathematical Physics",
+    "GroupName": "Mathematical Physics",
+    "GroupCode": "math-ph",
+    "Discipline": "Physics",
+    "Description": "Mathematical Physics"
+  },
+  {
+    "Code": "nlin.AO",
+    "Name": "Adaptation and Self-Organizing Systems",
+    "GroupName": "Nonlinear Sciences",
+    "GroupCode": "nlin",
+    "Discipline": "Physics",
+    "Description": "adaptation, self-organizing systems, statistical physics, fluctuating systems, stochastic processes, interacting particle systems, machine learning"
+  },
+  {
+    "Code": "nlin.CG",
+    "Name": "Cellular Automata and Lattice Gases",
+    "GroupName": "Nonlinear Sciences",
+    "GroupCode": "nlin",
+    "Discipline": "Physics",
+    "Description": "computational methods, time series analysis, signal processing, wavelets, lattice gases"
+  },
+  {
+    "Code": "nlin.CD",
+    "Name": "Chaotic Dynamics",
+    "GroupName": "Nonlinear Sciences",
+    "GroupCode": "nlin",
+    "Discipline": "Physics",
+    "Description": "dynamical systems, chaos, quantum chaos, topological dynamics, cycle expansions, turbulence, propagation"
+  },
+  {
+    "Code": "nlin.SI",
+    "Name": "Exactly Solvable and Integrable Systems",
+    "GroupName": "Nonlinear Sciences",
+    "GroupCode": "nlin",
+    "Discipline": "Physics",
+    "Description": "exactly solvable systems, integrable PDEs, integrable ODEs, Painleve analysis, integrable discrete maps, solvable lattice models, integrable quantum systems"
+  },
+  {
+    "Code": "nlin.PS",
+    "Name": "Pattern Formation and Solitons",
+    "GroupName": "Nonlinear Sciences",
+    "GroupCode": "nlin",
+    "Discipline": "Physics",
+    "Description": "pattern formation, coherent structures, solitons"
+  },
+  {
+    "Code": "nucl-ex",
+    "Name": "Nuclear Experiment",
+    "GroupName": "Nuclear Experiment",
+    "GroupCode": "nucl-ex",
+    "Discipline": "Physics",
+    "Description": "Nuclear Experiment"
+  },
+  {
+    "Code": "nucl-th",
+    "Name": "Nuclear Theory",
+    "GroupName": "Nuclear Theory",
+    "GroupCode": "nucl-th",
+    "Discipline": "Physics",
+    "Description": "Nuclear Theory"
+  },
+  {
+    "Code": "physics.acc-ph",
+    "Name": "Accelerator Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.app-ph",
+    "Name": "Applied Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.ao-ph",
+    "Name": "Atmospheric and Oceanic Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.atom-ph",
+    "Name": "Atomic Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.atm-clus",
+    "Name": "Atomic and Molecular Clusters",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.bio-ph",
+    "Name": "Biological Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.chem-ph",
+    "Name": "Chemical Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.class-ph",
+    "Name": "Classical Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.comp-ph",
+    "Name": "Computational Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.data-an",
+    "Name": "Data Analysis",
+    "GroupName": "Statistics and Probability Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.flu-dyn",
+    "Name": "Fluid Dynamics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.gen-ph",
+    "Name": "General Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.geo-ph",
+    "Name": "GeoPhysics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.hist-ph",
+    "Name": "History and Philosophy of Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.ins-det",
+    "Name": "Instrumentation and Detectors",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.med-ph",
+    "Name": "Medical Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.optics",
+    "Name": "Optics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.ed-ph",
+    "Name": "Physics Education",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.soc-ph",
+    "Name": "Physics and Society",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.plasm-ph",
+    "Name": "Plasma Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.pop-ph",
+    "Name": "Popular Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "physics.space-ph",
+    "Name": "Space Physics",
+    "GroupName": "Physics",
+    "GroupCode": "physics",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "quant-ph",
+    "Name": "Quantum Physics",
+    "GroupName": "Quantum Physics",
+    "GroupCode": "quant-ph",
+    "Discipline": "Physics",
+    "Description": ""
+  },
+  {
+    "Code": "math.AG",
+    "Name": "Algebraic Geometry",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.AT",
+    "Name": "Algebraic Topology",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.AP",
+    "Name": "Analysis of PDEs",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.CT",
+    "Name": "Category Theory",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.CA",
+    "Name": "Classical Analysis and ODEs",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.CO",
+    "Name": "Combinatorics",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.AC",
+    "Name": "Commutative Algebra",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.CV",
+    "Name": "Complex Variables",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.DG",
+    "Name": "Differential Geometry",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.DS",
+    "Name": "Dynamical Systems",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.FA",
+    "Name": "Functional Analysis",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.GM",
+    "Name": "Generalmathematics",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.GN",
+    "Name": "General Topology",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.GT",
+    "Name": "Geometric Topology",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.GR",
+    "Name": "Group Theory",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.HO",
+    "Name": "History and Overview",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.IT",
+    "Name": "Information Theory",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.KT",
+    "Name": "K-Theory and Homology",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.LO",
+    "Name": "Logic",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.MP",
+    "Name": "Mathematical Physics",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.MG",
+    "Name": "Metric Geometry",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.NT",
+    "Name": "Number Theory",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.NA",
+    "Name": "Numerical Analysis",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.OA",
+    "Name": "Operator Algebras",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.OC",
+    "Name": "Optimization and Control",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.PR",
+    "Name": "Probability",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.QA",
+    "Name": "Quantum Algebra",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.RT",
+    "Name": "Representation Theory",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.RA",
+    "Name": "Rings and Algebras",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.SP",
+    "Name": "Spectral Theory",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.ST",
+    "Name": "Statistics Theory",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "math.SG",
+    "Name": "Symplectic Geometry",
+    "GroupName": "Mathematics",
+    "GroupCode": "math",
+    "Discipline": "Mathematics",
+    "Description": ""
+  },
+  {
+    "Code": "cs.AI",
+    "Name": "Artificial Intelligence",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": "Covers all areas of AI except Vision, Robotics, Machine Learning, Multiagent Systems, and Computation and Language (Natural Language Processing), which have separate subject areas. In particular, includes Expert Systems, Theorem Proving (although this may overlap with Logic in Computer Science), Knowledge Representation, Planning, and Uncertainty in AI."
+  },
+  {
+    "Code": "cs.CL",
+    "Name": "Computation and Language",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.CC",
+    "Name": "Computational Complexity",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": "Covers models of computation, complexity classes, structural complexity, complexity tradeoffs, upper and lower bounds. Roughly includes material in ACM Subject Classes F.1 (computation by abstract devices), F.2.3 (tradeoffs among complexity measures), and F.4.3 (formal languages), although some material in formal languages may be more appropriate for Logic in Computer Science. Some material in F.2.1 and F.2.2, may also be appropriate here, but is more likely to have Data Structures and Algorithms as the primary subject area."
+  },
+  {
+    "Code": "cs.CE",
+    "Name": "Computational Engineering Finance and Science",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": "Covers applications of computer science to the mathematical modeling of complex systems in the fields of science, engineering, and finance. Papers here are interdisciplinary and applications-oriented, focusing on techniques and tools that enable challenging computational simulations to be performed, for which the use of supercomputers or distributed computing platforms is often required. Includes material in ACM Subject Classes J.2, J.3, and J.4 (economics)"
+  },
+  {
+    "Code": "cs.CG",
+    "Name": "Computational Geometry",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.GT",
+    "Name": "Computer Science and Game Theory",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.CV",
+    "Name": "Computer Vision and Pattern Recognition",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.CY",
+    "Name": "Computers and Society",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.CR",
+    "Name": "Cryptography and Security",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.DS",
+    "Name": "Data Structures and Algorithms",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.DB",
+    "Name": "Databases",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.DL",
+    "Name": "Digital Libraries",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.DM",
+    "Name": "Discrete Mathematics",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.DC",
+    "Name": "Distributed Parallel and Cluster Computing",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.ET",
+    "Name": "Emerging Technologies",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.FL",
+    "Name": "Formal Languages and Automata Theory",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.GL",
+    "Name": "General Literature",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.GR",
+    "Name": "Graphics",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.AR",
+    "Name": "Hardware Architecture",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.HC",
+    "Name": "Human-Computer Interaction",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.IR",
+    "Name": "Information Retrieval",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.IT",
+    "Name": "Information Theory",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.LO",
+    "Name": "Logic in Computer Science",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.LG",
+    "Name": "Machine Learning",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.MS",
+    "Name": "Mathematical Software",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.MA",
+    "Name": "Multiagent Systems",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.MM",
+    "Name": "Multimedia",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.NI",
+    "Name": "Networking and Internet Architecture",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.NE",
+    "Name": "Neural and Evolutionary Computing",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.NA",
+    "Name": "Numerical Analysis",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.OS",
+    "Name": "Operating Systems",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.OH",
+    "Name": "Other Computer Science",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.PF",
+    "Name": "Performance",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.PL",
+    "Name": "Programming Languages",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.RO",
+    "Name": "Robotics",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.SI",
+    "Name": "Social and Information Networks",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.SE",
+    "Name": "Software Engineering",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.SD",
+    "Name": "Sound",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.SC",
+    "Name": "Symbolic Computation",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": ""
+  },
+  {
+    "Code": "cs.SY",
+    "Name": "Systems and Control",
+    "GroupName": "Computer Science",
+    "GroupCode": "cs",
+    "Discipline": "Computer Science",
+    "Description": "This section includes theoretical and experimental research covering all facets of automatic control systems, having as focal point analysis and design methods using tools of modeling, simulation and optimization. Specific areas of research include nonlinear, distributed, adaptive, stochastic and robust control, hybrid and discrete event systems. Application areas include automotive, aerospace, process control, network control, biological systems, multiagent and cooperative control, sensor networks, control of cyberphysical and energy-related systems, control of computing systems"
+  },
+  {
+    "Code": "q-bio.BM",
+    "Name": "Biomolecules",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "DNA, RNA, proteins, lipids, etc.; molecular structures and folding kinetics; molecular interactions; single-molecule manipulation."
+  },
+  {
+    "Code": "q-bio.CB",
+    "Name": "Cell Behavior",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "Cell-cell signaling and interaction; morphogenesis and development; apoptosis; bacterial conjugation; viral-host interaction; immunology"
+  },
+  {
+    "Code": "q-bio.GN",
+    "Name": "Genomics",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "DNA sequencing and assembly; gene and motif finding; RNA editing and alternative splicing; genomic structure and processes (replication, transcription, methylation, etc); mutational processes."
+  },
+  {
+    "Code": "q-bio.MN",
+    "Name": "Molecular Networks",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "Gene regulation, signal transduction, proteomics, metabolomics, gene and enzymatic networks"
+  },
+  {
+    "Code": "q-bio.NC",
+    "Name": "Neurons and Cognition",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "Synapse, cortex, neuronal dynamics, neural network, sensorimotor control, behavior, attention"
+  },
+  {
+    "Code": "q-bio.OT",
+    "Name": "Other Quantitative Biology",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "Work in quantitative biology that does not fit into the other q-bio classifications"
+  },
+  {
+    "Code": "q-bio.PE",
+    "Name": "Populations and Evolution",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "Population dynamics, spatio-temporal and epidemiological models, dynamic speciation, co-evolution, biodiversity, foodwebs, aging; molecular evolution and phylogeny; directed evolution; origin of life"
+  },
+  {
+    "Code": "q-bio.QM",
+    "Name": "Quantitative Methods",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "All experimental, numerical, statistical and mathematical contributions of value to biology"
+  },
+  {
+    "Code": "q-bio.SC",
+    "Name": "Subcellular Processes",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "Assembly and control of subcellular structures (channels, organelles, cytoskeletons, capsules, etc.); molecular motors, transport, subcellular localization; mitosis and meiosis"
+  },
+  {
+    "Code": "q-bio.TO",
+    "Name": "Tissues and Organs",
+    "GroupName": "Quantitative Biology",
+    "GroupCode": "q-bio",
+    "Discipline": "Quantitative Biology",
+    "Description": "Blood flow in vessels, biomechanics of bones, electrical waves, endocrine system, tumor growth"
+  },
+  {
+    "Code": "q-fin.CP",
+    "Name": "Computational Finance",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "Computational methods, including Monte Carlo, PDE, lattice and other numerical methods with applications to financial modeling"
+  },
+  {
+    "Code": "q-fin.EC",
+    "Name": "Economics",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "q-fin.EC is an alias for econ.GN. Economics, including micro and macro economics, international economics, theory of the firm, labor economics, and other economic topics outside of finance"
+  },
+  {
+    "Code": "q-fin.GN",
+    "Name": "General Finance",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "Development of general quantitative methodologies with applications in finance"
+  },
+  {
+    "Code": "q-fin.MF",
+    "Name": "Mathematical Finance",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "Mathematical and analytical methods of finance, including stochastic, probabilistic and functional analysis, algebraic, geometric and other methods"
+  },
+  {
+    "Code": "q-fin.PM",
+    "Name": "Portfolio Management",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "Security selection and optimization, capital allocation, investment strategies and performance measurement"
+  },
+  {
+    "Code": "q-fin.PR",
+    "Name": "Pricing of Securities",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "Valuation and hedging of financial securities, their derivatives, and structured products"
+  },
+  {
+    "Code": "q-fin.RM",
+    "Name": "Risk Management",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "Statistical, econometric and econophysics analyses with applications to financial markets and economic data"
+  },
+  {
+    "Code": "q-fin.ST",
+    "Name": "Statistical Finance",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "Statistical, econometric and econophysics analyses with applications to financial markets and economic data"
+  },
+  {
+    "Code": "q-fin.TR",
+    "Name": "Trading and Market Microstructure",
+    "GroupName": "Quantitative Finance",
+    "GroupCode": "q-fin",
+    "Discipline": "Quantitative Finance",
+    "Description": "Market microstructure, liquidity, exchange and auction design, automated trading, agent-based modeling and market-making"
+  },
+  {
+    "Code": "stat.AP",
+    "Name": "Applications",
+    "GroupName": "Statistics",
+    "GroupCode": "stat",
+    "Discipline": "Statistics",
+    "Description": "Biology, Education, Epidemiology, Engineering, Environmental Sciences, Medical, Physical Sciences, Quality Control, Social Sciences"
+  },
+  {
+    "Code": "stat.CO",
+    "Name": "Computation",
+    "GroupName": "Statistics",
+    "GroupCode": "stat",
+    "Discipline": "Statistics",
+    "Description": "Algorithms, Simulation, Visualization"
+  },
+  {
+    "Code": "stat.ML",
+    "Name": "Machine Learning",
+    "GroupName": "Statistics",
+    "GroupCode": "stat",
+    "Discipline": "Statistics",
+    "Description": "Classification, Graphical Models, High Dimensional Inference"
+  },
+  {
+    "Code": "stat.ME",
+    "Name": "Methodology",
+    "GroupName": "Statistics",
+    "GroupCode": "stat",
+    "Discipline": "Statistics",
+    "Description": "Design, Surveys, Model Selection, Multiple Testing, Multivariate Methods, Signal and Image Processing, Time Series, Smoothing, Spatial Statistics, Survival Analysis, Nonparametric and Semiparametric Methods"
+  },
+  {
+    "Code": "stat.OT",
+    "Name": "Other Statistics",
+    "GroupName": "Statistics",
+    "GroupCode": "stat",
+    "Discipline": "Statistics",
+    "Description": "Work in statistics that does not fit into the other stat classifications"
+  },
+  {
+    "Code": "stat.TH",
+    "Name": "Statistics Theory",
+    "GroupName": "Statistics",
+    "GroupCode": "stat",
+    "Discipline": "Statistics",
+    "Description": "stat.TH is an alias for math.ST. Asymptotics, Bayesian Inference, Decision Theory, Estimation, Foundations, Inference, Testing."
+  },
+  {
+    "Code": "eess.AS",
+    "Name": "Audio and Speech Processing",
+    "GroupName": "Electrical Engineering and Systems Science",
+    "GroupCode": "eess",
+    "Discipline": "Electrical Engineering and Systems Science",
+    "Description": "Theory and methods for processing signals representing audio, speech, and language, and their applications. This includes analysis, synthesis, enhancement, transformation, classification and interpretation of such signals as well as the design, development, and evaluation of associated signal processing systems. Machine learning and pattern analysis applied to any of the above areas is also welcome. Specific topics of interest include: auditory modeling and hearing aids; acoustic beamforming and source localization; classification of acoustic scenes; speaker separation; active noise control and echo cancellation; enhancement; de-reverberation; bioacoustics; music signals analysis, synthesis and modification; music information retrieval; audio for multimedia and joint audio-video processing; spoken and written language modeling, segmentation, tagging, parsing, understanding, and translation; text mining; speech production, perception, and psychoacoustics; speech analysis, synthesis, and perceptual modeling and coding; robust speech recognition; speaker recognition and characterization; deep learning, online learning, and graphical models applied to speech, audio, and language signals; and implementation aspects ranging from system architecture to fast algorithms."
+  },
+  {
+    "Code": "eess.IV",
+    "Name": "Image and Video Processing",
+    "GroupName": "Electrical Engineering and Systems Science",
+    "GroupCode": "eess",
+    "Discipline": "Electrical Engineering and Systems Science",
+    "Description": "Theory, algorithms, and architectures for the formation, capture, processing, communication, analysis, and display of images, video, and multidimensional signals in a wide variety of applications. Topics of interest include: mathematical, statistical, and perceptual image and video modeling and representation; linear and nonlinear filtering, de-blurring, enhancement, restoration, and reconstruction from degraded, low-resolution or tomographic data; lossless and lossy compression and coding; segmentation, alignment, and recognition; image rendering, visualization, and printing; computational imaging, including ultrasound, tomographic and magnetic resonance imaging; and image and video analysis, synthesis, storage, search and retrieval."
+  },
+  {
+    "Code": "eess.SP",
+    "Name": "Signal Processing",
+    "GroupName": "Electrical Engineering and Systems Science",
+    "GroupCode": "eess",
+    "Discipline": "Electrical Engineering and Systems Science",
+    "Description": "\"Theory, algorithms, performance analysis and applications of signal and data analysis, including physical modeling, processing, detection and parameter estimation, learning, mining, retrieval, and information extraction. The term \"signal\" includes speech, audio, sonar, radar, geophysical, physiological, (bio-) medical, image, video, and multimodal natural and man-made signals, including communication signals and data. Topics of interest include: statistical signal processing, spectral estimation and system identification; filter design, adaptive filtering / stochastic learning; (compressive) sampling, sensing, and transform-domain methods including fast algorithms; signal processing for machine learning and machine learning for signal processing applications; in-network and graph signal processing; convex and nonconvex optimization methods for signal processing applications; radar, sonar, and sensor array beamforming and direction finding; communications signal processing; low power, multi-core and system-on-chip signal processing; sensing, communication, analysis and optimization for cyber-physical systems such as power grids and the Internet of Things.\""
+  },
+  {
+    "Code": "eess.SY",
+    "Name": "Systems and Control",
+    "GroupName": "Electrical Engineering and Systems Science",
+    "GroupCode": "eess",
+    "Discipline": "Electrical Engineering and Systems Science",
+    "Description": "TThis section includes theoretical and experimental research covering all facets of automatic control systems. The section is focused on methods of control system analysis and design using tools of modeling, simulation and optimization. Specific areas of research include nonlinear, distributed, adaptive, stochastic and robust control in addition to hybrid and discrete event systems. Application areas include automotive and aerospace control systems, network control, biological systems, multiagent and cooperative control, robotics, reinforcement learning, sensor networks, control of cyber-physical and energy-related systems, and control of computing systems."
+  },
+  {
+    "Code": "econ.EM",
+    "Name": "Econometrics",
+    "GroupName": "Economics",
+    "GroupCode": "econ",
+    "Discipline": "Economics",
+    "Description": "Econometric Theory, Micro-Econometrics, Macro-Econometrics, Empirical Content of Economic Relations discovered via New Methods, Methodological Aspects of the Application of Statistical Inference to Economic Data."
+  },
+  {
+    "Code": "econ.GN",
+    "Name": "General Economics",
+    "GroupName": "Economics",
+    "GroupCode": "econ",
+    "Discipline": "Economics",
+    "Description": "General methodological and applied contributions to economics."
+  },
+  {
+    "Code": "econ.TH",
+    "Name": "Theoretical Economics",
+    "GroupName": "Economics",
+    "GroupCode": "econ",
+    "Discipline": "Economics",
+    "Description": "Includes theoretical contributions to Contract Theory, Decision Theory, Game Theory, General Equilibrium, Growth, Learning and Evolution, Macroeconomics, Market and Mechanism Design, and Social Choice."
+  }
+]

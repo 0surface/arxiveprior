@@ -1,7 +1,10 @@
 ﻿using Journal.Domain.AggregatesModel.SubjectAggregate;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Journal.API.Infrastructure
+namespace Journal.Infrastructure
 {
     public class JournalContext : DbContext
     {

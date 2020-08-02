@@ -1,12 +1,9 @@
-using Journal.API.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.IO;
 using System.Net;
@@ -21,23 +18,9 @@ namespace Journal.API
 
         public static int Main(string[] args)
         {
-            var configuration = GetConfiguration();
-
             try
             {
-                var host = CreateHostBuilder(args).Build();
-                //var host = BuildWebHost(configuration, args);
-
-                host.MigrateDbContext<JournalContext>((context, services) =>
-                {
-                    var settings = services.GetService<IOptions<JournalSettings>>();
-                    var logger = services.GetService<ILogger<JournalContextSeed>>();
-
-                    new JournalContextSeed()
-                        .SeedAsync(context, settings, logger)
-                        .Wait();
-                });
-
+                var host = CreateHostBuilder(GetConfiguration(),args).Build();
                 host.Run();
 
                 return 0;
@@ -53,10 +36,12 @@ namespace Journal.API
         }
 
         // EF Core uses this method at design time to access the DbContext
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        public static IHostBuilder CreateHostBuilder(IConfiguration configuration, string[] args)
             => Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(
-                    webBuilder => webBuilder.UseStartup<Startup>());
+                   .ConfigureWebHostDefaults(webBuilder =>
+                   {
+                       webBuilder.UseStartup<Startup>();                        
+                   });
 
         public static IWebHost BuildWebHost(IConfiguration configuration, string[] args) =>
             WebHost.CreateDefaultBuilder(args)
@@ -92,7 +77,7 @@ namespace Journal.API
 
         private static (int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)
         {
-            var grpcPort = config.GetValue("GRPC_PORT", 5001);
+            var grpcPort = config.GetValue("GRPC_PORT", 81);
             var port = config.GetValue("PORT", 80);
             return (port, grpcPort);
         }

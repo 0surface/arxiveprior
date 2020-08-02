@@ -13,7 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Journal.API.Infrastructure
+namespace Journal.Infrastructure
 {
     /// <summary>
     /// For a comprehensive demonstartion of DbContext seeding desgin, construction and methodology
@@ -45,7 +45,7 @@ namespace Journal.API.Infrastructure
         {
             try
             {
-                string subjectFileResourceName = "Journal.API.Setup.SubjectSeedData.json";
+                string subjectFileResourceName = "Journal.Infrastructure.Setup.SubjectSeedData.json";
                 string data = ReadDocumentFromExecutingAssembly(subjectFileResourceName);
                 var entities = JsonConvert.DeserializeObject<IEnumerable<Subject>>(data);
                 return entities;
@@ -76,11 +76,9 @@ namespace Journal.API.Infrastructure
             try
             {
                 var assembly = Assembly.GetExecutingAssembly();
-                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-                using (StreamReader reader = new StreamReader(stream))
-                {
-                    data = reader.ReadToEnd();
-                }
+                using Stream stream = assembly.GetManifestResourceStream(resourceName);
+                using StreamReader reader = new StreamReader(stream);
+                data = reader.ReadToEnd();
             }
             catch (Exception)
             {

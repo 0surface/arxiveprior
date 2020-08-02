@@ -1,10 +1,13 @@
 using arx.Extract.API.Services;
 using arx.Extract.Data.Repository;
 using AutoMapper;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
@@ -25,6 +28,7 @@ namespace arx.Extract.API
             services.AddControllers();
             services.Configure<ExtractApiConfigurationSettings>(serviceConfig)
                     .AddCustomSwagger()
+                    .AddHealthChecks(serviceConfig)
                     .AddConfiguredAutoMapper()
                     .AddPublicationService(serviceConfig)
                     .AddFulfillmentService(serviceConfig)
@@ -51,19 +55,44 @@ namespace arx.Extract.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
             });
         }
     }
     static class CustomExtensionMethods
     {
         #region Service Collection
+
+        public static IServiceCollection AddHealthChecks(this IServiceCollection services, IConfiguration configuration)
+        {
+            var hcBuilder = services.AddHealthChecks();
+
+            hcBuilder.AddCheck("self", () => HealthCheckResult.Healthy());
+
+            hcBuilder.AddAzureTableStorage(
+                configuration["StorageConnectionString"],
+                tableName: configuration["JobTableName"],
+                name: "ExtractDB-check",
+                 tags: new string[] { "extractdb" });
+
+            return services;
+        }
+
         public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "arx.Extract - Extrat HTTP API",
+                    Title = "arxiveprior - Extract HTTP API",
                     Version = "v1",
                     Description = "The arx Extract Service HTTP API"
                 });

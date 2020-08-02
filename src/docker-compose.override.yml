@@ -22,9 +22,12 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - Settings__StorageConnectionString=${ARX_AZURE_EXTRACT_STORAGE_CS}
+      - GRPC_PORT=81
+      - PORT=80
     ports:
-      - "80"
-      - "443"
+      - "5001:80"
+      - "9101:81"
+      - "6001:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -40,12 +43,12 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ConnectionString=${ARX_AZURE_JOURNAL_DB:-Server=sqldata;Database=arxiveprior.Services.JournalDb;User Id=sa;Password=Pass@word}
-      - PATH_BASE=/journal-api
       - GRPC_PORT=81
       - PORT=80
     ports:
-      - "80"
-      - "443"
+      - "5002:80"
+      - "9102:81"
+      - "6002:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -53,6 +56,13 @@ services:
   journal.backgroundtasks:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+  
+  journal.infrastructure:
+    environment:
+       - ASPNETCORE_ENVIRONMENT=Development
+       - ConnectionString=${ARX_AZURE_JOURNAL_DB:-Server=sqldata;Database=arxiveprior.Services.JournalDb;User Id=sa;Password=Pass@word}
+       - PATH_BASE=/journal-infrastructure
+
 
 volumes:
 
