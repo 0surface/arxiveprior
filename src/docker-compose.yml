@@ -38,4 +38,12 @@ services:
       dockerfile: Services/Journal/Journal.BackgroundTasks/Dockerfile
     depends_on:
       - rabbitmq
-      - sqldata
+      - sqldata 
+
+  journal.infrastructure:
+    image: ${DOCKER_REGISTRY-}journalinfrastructure
+    build:
+      context: .
+      dockerfile: Services/Journal/Journal.Infrastructure/Dockerfile
+    depends_on:      
+      - sqldata 
