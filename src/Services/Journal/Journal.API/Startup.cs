@@ -1,5 +1,7 @@
 using HealthChecks.UI.Client;
-using Journal.API.Infrastructure;
+using Journal.API.Services;
+using Journal.Infrastructure;
+using Journal.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -29,7 +31,7 @@ namespace Journal.API
             services.AddControllers();
             services.AddHealthChecks(Configuration)
                    .AddCustomDbContext(Configuration)
-                   .AddCustomSwagger(Configuration)
+                   .AddCustomSwagger()
                    .AddCustomServices();
         }
 
@@ -45,13 +47,7 @@ namespace Journal.API
 
             app.UseHttpsRedirection();
 
-            app.UseSwagger()
-               .UseSwaggerUI(c =>
-               {
-                   c.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Journal.API V1");
-                   c.OAuthClientId("journalswaggerui");
-                   c.OAuthAppName("Journal Swagger UI");
-               });
+            app.UseCustomSwagger(pathBase);
 
             app.UseRouting();
 
@@ -84,28 +80,27 @@ namespace Journal.API
             hcBuilder.AddSqlServer(
                 configuration["ConnectionString"],
                 name: "JournalDB-check",
-                tags: new string[] { "scrapedb" });
+                tags: new string[] { "journaldb" });
 
             return services;
         }
 
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            services//.AddEntityFrameworkSqlServer()
-                .AddDbContext<JournalContext>(options =>
-                {
-                    options.UseSqlServer(configuration["ConnectionString"],
-                        sqlServerOptionsAction: sqlOptions =>
+            services.AddDbContext<JournalContext>(options =>
                         {
-                            sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                        });
-                },
-                ServiceLifetime.Scoped //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
-                );
+                            options.UseSqlServer(configuration["ConnectionString"],
+                                sqlServerOptionsAction: sqlOptions =>
+                                {
+                                    sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                                });
+                        },
+                        ServiceLifetime.Scoped //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
+                    );
             return services;
         }
 
-        public static IServiceCollection AddCustomSwagger(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddCustomSwagger(this IServiceCollection services)
         {
             services.AddSwaggerGen(options =>
             {
@@ -122,8 +117,22 @@ namespace Journal.API
 
         public static IServiceCollection AddCustomServices(this IServiceCollection services)
         {
+            services.AddScoped<ISubjectService, SubjectService>();
+            services.AddScoped<ISubjectRepository, SubjectRepository>();
 
             return services;
+        }
+
+        public static IApplicationBuilder UseCustomSwagger(this IApplicationBuilder app, string pathBase)
+        {
+            app.UseSwagger()
+              .UseSwaggerUI(c =>
+              {
+                  c.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Journal.API V1");
+                  c.OAuthClientId("journalswaggerui");
+                  c.OAuthAppName("Journal Swagger UI");
+              });
+            return app;
         }
     }
 }
