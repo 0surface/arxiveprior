@@ -2,6 +2,9 @@ version: '3.4'
 
 services:
 
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
 
@@ -18,3 +21,21 @@ services:
       dockerfile: Services/Extract/arx.Extract.BackgroundTasks/Dockerfile
     depends_on:
       - rabbitmq
+
+  journal.api:
+    image: ${DOCKER_REGISTRY-}journalapi
+    build:
+      context: .
+      dockerfile: Services/Journal/Journal.API/Dockerfile
+    depends_on:
+      - sqldata
+      - rabbitmq
+
+  journal.backgroundtasks:
+    image: ${DOCKER_REGISTRY-}journalbackgroundtasks
+    build:
+      context: .
+      dockerfile: Services/Journal/Journal.BackgroundTasks/Dockerfile
+    depends_on:
+      - rabbitmq
+      - sqldata
