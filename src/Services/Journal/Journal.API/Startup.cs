@@ -1,3 +1,4 @@
+using AutoMapper;
 using HealthChecks.UI.Client;
 using Journal.API.Services;
 using Journal.Infrastructure;
@@ -30,6 +31,7 @@ namespace Journal.API
         {
             services.AddControllers();
             services.AddHealthChecks(Configuration)
+                    .AddConfiguredAutoMapper()
                    .AddCustomDbContext(Configuration)
                    .AddCustomSwagger()
                    .AddCustomServices();
@@ -133,6 +135,23 @@ namespace Journal.API
                   c.OAuthAppName("Journal Swagger UI");
               });
             return app;
+        }
+
+        public static IServiceCollection AddConfiguredAutoMapper(this IServiceCollection services)
+        {
+            services.AddSingleton(ConfigureAutoMapper());
+            return services;
+        }
+
+        public static IMapper ConfigureAutoMapper()
+        {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new JournalApiAutoMapperProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            return mapper;
         }
     }
 }

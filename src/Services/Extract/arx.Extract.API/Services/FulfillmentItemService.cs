@@ -19,7 +19,7 @@ namespace arx.Extract.API.Services
         public FulfillmentItemService(IFulfillmentItemRepository repo, IMapper mapper)
         {
             _repo = repo;
-            this._mapper = mapper;
+            _mapper = mapper;
         }
 
         public async Task<List<FulfillmentItem>> GetItems(string fulfillmentId)

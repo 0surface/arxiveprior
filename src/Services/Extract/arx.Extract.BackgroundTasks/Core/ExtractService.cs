@@ -12,21 +12,21 @@ namespace arx.Extract.BackgroundTasks.Core
 {
     public class ExtractService : IExtractService
     {
-        private readonly BackgroundTaskSettings _configSettings;
+        private readonly BackgroundTasksConfiguration _config;
         private readonly ILogger<ExtractService> _logger;
         private readonly IJobRepository _jobRepository;
         private readonly IFulfillmentRepository _fulfillmentRepository;
         private readonly IFulfillmentItemRepository _fulfillmentItemRepository;
         private readonly IJobItemRepository _jobItemRepository;
 
-        public ExtractService(IOptions<BackgroundTaskSettings> configSettings,
+        public ExtractService(IOptions<BackgroundTasksConfiguration> configSettings,
             ILogger<ExtractService> logger,
             IJobRepository jobRepository,
             IJobItemRepository jobItemRepository,
             IFulfillmentRepository fulfillmentRepository,
             IFulfillmentItemRepository fulfillmentItemRepository)
         {
-            _configSettings = configSettings?.Value ?? throw new ArgumentException(nameof(configSettings));
+            _config = configSettings?.Value ?? throw new ArgumentException(nameof(configSettings));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger)); ;
             _jobRepository = jobRepository;
             _fulfillmentRepository = fulfillmentRepository;
@@ -38,7 +38,7 @@ namespace arx.Extract.BackgroundTasks.Core
         {
             try
             {
-                JobEntity job = _jobRepository.GetJob(ExtractTypeEnum.Archive, _configSettings.ArchiveJobName);
+                JobEntity job = _jobRepository.GetJob(ExtractTypeEnum.Archive, _config.ArchiveJobName);
 
                 List<JobItemEntity> jobItems = _jobItemRepository.GetJobItems(job?.UniqueName);
 
@@ -67,10 +67,10 @@ namespace arx.Extract.BackgroundTasks.Core
 
                 FulfillmentEntity newFulfillment = ExtractUtil.MakeNewFulfillment(job, lastFulfillment, minQueryDateInterval);
 
-                if (ExtractUtil.HasPassedTerminationDate(_configSettings.ArchiveTerminateDate, newFulfillment.QueryToDate))
+                if (ExtractUtil.HasPassedTerminationDate(_config.ArchiveTerminateDate, newFulfillment.QueryToDate))
                 {
                     _logger.LogInformation("Stopping Service. Query Date window From [{0}] To [{1}] has passed Archive Terminate Date [{2}]",
-                        _configSettings.ArchiveTerminateDate, newFulfillment.QueryFromDate, newFulfillment.QueryToDate);
+                        _config.ArchiveTerminateDate, newFulfillment.QueryFromDate, newFulfillment.QueryToDate);
                     return (false, null, null);
                 }
 
@@ -96,7 +96,7 @@ namespace arx.Extract.BackgroundTasks.Core
                         //For an optimal configuration, the loop below will only be executed once.
                         foreach (var interval in ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval))
                         {
-                            if (ExtractUtil.HasPassedTerminationDate(_configSettings.ArchiveTerminateDate, interval.QueryToDate) == false)
+                            if (ExtractUtil.HasPassedTerminationDate(_config.ArchiveTerminateDate, interval.QueryToDate) == false)
                             {
                                 newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
                             }

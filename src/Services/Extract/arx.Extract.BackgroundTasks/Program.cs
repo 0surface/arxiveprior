@@ -5,7 +5,6 @@ using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 
 namespace arx.Extract.BackgroundTasks
 {
@@ -22,23 +21,26 @@ namespace arx.Extract.BackgroundTasks
                 .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                 .ConfigureServices((hostContext, services) =>
                 {
-                    IConfiguration settings = hostContext.Configuration.GetSection("settings");
+                    IConfiguration eventBusConfig = hostContext.Configuration.GetSection("EventBus");
+                    IConfiguration storageConfig = hostContext.Configuration.GetSection("Storage");
+
                     services.AddHostedService<ArchiveExtractionService>();
-                    services.Configure<BackgroundTaskSettings>(settings);
-                    services.AddEventBus(settings)
+
+                    services.Configure<BackgroundTasksConfiguration>(hostContext.Configuration)
+                            .Configure<EventBusConfiguration>(eventBusConfig)
+                            .Configure<StorageConfiguration>(storageConfig);
+
+                    services.AddEventBus(eventBusConfig)
                             .AddAutoMapper(typeof(Program))
-                            .AddSubjectRepository(settings)
-                            .AddJobRepository(settings)
-                            .AddJobItemRepository(settings)
-                            .AddFulfillmentRepository(settings)
-                            .AddFulfillmentItemRepository(settings)
-                            .AddPublicationRepository(settings)
+                            .AddSubjectRepository(storageConfig)
+                            .AddJobRepository(storageConfig)
+                            .AddJobItemRepository(storageConfig)
+                            .AddFulfillmentRepository(storageConfig)
+                            .AddFulfillmentItemRepository(storageConfig)
+                            .AddPublicationRepository(storageConfig)
                             .AddExtractService()
                             .AddArchiveFetch()
                             .AddTransformService();
-                            
-
-                    Console.WriteLine($"host.HostingEnvironment.EnvironmentName : {hostContext.HostingEnvironment.EnvironmentName}");
                 })
             //TODO : Configure SeriLog
             .Build();

@@ -21,18 +21,18 @@ namespace arx.Extract.API
         }
 
         public IConfiguration Configuration { get; }
-                
+
         public void ConfigureServices(IServiceCollection services)
         {
-            IConfiguration serviceConfig = Configuration.GetSection("Settings");
+            IConfiguration storageConfig = Configuration.GetSection("Storage");
             services.AddControllers();
-            services.Configure<ExtractApiConfigurationSettings>(serviceConfig)
+            services.Configure<StorageConfiguration>(storageConfig)
                     .AddCustomSwagger()
-                    .AddHealthChecks(serviceConfig)
+                    .AddHealthChecks(storageConfig)
                     .AddConfiguredAutoMapper()
-                    .AddPublicationService(serviceConfig)
-                    .AddFulfillmentService(serviceConfig)
-                    .AddFulfillmentItemService(serviceConfig);
+                    .AddPublicationService(storageConfig)
+                    .AddFulfillmentService(storageConfig)
+                    .AddFulfillmentItemService(storageConfig);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
