@@ -1,24 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Contexts\neljpcul.kzi~" />
-    <None Remove="Setup\SubjectSeedData.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Setup\SubjectSeedData.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.6" />
@@ -34,6 +29,12 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Extensions\Common.Util\Common.Util.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\HostExtensions\Host.Customization\Host.Customization.csproj" />
     <ProjectReference Include="..\Journal.Domain\Journal.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="EntityConfigurations\" />
+    <Folder Include="Repositories\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://json.schemastore.org/appsettings" appsettings_1production_1json__JsonSchema="https://json.schemastore.org/appsettings" /></VisualStudio></ProjectExtensions>
