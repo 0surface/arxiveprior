@@ -9,9 +9,9 @@ namespace Journal.Infrastructure.Repositories
 {
     public interface ISubjectRepository
     {
-        Task<IEnumerable<Subject>> GetAllSubjects();
-        Task<IEnumerable<Subject>> GetSubjectsByGroupCode(string groupCode);
-        Task<IEnumerable<Subject>> GetSubjectsByDiscipline(string discipline);
+        Task<List<Subject>> GetAllSubjects();
+        Task<List<Subject>> GetSubjectsByGroupCode(string groupCode);
+        Task<List<Subject>> GetSubjectsByDiscipline(string discipline);
     }
     public class SubjectRepository : ISubjectRepository
     {
@@ -22,7 +22,7 @@ namespace Journal.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Subject>> GetAllSubjects()
+        public async Task<List<Subject>> GetAllSubjects()
         {
             try
             {
@@ -33,8 +33,7 @@ namespace Journal.Infrastructure.Repositories
                 return new List<Subject>();
             }
         }
-
-        public async Task<IEnumerable<Subject>> GetSubjectsByGroupCode(string groupCode)
+        public async Task<List<Subject>> GetSubjectsByGroupCode(string groupCode)
         {
             try
             {
@@ -47,7 +46,7 @@ namespace Journal.Infrastructure.Repositories
                 return new List<Subject>();
             }
         }
-        public async Task<IEnumerable<Subject>> GetSubjectsByDiscipline(string discipline)
+        public async Task<List<Subject>> GetSubjectsByDiscipline(string discipline)
         {
             try
             {
