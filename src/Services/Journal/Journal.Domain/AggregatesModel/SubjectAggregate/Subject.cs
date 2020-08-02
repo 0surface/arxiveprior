@@ -1,7 +1,7 @@
 ﻿using Journal.Domain.SeedWork;
 
 namespace Journal.Domain.AggregatesModel.SubjectAggregate
-{
+{    
     public class Subject
          : Entity, IAggregateRoot
     {
@@ -14,9 +14,9 @@ namespace Journal.Domain.AggregatesModel.SubjectAggregate
 
         protected Subject() { }
 
-        public Subject(string subjectCode, string name, string groupName, string groupCode, string discipline,string description)
+        public Subject(string code, string name, string groupName, string groupCode, string discipline,string description)
         {
-            Code = subjectCode;
+            Code = code;
             Name = name;
             GroupName = groupName;
             GroupCode = groupCode;
