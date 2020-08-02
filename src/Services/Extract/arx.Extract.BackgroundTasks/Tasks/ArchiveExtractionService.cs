@@ -17,7 +17,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 {
     public class ArchiveExtractionService : BackgroundService
     {
-        private readonly BackgroundTaskSettings _settings;
+        private readonly BackgroundTasksConfiguration _config;
         private readonly IEventBus _eventBus;
         private readonly ILogger<ArchiveExtractionService> _logger;
         private readonly IExtractService _extractService;
@@ -28,7 +28,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
         private readonly IArchiveFetch _archiveFetch;
         private readonly ITransformService _transformService;
 
-        public ArchiveExtractionService(IOptions<BackgroundTaskSettings> settings,
+        public ArchiveExtractionService(IOptions<BackgroundTasksConfiguration> config,
             IEventBus eventBus,
             ILogger<ArchiveExtractionService> logger,
             IExtractService extractService,
@@ -39,7 +39,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             IArchiveFetch archiveFetch,
             ITransformService transformService)
         {
-            _settings = settings?.Value ?? throw new ArgumentException(nameof(settings));
+            _config = config?.Value ?? throw new ArgumentException(nameof(config));
             _eventBus = eventBus;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _extractService = extractService;
@@ -84,7 +84,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
             stoppingToken.Register(() => _logger.LogDebug($"#1 {this.GetType().Name} background task is stopping."));
 
-            if (!_settings.ArchiveModeIsActive)
+            if (!_config.ArchiveModeIsActive)
             {
                 _logger.LogInformation($"Stopping {this.GetType().Name} because current Archive Extraction Mode is NOT Active.");
 
@@ -108,8 +108,8 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         _eventBus.Publish(extractionCompletedEvent);
                     }
 
-                    _logger.LogInformation($"Waiting For [{_settings.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
-                    await Task.Delay(_settings.PostFetchWaitTime, stoppingToken);
+                    _logger.LogInformation($"Waiting For [{_config.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
+                    await Task.Delay(_config.PostFetchWaitTime, stoppingToken);
                 }
             }
         }
@@ -178,7 +178,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                             int requests = ExtractUtil.CalculatePagedRequestCount(totalAvailable, fetched);
 
                             //Get delay value from settings/Environment
-                            int delay = _settings.ArxivApiPagingRequestDelay;
+                            int delay = _config.ArxivApiPagingRequestDelay;
 
                             //Record delay value
                             fulfillmentItem.DelayBetweenHttpRequests = delay * 1000;
