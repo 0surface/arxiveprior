@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace arx.Extract.BackgroundTasks
+﻿namespace arx.Extract.BackgroundTasks
 {
     public class StorageConfiguration
     {
