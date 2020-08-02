@@ -1,6 +1,17 @@
 version: '3.4'
 
 services:
+
+  sqldata:
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"
+    volumes:
+      - arxiveprior-sqldata:/var/opt/mssql
+    
+
   rabbitmq:
     ports:
       - "15672:15672"
@@ -21,12 +32,17 @@ services:
   arx.Extract.BackgroundTasks:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - DOTNET_ENVIRONMENT=Development
+      - DOTNET_ENVIRONMENT=Development      
       - Settings__StorageConnectionString=${ARX_AZURE_EXTRACT_STORAGE_CS}
+
   journal.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ConnectionString=${ARX_AZURE_JOURNAL_DB:-Server=sqldata;Database=arxiveprior.Services.JournalDb;User Id=sa;Password=Pass@word}
+      - PATH_BASE=/journal-api
+      - GRPC_PORT=81
+      - PORT=80
     ports:
       - "80"
       - "443"
@@ -38,6 +54,6 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
-  journal.infrastructure:
-    environment:
-      - DOTNET_ENVIRONMENT=Development
+volumes:
+
+  arxiveprior-sqldata:

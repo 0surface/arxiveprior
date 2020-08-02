@@ -2,6 +2,9 @@ version: '3.4'
 
 services:
 
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+
   rabbitmq:
     image: rabbitmq:3.8-management-alpine
 
@@ -23,7 +26,10 @@ services:
     image: ${DOCKER_REGISTRY-}journalapi
     build:
       context: .
-      dockerfile: Services/Journal/Journal.API/Dockerfile    
+      dockerfile: Services/Journal/Journal.API/Dockerfile
+    depends_on:
+      - sqldata
+      - rabbitmq
 
   journal.backgroundtasks:
     image: ${DOCKER_REGISTRY-}journalbackgroundtasks
@@ -31,11 +37,5 @@ services:
       context: .
       dockerfile: Services/Journal/Journal.BackgroundTasks/Dockerfile
     depends_on:
-      - rabbitmq 
-
-  journal.infrastructure:
-    image: ${DOCKER_REGISTRY-}journalinfrastructure
-    build:
-      context: .
-      dockerfile: Services/Journal/Journal.Infrastructure/Dockerfile
-
+      - rabbitmq
+      - sqldata
