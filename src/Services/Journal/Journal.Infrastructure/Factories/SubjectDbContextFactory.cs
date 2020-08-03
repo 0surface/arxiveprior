@@ -6,11 +6,11 @@ using System.IO;
 
 namespace Journal.Infrastructure.Factories
 {
-    public class JournalDbContextFactory : IDesignTimeDbContextFactory<JournalContext>
+    public class SubjectDbContextFactory : IDesignTimeDbContextFactory<SubjectContext>
     {
         public static readonly string EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-        public JournalContext CreateDbContext(string[] args)
+        public SubjectContext CreateDbContext(string[] args)
         {
             var config = new ConfigurationBuilder()
                             .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()))
@@ -18,11 +18,11 @@ namespace Journal.Infrastructure.Factories
                             .AddEnvironmentVariables()
                             .Build();
 
-            var optionsBuilder = new DbContextOptionsBuilder<JournalContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<SubjectContext>();
 
             optionsBuilder.UseSqlServer(config["ConnectionString"], sqlServerOptionsAction: o => o.MigrationsAssembly("Journal.Infrastructure"));
 
-            return new JournalContext(optionsBuilder.Options);
+            return new SubjectContext(optionsBuilder.Options);
         }
     }
 }

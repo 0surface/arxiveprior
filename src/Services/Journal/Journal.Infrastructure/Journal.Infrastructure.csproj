@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200802103913_initial.cs" />
+    <Compile Remove="Migrations\20200802103913_initial.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.Production.json" />
     <None Remove="Setup\SubjectSeedData.json" />

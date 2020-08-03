@@ -24,12 +24,12 @@ namespace Journal.Infrastructure
             {
                 var host = CreateHostBuilder(args).Build();
 
-                host.MigrateDbContext<JournalContext>((context, services) =>
+                host.MigrateDbContext<SubjectContext>((context, services) =>
                 {
-                    var settings = services.GetService<IOptions<JournalSettings>>();
-                    var logger = services.GetService<ILogger<JournalContextSeed>>();
+                    var settings = services.GetService<IOptions<JournalConfiguration>>();
+                    var logger = services.GetService<ILogger<SubjectContextSeed>>();
 
-                    new JournalContextSeed()
+                    new SubjectContextSeed()
                         .SeedAsync(context, settings, logger)
                         .Wait();
                 });

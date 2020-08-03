@@ -3,16 +3,14 @@ using Journal.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Journal.Infrastructure.Migrations
 {
-    [DbContext(typeof(JournalContext))]
-    [Migration("20200802103913_initial")]
-    partial class initial
+    [DbContext(typeof(SubjectContext))]
+    partial class SubjectContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -1,6 +1,6 @@
 ﻿namespace Journal.Infrastructure
 {
-    public class JournalSettings
+    public class JournalConfiguration
     {
         public string ConnectionString { get; set; }
     }

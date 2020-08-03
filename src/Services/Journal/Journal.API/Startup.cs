@@ -89,7 +89,7 @@ namespace Journal.API
 
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<JournalContext>(options =>
+            services.AddDbContext<SubjectContext>(options =>
                         {
                             options.UseSqlServer(configuration["ConnectionString"],
                                 sqlServerOptionsAction: sqlOptions =>

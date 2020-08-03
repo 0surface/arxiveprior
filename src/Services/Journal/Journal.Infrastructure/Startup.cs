@@ -1,12 +1,10 @@
 ﻿using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -21,12 +19,12 @@ namespace Journal.Infrastructure
 
         public IConfiguration Configuration { get; }
 
-       
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHealthChecks(Configuration)
                 .AddCustomDbContext(Configuration)
-                .Configure<JournalSettings>(this.Configuration)
+                .Configure<JournalConfiguration>(this.Configuration)
                 .AddOptions()
                 .AddCustomServices();
         }
@@ -35,7 +33,7 @@ namespace Journal.Infrastructure
         public void Configure(IApplicationBuilder app)
         {
             app.UseRouting();
-           // app.UseAuthorization();
+            // app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
@@ -69,8 +67,7 @@ namespace Journal.Infrastructure
 
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            services//.AddEntityFrameworkSqlServer()
-                .AddDbContext<JournalContext>(options =>
+            services.AddDbContext<SubjectContext>(options =>
                 {
                     options.UseSqlServer(configuration["ConnectionString"],
                         sqlServerOptionsAction: sqlOptions =>
@@ -100,7 +97,6 @@ namespace Journal.Infrastructure
 
         public static IServiceCollection AddCustomServices(this IServiceCollection services)
         {
-
             return services;
         }
     }
