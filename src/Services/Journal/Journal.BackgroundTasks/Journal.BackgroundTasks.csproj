@@ -20,16 +20,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Events\" />
     <Folder Include="Core\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Tasks\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusServiceBus\EventBusServiceBus.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBus\EventBus.csproj" />
+    <ProjectReference Include="..\Journal.Domain\Journal.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

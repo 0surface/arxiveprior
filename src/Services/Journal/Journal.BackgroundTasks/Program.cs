@@ -1,4 +1,5 @@
 using Autofac.Extensions.DependencyInjection;
+using Journal.BackgroundTasks.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,9 +21,11 @@ namespace Journal.BackgroundTasks
                 .ConfigureServices((hostContext, services) =>
                 {
                     IConfiguration eventBusConfig = hostContext.Configuration.GetSection("EventBus");
-                    services.AddHostedService<Worker>();
 
-                    services.Configure<EventBusConfiguration>(eventBusConfig);
+                    services.AddHostedService<ArchiveProcessingService>();
+
+                    services.Configure<EventBusConfiguration>(eventBusConfig)
+                            .Configure<JournalBackgroundTasksConfiguration>(hostContext.Configuration);
 
                     services.AddEventBus(eventBusConfig);
                 })
