@@ -19,11 +19,11 @@ namespace Journal.Infrastructure
     /// For a comprehensive demonstartion of DbContext seeding desgin, construction and methodology
     /// Go to https://github.com/dotnet-architecture/eShopOnContainers via the Ordering Microservice API projects.
     /// </summary>
-    public class JournalContextSeed
+    public class SubjectContextSeed
     {
-        public async Task SeedAsync(JournalContext context, IOptions<JournalSettings> settings, ILogger<JournalContextSeed> logger)
+        public async Task SeedAsync(SubjectContext context, IOptions<JournalSettings> settings, ILogger<SubjectContextSeed> logger)
         {
-            var policy = CreatePolicy(logger, nameof(JournalContextSeed));
+            var policy = CreatePolicy(logger, nameof(SubjectContextSeed));
 
             await policy.ExecuteAsync(async () =>
             {
@@ -41,7 +41,7 @@ namespace Journal.Infrastructure
             });
         }
 
-        private static IEnumerable<Subject> ReadSubjects(ILogger<JournalContextSeed> logger)
+        private static IEnumerable<Subject> ReadSubjects(ILogger<SubjectContextSeed> logger)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace Journal.Infrastructure
             }
         }
 
-        private AsyncRetryPolicy CreatePolicy(ILogger<JournalContextSeed> logger, string prefix, int retries = 3)
+        private AsyncRetryPolicy CreatePolicy(ILogger<SubjectContextSeed> logger, string prefix, int retries = 3)
         {
             return Policy.Handle<SqlException>().
                 WaitAndRetryAsync(

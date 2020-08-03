@@ -15,9 +15,9 @@ namespace Journal.Infrastructure.Repositories
     }
     public class SubjectRepository : ISubjectRepository
     {
-        private readonly JournalContext _context;
+        private readonly SubjectContext _context;
 
-        public SubjectRepository(JournalContext context)
+        public SubjectRepository(SubjectContext context)
         {
             _context = context;
         }

@@ -1,6 +1,6 @@
 ﻿namespace Journal.Domain.AggregatesModel.JobAggregate
 {
-    public enum JournalTypeEnum
+    public enum ProcessTypeEnum
     {
         Journal,
         Archive,

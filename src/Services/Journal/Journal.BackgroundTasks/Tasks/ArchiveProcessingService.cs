@@ -74,7 +74,7 @@ namespace Journal.BackgroundTasks.Tasks
                     if (journalId != 0)
                     {
                         var journalProcessedIntegrationEvent = new JournalProcessedIntegrationEvent(journalId);
-                        journalProcessedIntegrationEvent.JournalType = JournalTypeEnum.Archive;
+                        journalProcessedIntegrationEvent.JournalType = ProcessTypeEnum.Archive;
 
                         _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
                                                 journalProcessedIntegrationEvent.JournalId, Program.AppName, journalProcessedIntegrationEvent);

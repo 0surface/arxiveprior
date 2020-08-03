@@ -20,11 +20,11 @@ namespace Journal.API.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<SubjectsController> _logger;
 
-        public SubjectsController(JournalContext journalContext,
+        public SubjectsController(SubjectContext subjectContext,
             IMapper mapper,
             ILogger<SubjectsController> logger)
         {
-            _subjectRepository = new SubjectRepository(journalContext);
+            _subjectRepository = new SubjectRepository(subjectContext);
             _mapper = mapper;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
