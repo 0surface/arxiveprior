@@ -3,6 +3,8 @@ using Journal.API.Application.Models.Subject;
 using Journal.Infrastructure;
 using Journal.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,11 +18,15 @@ namespace Journal.API.Controllers
     {
         private readonly ISubjectRepository _subjectRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<SubjectsController> _logger;
 
-        public SubjectsController(JournalContext journalContext, IMapper mapper)
+        public SubjectsController(JournalContext journalContext,
+            IMapper mapper,
+            ILogger<SubjectsController> logger)
         {
             _subjectRepository = new SubjectRepository(journalContext);
             _mapper = mapper;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]

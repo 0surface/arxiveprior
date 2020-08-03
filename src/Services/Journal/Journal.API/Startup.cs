@@ -119,7 +119,6 @@ namespace Journal.API
 
         public static IServiceCollection AddCustomServices(this IServiceCollection services)
         {
-            services.AddScoped<ISubjectService, SubjectService>();
             services.AddScoped<ISubjectRepository, SubjectRepository>();
 
             return services;

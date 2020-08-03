@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.IO;
 
@@ -57,9 +58,8 @@ namespace Journal.Infrastructure
                             builder.AddJsonFile($"appsettings.{host.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
                             builder.AddEnvironmentVariables();
                             builder.AddCommandLine(args);
-                        });
-                        //.ConfigureLogging((host, builder) => builder.UseSerilog(host.Configuration).AddSerilog())
-                        //.UseEnvironment(EnvironmentName);
+                        })
+                        .ConfigureLogging((host, builder) => builder.UseSerilog(host.Configuration).AddSerilog());
 
 
         private static IConfiguration GetConfiguration()
@@ -70,6 +70,6 @@ namespace Journal.Infrastructure
                 .AddEnvironmentVariables();
 
             return builder.Build();
-        }
+        }       
     }
 }

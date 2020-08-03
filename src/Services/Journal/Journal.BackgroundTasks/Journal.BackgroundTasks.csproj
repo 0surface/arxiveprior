@@ -11,18 +11,23 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="3.2.0-dev-00244" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+    <PackageReference Include="Serilog.Sinks.Http" Version="5.2.0" />
+    <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.0-dev-00174" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Events\" />
     <Folder Include="Core\" />
-    <Folder Include="Tasks\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusServiceBus\EventBusServiceBus.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBus\EventBus.csproj" />
+    <ProjectReference Include="..\Journal.Domain\Journal.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
