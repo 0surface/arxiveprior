@@ -22,7 +22,7 @@ namespace Journal.BackgroundTasks
                 {
                     IConfiguration eventBusConfig = hostContext.Configuration.GetSection("EventBus");
 
-                    services.AddHostedService<ArchiveProcessingService>();
+                    services.AddHostedService<ArchiveJournalProcessingService>();
 
                     services.Configure<EventBusConfiguration>(eventBusConfig)
                             .Configure<JournalBackgroundTasksConfiguration>(hostContext.Configuration);

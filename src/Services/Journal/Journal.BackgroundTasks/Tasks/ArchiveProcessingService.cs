@@ -10,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace Journal.BackgroundTasks.Tasks
 {
-    public class ArchiveProcessingService : BackgroundService
+    public class ArchiveJournalProcessingService : BackgroundService
     {
-        private readonly ILogger<ArchiveProcessingService> _logger;
+        private readonly ILogger<ArchiveJournalProcessingService> _logger;
         private readonly IEventBus _eventBus;
         private readonly JournalBackgroundTasksConfiguration _config;
 
-        public string AppName { get; set; } = typeof(ArchiveProcessingService).Name;
+        public string AppName { get; set; } = typeof(ArchiveJournalProcessingService).Name;
 
-        public ArchiveProcessingService(ILogger<ArchiveProcessingService> logger,
+        public ArchiveJournalProcessingService(ILogger<ArchiveJournalProcessingService> logger,
             IOptions<JournalBackgroundTasksConfiguration> config,
             IEventBus eventBus)
         {
@@ -90,7 +90,7 @@ namespace Journal.BackgroundTasks.Tasks
 
         private Task<int> RunArchiveJournalProcessing(CancellationToken stoppingToken)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(42);
         }
     }
 }
