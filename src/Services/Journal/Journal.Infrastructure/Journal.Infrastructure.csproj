@@ -71,7 +71,6 @@
 
   <ItemGroup>
     <Folder Include="EntityConfigurations\" />
-    <Folder Include="Migrations\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

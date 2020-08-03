@@ -24,7 +24,7 @@ namespace Journal.Infrastructure
         {
             services.AddHealthChecks(Configuration)
                 .AddCustomDbContext(Configuration)
-                .Configure<JournalSettings>(this.Configuration)
+                .Configure<JournalConfiguration>(this.Configuration)
                 .AddOptions()
                 .AddCustomServices();
         }

@@ -21,7 +21,7 @@ namespace Journal.Infrastructure
     /// </summary>
     public class SubjectContextSeed
     {
-        public async Task SeedAsync(SubjectContext context, IOptions<JournalSettings> settings, ILogger<SubjectContextSeed> logger)
+        public async Task SeedAsync(SubjectContext context, IOptions<JournalConfiguration> settings, ILogger<SubjectContextSeed> logger)
         {
             var policy = CreatePolicy(logger, nameof(SubjectContextSeed));
 

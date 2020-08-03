@@ -26,7 +26,7 @@ namespace Journal.Infrastructure
 
                 host.MigrateDbContext<SubjectContext>((context, services) =>
                 {
-                    var settings = services.GetService<IOptions<JournalSettings>>();
+                    var settings = services.GetService<IOptions<JournalConfiguration>>();
                     var logger = services.GetService<ILogger<SubjectContextSeed>>();
 
                     new SubjectContextSeed()
