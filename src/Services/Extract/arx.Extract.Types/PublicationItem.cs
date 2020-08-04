@@ -20,6 +20,8 @@ namespace arx.Extract.Types
 
         string PrimarySubjectCode { get; set; }
         List<string> SubjectCodes { get; set; }
+        string MscCodes { get; set; }
+        string AcmCodes { get; set; }
         string JournalReference { get; set; }
         string Doi { get; set; }
 
@@ -46,6 +48,8 @@ namespace arx.Extract.Types
 
         public string PrimarySubjectCode { get; set; }
         public List<string> SubjectCodes { get; set; } = new List<string>();
+        public string MscCodes { get; set; }
+        public string AcmCodes { get; set; }
         public string JournalReference { get; set; }
         public string Doi { get; set; }
 
