@@ -121,9 +121,9 @@ namespace arx.Extract.BackgroundTasks.Core
                     if (codesFound != categoryCodes.Count)
                     {
                         _logger.LogError($"Error Category Code Processing - [{pub.ArxivId}] - Found/Expected = {codesFound} / {categoryCodes.Count}");
-                        string[] c = new string[categoryCodes.Count];
-                        categoryCodes.ForEach(x => c.Append(x.CategoryCode));                        
-                        _logger.LogError($"Error Category Code Processing {pub.ArxivId} | Pre-processed Codes =[{string.Join('|', c)}]");
+                        List<string> codes = new List<string>();
+                        categoryCodes.ForEach(x => codes.Add(x.CategoryCode));                        
+                        _logger.LogError($"Error Category Code Processing {pub.ArxivId} | Pre-processed Codes =[{string.Join('|', codes)}]");
                     }
                 }
 

@@ -239,7 +239,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                             else
                             {
                                 //Perform transformations
-                                var (success, count, publications) = _transformService.TransformArxivEntriesToPublications(allArxivEntries);
+                                var (success, transformedCount, publications) = _transformService.TransformArxivEntriesToPublications(allArxivEntries);
 
                                 //Set type transformaiton success
                                 fulfillmentItem.DataExtractionIsSuccess = success;
@@ -247,15 +247,16 @@ namespace arx.Extract.BackgroundTasks.Tasks
                                 //Log errors in transformation process
                                 if (!success)
                                 {
-                                    _logger.LogError("Fulfillment Item [{0}] - Error Transforming ArxivEntries To Publicationitems. {1}/{2} were successful.",
-                                                        fulfillmentItem.ItemUId, count, allArxivEntries);
+                                    _logger.LogError($"Fulfillment Item [{fulfillmentItem.ItemUId}] - Error Transforming ArxivEntries To Publicationitems. Only {transformedCount}/{allArxivEntries.Count} (transformed/fetched) were successful.",
+                                                        fulfillmentItem.ItemUId, transformedCount, allArxivEntries);
                                 }
-                                else
+
+                                if (transformedCount > 0)
                                 {
-                                    var (mapIsSuccess, entityList) = _transformService.TransformPublicationItemsToEntity
-                                                                                        (newFulfillment.FulfillmentId.ToString(),
-                                                                                        fulfillmentItem.ItemUId.ToString(),
-                                                                                        publications);
+                                    var (mapIsSuccess, entityList)
+                                        = _transformService.TransformPublicationItemsToEntity(newFulfillment.FulfillmentId.ToString(),
+                                                                                            fulfillmentItem.ItemUId.ToString(),
+                                                                                            publications);
 
                                     if (!mapIsSuccess)
                                     {
