@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static arx.Extract.BackgroundTasks.Core.SubjectEntryExtensions;
 
 namespace arx.Extract.BackgroundTasks.Core
 {
@@ -93,22 +92,39 @@ namespace arx.Extract.BackgroundTasks.Core
 
                 if (categoryCodes != null && categoryCodes.Count > 0)
                 {
-                    SubjectEntryResultList subjectEntryResultList = new SubjectEntryResultList(categoryCodes, _arxivSubjectCodes);
+                    int codesFound = 0;
+                    for (int i = 0; i < categoryCodes.Count; i++)
+                    {
+                        string value = categoryCodes[i].CategoryCode.Trim();
 
-                    pub.SubjectCodes = subjectEntryResultList.EntryResultList
-                                        ?.Where(x => !string.IsNullOrEmpty(x.ArxivCode))
-                                        ?.Select(x => x.ArxivCode)
-                                        ?.ToList();
+                        if (_arxivSubjectCodes.ContainsKey(value))
+                        {
+                            pub.SubjectCodes.Add(value);
+                            codesFound++;
+                            continue;
+                        }
 
-                    pub.AcmCodes = subjectEntryResultList.EntryResultList
-                                        ?.Where(x => !string.IsNullOrEmpty(x.AcmCode))
-                                        ?.Select(x => x.ArxivCode)
-                                        .SingleOrDefault();
+                        if (IsAcmCode(value))
+                        {
+                            pub.AcmCodes = value;
+                            codesFound++;
+                            continue;
+                        }
 
-                    pub.MscCodes = subjectEntryResultList.EntryResultList
-                                    ?.Where(x => !string.IsNullOrEmpty(x.MscCode))
-                                    ?.Select(x => x.ArxivCode)
-                                    .SingleOrDefault();
+                        if (IsMcsCode(value))
+                        {
+                            pub.MscCodes = value;
+                            codesFound++;
+                        }                        
+                    }
+
+                    if (codesFound != categoryCodes.Count)
+                    {
+                        _logger.LogError($"Error Category Code Processing - [{pub.ArxivId}] - Found/Expected = {codesFound} / {categoryCodes.Count}");
+                        string[] c = new string[categoryCodes.Count];
+                        categoryCodes.ForEach(x => c.Append(x.CategoryCode));                        
+                        _logger.LogError($"Error Category Code Processing {pub.ArxivId} | Pre-processed Codes =[{string.Join('|', c)}]");
+                    }
                 }
 
                 pub.PdfLink = item?.Links
@@ -129,71 +145,22 @@ namespace arx.Extract.BackgroundTasks.Core
 
             return pub;
         }
-    }
-
-    public static class SubjectEntryExtensions
-    {
-        public class SubjectEntryResultList
-        {
-            public List<SubjectEntryResult> EntryResultList { get; set; } = new List<SubjectEntryResult>();
-            internal SubjectEntryResultList(List<Categories> entrySubjects, Dictionary<string, string> arxivCodes)
-            {
-                entrySubjects?.ForEach(s => EntryResultList.Add(new SubjectEntryResult(s.CategoryCode)));
-                EntryResultList?.ForEach(e => e.ProcessCodes(arxivCodes));
-            }
-        }
-
-        public class SubjectEntryResult
-        {
-            internal SubjectEntryResult(string entry)
-            {
-                EntrySubject = entry;
-            }
-            public string EntrySubject { get; set; }
-            public string ArxivCode { get; set; }
-            public string AcmCode { get; set; }
-            public string MscCode { get; set; }
-        }
-
-        public static SubjectEntryResult ProcessCodes(this SubjectEntryResult entry, Dictionary<string, string> arxivCodes)
-        {
-            string value = entry.EntrySubject.Trim();
-
-            if (arxivCodes.ContainsKey(value))
-            {
-                entry.ArxivCode = value;
-                return entry;
-            }
-
-            if (IsAcmCode(value))
-            {
-                entry.AcmCode = value;
-                return entry;
-            }
-
-            if (IsMcsCode(value))
-            {
-                entry.MscCode = value;
-                return entry;
-            }
-
-            return entry;
-        }
 
         public static bool IsAcmCode(string value)
         {
-            return (value.Contains(',')) // "A.O.O; B.0.0"
+            return (value.Contains(';')) // "A.O.O; B.0.0"
                 || (value.Length == 3 && value[1] == '.') //A.0
-                || (value.Length == 5 && value[1] == '.' && value[3] == '.'); // A.0.0
+                || (value.Length >= 5 && value[1] == '.' && value[3] == '.'); // A.0.0
         }
 
         public static bool IsMcsCode(string value)
         {
-            return value.Contains(',') // "00A00, 00B00"
+            return value.Contains(',') // "00A00, 00B00"                
                 || value.ToLower().Contains("primary")
                 || value.ToLower().Contains("secondary")//["90C17 (Primary), 90C25 (Secondary), 90C34 (Tertiary)"]                
                 || value.ToLower().Contains("tertiary")
-                || (value.Length == 5 && char.IsNumber(value[0]) && char.IsNumber(value[1])); //42Bxx
+                || value.Contains(':') //2010 MSC: 60H15
+                || (value.Length >= 3 && char.IsNumber(value[0]) && char.IsNumber(value[1])); //03F, 42Bxx
         }
     }
 }

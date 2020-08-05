@@ -32,6 +32,8 @@ namespace arx.Extract.Data.Entities
 
         [EntityJsonPropertyConverter]
         public List<string> SubjectCodes { get; set; }
+        public string MscCodes { get; set; }
+        public string AcmCodes { get; set; }
 
         [EntityJsonPropertyConverter]
         public List<AuthorItem> Authors { get; set; }
