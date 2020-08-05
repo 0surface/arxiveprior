@@ -130,11 +130,16 @@ namespace arx.Extract.BackgroundTasks.Core
                 pub.PdfLink = item?.Links
                                     ?.Where(l => l.Title == "pdf")
                                     ?.Select(l => l.Href)
-                                    ?.SingleOrDefault() ?? string.Empty;
-                pub.DoiLink = item?.Links
-                                    ?.Where(l => l.Title == "doi")
-                                    ?.Select(l => l.Href)
-                                    ?.SingleOrDefault() ?? string.Empty;
+                                    ?.FirstOrDefault() ?? string.Empty;
+
+                var doiLinks = item?.Links
+                                   ?.Where(l => l.Title == "doi")
+                                   ?.Select(l => l.Href)
+                                   ?.ToList();
+
+                pub.DoiLinks = doiLinks == null ? string.Empty :
+                                doiLinks.Count() == 1 ? doiLinks[0] :
+                                string.Join(',', doiLinks.ToList());
 
                 pub.Authors = _mapper.Map<List<AuthorItem>>(item.Authors);
             }

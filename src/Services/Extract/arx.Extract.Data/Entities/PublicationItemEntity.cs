@@ -28,7 +28,7 @@ namespace arx.Extract.Data.Entities
         public string Doi { get; set; }
 
         public string PdfLink { get; set; }
-        public string DoiLink { get; set; }
+        public string DoiLinks { get; set; }
 
         [EntityJsonPropertyConverter]
         public List<string> SubjectCodes { get; set; }

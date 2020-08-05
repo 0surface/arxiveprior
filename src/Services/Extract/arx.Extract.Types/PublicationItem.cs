@@ -26,8 +26,8 @@ namespace arx.Extract.Types
         string Doi { get; set; }
 
         string PdfLink { get; set; }
-        string DoiLink { get; set; }
-
+        string DoiLinks { get; set; }
+        
         List<AuthorItem> Authors { get; set; }
         bool AuthorListTruncated { get; set; }
     }
@@ -54,7 +54,7 @@ namespace arx.Extract.Types
         public string Doi { get; set; }
 
         public string PdfLink { get; set; }
-        public string DoiLink { get; set; }
+        public string DoiLinks { get; set; }
 
         public bool AuthorListTruncated { get; set; }
         public List<AuthorItem> Authors { get; set; } = new List<AuthorItem>();
