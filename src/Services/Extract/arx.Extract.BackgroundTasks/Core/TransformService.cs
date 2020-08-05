@@ -156,11 +156,13 @@ namespace arx.Extract.BackgroundTasks.Core
         public static bool IsMcsCode(string value)
         {
             return value.Contains(',') // "00A00, 00B00"                
+                || (value.Length >= 3 && char.IsNumber(value[0]) && char.IsNumber(value[1])) //03F, 42Bxx 
                 || value.ToLower().Contains("primary")
                 || value.ToLower().Contains("secondary")//["90C17 (Primary), 90C25 (Secondary), 90C34 (Tertiary)"]                
                 || value.ToLower().Contains("tertiary")
                 || value.Contains(':') //2010 MSC: 60H15
-                || (value.Length >= 3 && char.IsNumber(value[0]) && char.IsNumber(value[1])); //03F, 42Bxx
+                || value.Contains('[') || value.Contains('(')  //[2010] 11T71
+                || value.Length == 2; // 35 85
         }
     }
 }
