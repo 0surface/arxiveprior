@@ -125,19 +125,9 @@ namespace arx.Extract.BackgroundTasks.Core
                     }
                 }
 
-                pub.PdfLink = item?.Links
-                                    ?.Where(l => l.Title == "pdf")
-                                    ?.Select(l => l.Href)
-                                    ?.FirstOrDefault() ?? string.Empty;
-
-                var doiLinks = item?.Links
-                                   ?.Where(l => l.Title == "doi")
-                                   ?.Select(l => l.Href)
-                                   ?.ToList();
-
-                pub.DoiLinks = doiLinks == null ? string.Empty :
-                                doiLinks.Count() == 1 ? doiLinks[0] :
-                                string.Join(',', doiLinks.ToList());
+                pub.DoiLinks = string.Join(',', item?.Links
+                                                   ?.Where(l => l.Title == "doi")
+                                                   ?.Select(l => l.Href) ?? new List<string>());
 
                 pub.Authors = MapAuthors(item.Authors);
             }
@@ -151,17 +141,21 @@ namespace arx.Extract.BackgroundTasks.Core
 
         public static List<string> MapAuthors(List<Author> authorEntryList)
         {
-            if (authorEntryList == null || authorEntryList.Count() == 0)
-                return new List<string>();
-
             List<string> result = new List<string>();
-            foreach (var entry in authorEntryList)
-            {
-                if (string.IsNullOrEmpty(entry.Affiliation))
-                    result.Add(entry.Name);
-                else
-                    result.Add(string.Join('|', entry.Name, entry.Affiliation));
-            }
+
+            if (authorEntryList == null || authorEntryList.Count() == 0)
+                return result;
+
+            authorEntryList.ForEach(entry =>
+                {
+                    if (string.IsNullOrEmpty(entry.Affiliation))
+                        result.Add(entry.Name);
+                    else
+                        result.Add(string.Join('|', entry.Name, entry.Affiliation));
+                });
+
+            result?.RemoveAll(r => r.Trim() == ":");
+
             return result;
         }
 
