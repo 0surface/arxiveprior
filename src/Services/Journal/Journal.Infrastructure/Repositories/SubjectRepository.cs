@@ -28,8 +28,9 @@ namespace Journal.Infrastructure.Repositories
             {
                 return await _context.Subjects.ToListAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Serilog.Log.Fatal(ex, $"{this.GetType().Name} - has thrown an exception");
                 return new List<Subject>();
             }
         }
@@ -41,8 +42,9 @@ namespace Journal.Infrastructure.Repositories
                     .Where(s => s.GroupCode == groupCode)
                     .ToListAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Serilog.Log.Fatal(ex, $"{this.GetType().Name} - has thrown an exception");
                 return new List<Subject>();
             }
         }
@@ -54,8 +56,9 @@ namespace Journal.Infrastructure.Repositories
                   .Where(s => s.Discipline.ToLower() == discipline.ToLower())
                   .ToListAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Serilog.Log.Fatal(ex, $"{this.GetType().Name} - has thrown an exception");
                 return new List<Subject>();
             }
         }

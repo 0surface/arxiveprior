@@ -4,6 +4,7 @@ using Journal.Infrastructure;
 using Journal.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +19,11 @@ namespace Journal.API.Controllers
     {
         private readonly ISubjectRepository _subjectRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger<SubjectsController> _logger;
 
-        public SubjectsController(SubjectContext subjectContext,
-            IMapper mapper,
-            ILogger<SubjectsController> logger)
+        public SubjectsController(SubjectContext subjectContext, IMapper mapper)
         {
             _subjectRepository = new SubjectRepository(subjectContext);
-            _mapper = mapper;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -39,7 +36,10 @@ namespace Journal.API.Controllers
             var result = await _subjectRepository.GetAllSubjects();
 
             if (result == null)
+            {                
+                Log.Error($"[{this.GetType().Name}] -[GetAll()] - Exception thrown in SubjectRepository");
                 return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
 
             if (result.Count() == 0)
                 return NoContent();
