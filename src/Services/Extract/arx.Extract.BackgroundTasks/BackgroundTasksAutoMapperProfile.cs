@@ -2,6 +2,7 @@
 using arx.Extract.Lib;
 using arx.Extract.Types;
 using AutoMapper;
+using Common.Types;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,7 +23,7 @@ namespace arx.Extract.BackgroundTasks
 
             CreateMap<PublicationItemEntity, PublicationItem>();
 
-            CreateMap<Author, AuthorItem>().ReverseMap();
+            CreateMap<Author, string>().ReverseMap();
         }
     }
 
@@ -41,7 +42,7 @@ namespace arx.Extract.BackgroundTasks
     }
 
 
-    public class AuthorListSplitResolver : IValueResolver<PublicationItem, PublicationItemEntity, List<AuthorItem>>
+    public class AuthorListSplitResolver : IValueResolver<PublicationItem, PublicationItemEntity, List<string>>
     {        
         private readonly int _collectionIndex;
         private readonly int _authorsCountLimit;
@@ -51,7 +52,7 @@ namespace arx.Extract.BackgroundTasks
             _collectionIndex = collectionIndex;
             _authorsCountLimit = authorsCountLimit;
         }
-        public List<AuthorItem> Resolve(PublicationItem source, PublicationItemEntity destination, List<AuthorItem> destMember, ResolutionContext context)
+        public List<string> Resolve(PublicationItem source, PublicationItemEntity destination, List<string> destMember, ResolutionContext context)
         {
             if(_collectionIndex == 0 && source.Authors.Count() > 0)
             {

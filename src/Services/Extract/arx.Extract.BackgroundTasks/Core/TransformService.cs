@@ -74,8 +74,6 @@ namespace arx.Extract.BackgroundTasks.Core
             try
             {
                 pub.ArxivId = item.Id.GetSubStringAfterCharValue('/');
-                pub.VersionTag = pub.ArxivId.GetSubStringAfterCharValue('v', true);
-                pub.CanonicalArxivId = pub.ArxivId.Replace(pub.VersionTag, "");
                 pub.PublishedDate = item.PublishDate;
                 pub.UpdatedDate = item.UpdatedDate;
                 pub.Title = item.Title;
@@ -115,14 +113,14 @@ namespace arx.Extract.BackgroundTasks.Core
                         {
                             pub.MscCodes = value;
                             codesFound++;
-                        }                        
+                        }
                     }
 
                     if (codesFound != categoryCodes.Count)
                     {
                         _logger.LogError($"Error Category Code Processing - [{pub.ArxivId}] - Found/Expected = {codesFound} / {categoryCodes.Count}");
                         List<string> codes = new List<string>();
-                        categoryCodes.ForEach(x => codes.Add(x.CategoryCode));                        
+                        categoryCodes.ForEach(x => codes.Add(x.CategoryCode));
                         _logger.LogError($"Error Category Code Processing {pub.ArxivId} | Pre-processed Codes =[{string.Join('|', codes)}]");
                     }
                 }
@@ -141,7 +139,7 @@ namespace arx.Extract.BackgroundTasks.Core
                                 doiLinks.Count() == 1 ? doiLinks[0] :
                                 string.Join(',', doiLinks.ToList());
 
-                pub.Authors = _mapper.Map<List<AuthorItem>>(item.Authors);
+                pub.Authors = MapAuthors(item.Authors);
             }
             catch (Exception)
             {
@@ -149,6 +147,22 @@ namespace arx.Extract.BackgroundTasks.Core
             }
 
             return pub;
+        }
+
+        public static List<string> MapAuthors(List<Author> authorEntryList)
+        {
+            if (authorEntryList == null || authorEntryList.Count() == 0)
+                return new List<string>();
+
+            List<string> result = new List<string>();
+            foreach (var entry in authorEntryList)
+            {
+                if (string.IsNullOrEmpty(entry.Affiliation))
+                    result.Add(entry.Name);
+                else
+                    result.Add(string.Join('|', entry.Name, entry.Affiliation));
+            }
+            return result;
         }
 
         public static bool IsAcmCode(string value)
