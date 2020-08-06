@@ -19,8 +19,6 @@ namespace Common.Types
          string AcmCodes { get; set; }
          string JournalReference { get; set; }
          string Doi { get; set; }
-
-         string PdfLink { get; set; }
          string DoiLinks { get; set; }
 
          bool AuthorListTruncated { get; set; }
@@ -43,8 +41,6 @@ namespace Common.Types
         public string AcmCodes { get; set; }
         public string JournalReference { get; set; }
         public string Doi { get; set; }
-
-        public string PdfLink { get; set; }
         public string DoiLinks { get; set; }
 
         public bool AuthorListTruncated { get; set; }

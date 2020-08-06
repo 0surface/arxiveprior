@@ -24,8 +24,6 @@ namespace arx.Extract.Data.Entities
 
         public string JournalReference { get; set; }
         public string Doi { get; set; }
-
-        public string PdfLink { get; set; }
         public string DoiLinks { get; set; }
 
         [EntityJsonPropertyConverter]
