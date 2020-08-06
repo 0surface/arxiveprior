@@ -6,6 +6,7 @@ using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +20,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
     {
         private readonly BackgroundTasksConfiguration _config;
         private readonly IEventBus _eventBus;
-        private readonly ILogger<ArchiveExtractionService> _logger;
         private readonly IExtractService _extractService;
         private readonly ISubjectRepository _subjectRepo;
         private readonly IJobRepository _jobRepository;
@@ -30,7 +30,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
         public ArchiveExtractionService(IOptions<BackgroundTasksConfiguration> config,
             IEventBus eventBus,
-            ILogger<ArchiveExtractionService> logger,
             IExtractService extractService,
             ISubjectRepository subjectRepo,
             IJobRepository jobRepository,
@@ -41,7 +40,6 @@ namespace arx.Extract.BackgroundTasks.Tasks
         {
             _config = config?.Value ?? throw new ArgumentException(nameof(config));
             _eventBus = eventBus;
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _extractService = extractService;
             _subjectRepo = subjectRepo;
             _jobRepository = jobRepository;
@@ -53,18 +51,18 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogDebug($"{this.GetType().Name} Background Task is starting.");
+            Log.Debug($"{this.GetType().Name} Background Task is starting.");
             try
             {
                 await DoWork(stoppingToken);
             }
             catch (OperationCanceledException)
             {
-                _logger.LogError($"{this.GetType().Name} - Operation Canceled Exception Occured");
+                Log.Error($"{this.GetType().Name} - Operation Canceled Exception Occured");
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex, $"{this.GetType().Name} - An Unhandled exception was thrown");
+                Log.Fatal(ex, $"{this.GetType().Name} - An Unhandled exception was thrown");
             }
             finally
             {
@@ -74,7 +72,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
         public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogDebug($"{this.GetType().Name} Background Task is stopping.");
+            Log.Debug($"{this.GetType().Name} Background Task is stopping.");
             await base.StopAsync(cancellationToken);
         }
 
@@ -82,17 +80,17 @@ namespace arx.Extract.BackgroundTasks.Tasks
         {
             ServiceSeedSetup();
 
-            stoppingToken.Register(() => _logger.LogDebug($"#1 {this.GetType().Name} background task is stopping."));
+            stoppingToken.Register(() => Log.Debug($"#1 {this.GetType().Name} background task is stopping."));
 
             if (!_config.ArchiveModeIsActive)
             {
-                _logger.LogInformation($"Stopping {this.GetType().Name} because current Archive Extraction Mode is NOT Active.");
+                Log.Information($"Stopping {this.GetType().Name} because current Archive Extraction Mode is NOT Active.");
 
                 await StopAsync(stoppingToken);
             }
             else
             {
-                _logger.LogDebug($"{this.GetType().Name} background task is doing background work. [{DateTime.UtcNow}]");
+                Log.Debug($"{this.GetType().Name} background task is doing background work. [{DateTime.UtcNow}]");
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
@@ -102,13 +100,13 @@ namespace arx.Extract.BackgroundTasks.Tasks
                     {
                         var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfillmentId);
 
-                        _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
+                        Log.Information("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
                                                 extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
 
                         _eventBus.Publish(extractionCompletedEvent);
                     }
 
-                    _logger.LogInformation($"Waiting For [{_config.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
+                    Log.Information($"Waiting For [{_config.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
                     await Task.Delay(_config.PostFetchWaitTime, stoppingToken);
                 }
             }
@@ -116,13 +114,13 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
         private async Task<string> RunArchiveExtraction(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Reading Archive Task Metadata from Storage...");
+            Log.Information("Reading Archive Task Metadata from Storage...");
 
             var (jobFetchSuccess, job, jobItems) = _extractService.GetArchiveJob();
 
             if (!jobFetchSuccess)
             {
-                _logger.LogCritical("Error fetching Job Archive metadata from Storage");
+                Log.Error("Error fetching Job Archive metadata from Storage");
                 await StopAsync(stoppingToken);
             }
             else
@@ -138,7 +136,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                 }
                 else
                 {
-                    _logger.LogInformation($"Created [{newFulfillmentItems.Count}] New Fulfillment Items from Fulfillment {newFulfillment.FulfillmentId} - @{DateTime.UtcNow}");
+                    Log.Information($"Created [{newFulfillmentItems.Count}] New Fulfillment Items from Fulfillment {newFulfillment.FulfillmentId} - @{DateTime.UtcNow}");
                     Stopwatch stopwatch = new Stopwatch();
 
                     //Run Http Request, transform, persist operations per Fulfillment Item Entry
@@ -172,7 +170,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                         if (fetched < totalAvailable)
                         {
-                            _logger.LogInformation($"FulfillmentItem {fulfillmentItem.ItemUId} - Only fetched[{fetched}] out of [{totalAvailable}]. Making further Paged Http Requests...");
+                            Log.Information($"FulfillmentItem {fulfillmentItem.ItemUId} - Only fetched[{fetched}] out of [{totalAvailable}]. Making further Paged Http Requests...");
 
                             //Calculate the number of requests required to fetch all items for the initial query
                             int requests = ExtractUtil.CalculatePagedRequestCount(totalAvailable, fetched);
@@ -194,7 +192,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                                 //Add next start index to request url
                                 string pagedUrl = $"{initialUrl}&start={currentStartIndex}";
 
-                                _logger.LogInformation($"FulfillmentItem {fulfillmentItem.ItemUId} - Making paged Http request no [{i + 1}]");
+                                Log.Information($"FulfillmentItem {fulfillmentItem.ItemUId} - Making paged Http request no [{i + 1}]");
                                 stopwatch.Start();
                                 var (pagedResponse, pagedItems) = _archiveFetch.GetArxivItems(pagedUrl).Result;
                                 stopwatch.Stop();
@@ -223,7 +221,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                         //Tranform and Persist to Storage
                         if (fulfillmentItem.TotalResults < 1)
                         {
-                            _logger.LogInformation($"FulfillmentItem {fulfillmentItem.ItemUId} - returned 0 items.");
+                            Log.Information($"FulfillmentItem {fulfillmentItem.ItemUId} - returned 0 items.");
                         }
                         else
                         {
@@ -247,7 +245,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                                 //Log errors in transformation process
                                 if (!success)
                                 {
-                                    _logger.LogError($"Fulfillment Item [{fulfillmentItem.ItemUId}] - Error Transforming ArxivEntries To Publicationitems. Only {transformedCount}/{allArxivEntries.Count} (transformed/fetched) were successful.",
+                                    Log.Error($"Fulfillment Item [{fulfillmentItem.ItemUId}] - Error Transforming ArxivEntries To Publicationitems. Only {transformedCount}/{allArxivEntries.Count} (transformed/fetched) were successful.",
                                                         fulfillmentItem.ItemUId, transformedCount, allArxivEntries);
                                 }
 
@@ -260,14 +258,14 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                                     if (!mapIsSuccess)
                                     {
-                                        _logger.LogCritical("FulfillmentItem {0} - Error Transforming PublicationItems To PublicationItemEntity", fulfillmentItem.ItemUId);
+                                        Log.Error("FulfillmentItem {0} - Error Transforming PublicationItems To PublicationItemEntity", fulfillmentItem.ItemUId);
                                     }
                                     else
                                     {
                                         //Persist publications to Storage - Batch insert
                                         if (await _publicationRepository.BatchSavePublications(entityList) == 0)
                                         {
-                                            _logger.LogCritical("FulfillmentItem {0} - FAILED to persist publications to Storage", fulfillmentItem.ItemUId);
+                                            Log.Error("FulfillmentItem {0} - FAILED to persist publications to Storage", fulfillmentItem.ItemUId);
                                         }
                                     }
                                 }
@@ -307,32 +305,32 @@ namespace arx.Extract.BackgroundTasks.Tasks
             //Seed Subjects if empty
             if (_subjectRepo.HasSeed() == false)
             {
-                _logger.LogInformation($"Seeding {_subjectRepo.TableName()} Table.");
+                Log.Information($"Seeding {_subjectRepo.TableName()} Table.");
 
                 if (_subjectRepo.SeedSubjects())
-                    _logger.LogInformation($"Successfullly Inserted Seed data to  {_subjectRepo.TableName()} Table.");
+                    Log.Information($"Successfullly Inserted Seed data to  {_subjectRepo.TableName()} Table.");
                 else
-                    _logger.LogDebug($"Error inserting Seed data to  {_subjectRepo.TableName()}  Table");
+                    Log.Debug($"Error inserting Seed data to  {_subjectRepo.TableName()}  Table");
             }
 
             //Seed Jobs if Empty
             if (_jobRepository.HasSeed() == false)
             {
-                _logger.LogInformation($"Seeding {_jobRepository.TableName()}  Table.");
+                Log.Information($"Seeding {_jobRepository.TableName()}  Table.");
                 if (_jobRepository.SeedJobs())
-                    _logger.LogInformation($"Successfullly Inserted Seed data to {_jobRepository.TableName()} Table.");
+                    Log.Information($"Successfullly Inserted Seed data to {_jobRepository.TableName()} Table.");
                 else
-                    _logger.LogDebug($"Error inserting Seed data to  {_jobRepository.TableName()}  Table");
+                    Log.Debug($"Error inserting Seed data to  {_jobRepository.TableName()}  Table");
             }
 
             //Seed JobItems if Empty
             if (_jobItemRepository.HasSeed() == false)
             {
-                _logger.LogInformation($"Seeding {_jobItemRepository.TableName()}  Table.");
+                Log.Information($"Seeding {_jobItemRepository.TableName()}  Table.");
                 if (_jobItemRepository.SeedJobItems())
-                    _logger.LogInformation($"Successfullly Inserted Seed data to {_jobItemRepository.TableName()} Table.");
+                    Log.Information($"Successfullly Inserted Seed data to {_jobItemRepository.TableName()} Table.");
                 else
-                    _logger.LogDebug($"Error inserting Seed data to  {_jobItemRepository.TableName()} Table");
+                    Log.Debug($"Error inserting Seed data to  {_jobItemRepository.TableName()} Table");
             }
         }
     }

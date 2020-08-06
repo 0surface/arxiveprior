@@ -4,6 +4,7 @@ using arx.Extract.Lib;
 using arx.Extract.Types;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,16 +14,13 @@ namespace arx.Extract.BackgroundTasks.Core
     public class TransformService : ITransformService
     {
         private readonly IMapper _mapper;
-        private readonly ILogger<TransformService> _logger;
         private readonly ISubjectRepository _subjectRepo;
         private Dictionary<string, string> _arxivSubjectCodes { get; set; }
 
         public TransformService(IMapper mapper,
-            ILogger<TransformService> logger,
             ISubjectRepository subjectRepo)
         {
             _mapper = mapper;
-            _logger = logger;
             _subjectRepo = subjectRepo;
         }
 
@@ -118,10 +116,10 @@ namespace arx.Extract.BackgroundTasks.Core
 
                     if (codesFound != categoryCodes.Count)
                     {
-                        _logger.LogError($"Error Category Code Processing - [{pub.ArxivId}] - Found/Expected = {codesFound} / {categoryCodes.Count}");
+                        Log.Error($"Error Category Code Processing - [{pub.ArxivId}] - Found/Expected = {codesFound} / {categoryCodes.Count}");
                         List<string> codes = new List<string>();
                         categoryCodes.ForEach(x => codes.Add(x.CategoryCode));
-                        _logger.LogError($"Error Category Code Processing {pub.ArxivId} | Pre-processed Codes =[{string.Join('|', codes)}]");
+                        Log.Error($"Error Category Code Processing {pub.ArxivId} | Pre-processed Codes =[{string.Join('|', codes)}]");
                     }
                 }
 
@@ -131,8 +129,9 @@ namespace arx.Extract.BackgroundTasks.Core
 
                 pub.Authors = MapAuthors(item.Authors);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Fatal(ex, $"Exception thrwon mapping Entry [{pub.ArxivId}] to PublicationItem");
                 return null;
             }
 
