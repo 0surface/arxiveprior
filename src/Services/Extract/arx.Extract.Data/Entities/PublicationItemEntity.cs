@@ -35,13 +35,7 @@ namespace arx.Extract.Data.Entities
         public List<string> Authors { get; set; }
 
         [EntityJsonPropertyConverter]
-        public List<string> AuthorSpillOverListOne { get; set; }
-        [EntityJsonPropertyConverter]
-        public List<string> AuthorSpillOverListTwo { get; set; }
-
-        [EntityJsonPropertyConverter]
-        public List<string> AuthorSpillOverListThree { get; set; }
-
+        public List<string> AuthorSpillOverList { get; set; }
         public bool AuthorListTruncated { get; set; }
 
         public override IDictionary<string, EntityProperty> WriteEntity(OperationContext operationContext)

@@ -23,14 +23,10 @@ namespace arx.Extract.API
                 if (source?.Authors != null && source.Authors.Count > 0)
                     destination.Authors.AddRange(source.Authors);
 
-                if (source?.AuthorSpillOverListOne != null && source.AuthorSpillOverListOne.Count > 0)
-                    destination.Authors.AddRange(source?.AuthorSpillOverListOne);
+                if (source?.AuthorSpillOverList != null && source.AuthorSpillOverList.Count > 0)
+                    destination.Authors.AddRange(source?.AuthorSpillOverList);
 
-                if (source?.AuthorSpillOverListOne != null && source.AuthorSpillOverListOne.Count > 0)
-                    destination.Authors.AddRange(source.AuthorSpillOverListTwo);
-
-                if (source?.AuthorSpillOverListOne != null && source.AuthorSpillOverListOne.Count > 0)
-                    destination.Authors.AddRange(source.AuthorSpillOverListThree);
+               
 
                 return destination.Authors;
             }
