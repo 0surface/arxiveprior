@@ -20,14 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Common\Common.Types\Common.Types.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusServiceBus\EventBusServiceBus.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBus\EventBus.csproj" />
     <ProjectReference Include="..\Journal.Domain\Journal.Domain.csproj" />
+    <ProjectReference Include="..\Journal.Infrastructure\Journal.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
