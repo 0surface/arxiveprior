@@ -17,7 +17,7 @@
 
             string start = urlParams?.QueryFromDate.ToString("yyyyMMddHHmm");
             string end = urlParams?.QueryToDate.ToString("yyyyMMddHHmm");
-            string dateQueryString = $"+AND+submittedDate:[{start}+TO+{end}]";
+            string dateQueryString = $"+AND+lastUpdatedDate:[{start}+TO+{end}]";
             string startIndex = urlParams?.StartIndex == 0 ? "" : $"&start={urlParams?.StartIndex}";
 
             return $"{baseUrl}{subjectQuery}{dateQueryString}{startIndex}{maxResultsQuery}";
@@ -38,7 +38,7 @@
 
             string start = urlParams?.QueryFromDate.ToString("yyyyMMddHHmm");
             string end = urlParams?.QueryToDate.ToString("yyyyMMddHHmm");
-            string dateQueryString = $"+AND+submittedDate:[{start}+TO+{end}]";
+            string dateQueryString = $"+AND+lastUpdatedDate:[{start}+TO+{end}]";
             string startIndex = urlParams?.StartIndex == 0 ? "" : $"&start={urlParams?.StartIndex}";
 
             return $"{baseUrl}{subjectQuery}{dateQueryString}{startIndex}{maxResultsQuery}";
