@@ -73,6 +73,7 @@ namespace Journal.Infrastructure
                         {
                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                         });
+                    options.UseLazyLoadingProxies();
                 },
                 ServiceLifetime.Scoped //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
                 );
