@@ -1,16 +1,12 @@
 ﻿using Journal.Domain.AggregatesModel.SubjectAggregate;
+using Journal.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Polly;
-using Polly.Retry;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Journal.Infrastructure
@@ -23,7 +19,7 @@ namespace Journal.Infrastructure
     {
         public async Task SeedAsync(SubjectContext context, IOptions<JournalConfiguration> settings, ILogger<SubjectContextSeed> logger)
         {
-            var policy = CreatePolicy(logger, nameof(SubjectContextSeed));
+            var policy = SeedExtensions.CreatePolicy(logger, nameof(SubjectContextSeed));
 
             await policy.ExecuteAsync(async () =>
             {
@@ -46,7 +42,7 @@ namespace Journal.Infrastructure
             try
             {
                 string subjectFileResourceName = "Journal.Infrastructure.Setup.SubjectSeedData.json";
-                string data = ReadDocumentFromExecutingAssembly(subjectFileResourceName);
+                string data = subjectFileResourceName.ReadDocumentFromExecutingAssembly();
                 var entities = JsonConvert.DeserializeObject<IEnumerable<Subject>>(data);
                 return entities;
             }
@@ -55,36 +51,6 @@ namespace Journal.Infrastructure
                 logger.LogError(ex, "EXCEPTION ERROR: {Message}", ex.Message);
                 throw new Exception("Error reading Subject Seed Json File", ex);
             }
-        }
-
-        private AsyncRetryPolicy CreatePolicy(ILogger<SubjectContextSeed> logger, string prefix, int retries = 3)
-        {
-            return Policy.Handle<SqlException>().
-                WaitAndRetryAsync(
-                    retryCount: retries,
-                    sleepDurationProvider: retry => TimeSpan.FromSeconds(5),
-                    onRetry: (exception, timeSpan, retry, ctx) =>
-                    {
-                        logger.LogWarning(exception, "[{prefix}] Exception {ExceptionType} with message {Message} detected on attempt {retry} of {retries}", prefix, exception.GetType().Name, exception.Message, retry, retries);
-                    }
-                );
-        }
-
-        public static string ReadDocumentFromExecutingAssembly(string resourceName)
-        {
-            string data = "";
-            try
-            {
-                var assembly = Assembly.GetExecutingAssembly();
-                using Stream stream = assembly.GetManifestResourceStream(resourceName);
-                using StreamReader reader = new StreamReader(stream);
-                data = reader.ReadToEnd();
-            }
-            catch (Exception)
-            {
-            }
-
-            return data;
         }
     }
 }
