@@ -3,25 +3,35 @@ using System;
 
 namespace Journal.Domain.AggregatesModel.ArticleAggregate
 {
-    public class Version
+    public class PaperVersion
         : Entity
     {
-        /* On arxiv.org, an Article's version list is titled 'Submission history' 
-          SubmissionDate = Article's UpdatedDate */
+        /// <summary>
+        /// The 'canonical' arxiv.oeg id withour thee version appended at the end as v1,2,3...
+        /// </summary>
+        public string ArxivId { get; private set; }
+                
+        /// <summary>
+        ///  On arxiv.org, an Article's version list is titled 'Submission history' 
+        ///  SubmissionDate = Article's UpdatedDate
+        /// </summary>
         public DateTime SubmissionDate { get; private set; }
         public int Number { get; private set; }
-        public DateTime CreatedDate { get; private set; }
 
-        protected Version()
+        public Article Article { get; set; }
+
+
+        protected PaperVersion()
         {
-            SubmissionDate = DateTime.MinValue;
-            CreatedDate = DateTime.MinValue;
+            Number = 1;
+            SubmissionDate = DateTime.MinValue;            
         }
-        public Version(DateTime updatedDate, int versionNumber)
+        public PaperVersion(string arxivId, DateTime updatedDate, int versionNumber) 
+            : this()
         {
+            ArxivId = arxivId;
             SubmissionDate = updatedDate;
             Number = versionNumber;
-            CreatedDate = DateTime.UtcNow;
         }
     }
 }
