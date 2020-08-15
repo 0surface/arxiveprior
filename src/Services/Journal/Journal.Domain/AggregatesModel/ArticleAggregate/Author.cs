@@ -8,7 +8,7 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
     {
         public string Name { get; private set; }
         public string OrcidId { get; private set; }
-        public string OrcidLink { get; private set; }
+        public string OrcidLink { get; private set; }   
         public List<AuthorAffiliation> AuthorAffiliations { get; private set; }
 
         public Author(string name)

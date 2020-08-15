@@ -24,7 +24,7 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
         /// </summary>
         public string Doi { get; private set; }
         public string DoiLinks { get; private set; }        
-        public string PrimarySubjectCode { get; private set; }
+        public SubjectCode PrimarySubjectCode { get; private set; }
 
         /// <summary>
         /// MSC = Mathematics Subject Classification - is an alphanumerical classification scheme.
@@ -48,7 +48,8 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
 
         public string PdfLink { get; private set; }
         public string ArxivId { get; private set; }
-        public string PrimarySubjectGroupCode { get; private set; }
+        public SubjectGroup PrimarySubjectGroupCode { get; private set; }
+        public Discipline PrmiaryDiscipline { get; private set; }
         public int UpdatedDay { get; private set; }
         public int UpdatedMonth { get; private set; }
         public int UpdatedYear { get; private set; }
@@ -75,12 +76,14 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             Created = DateTime.UtcNow;
             LastModified = DateTime.UtcNow;
         }
+
         public Article(int journalProcessedId, string arxivId,
             DateTime publishedDate, DateTime updatedDate,
             string title, string summary, string comment,
             string primarySubjectCode, string journalReference,
             string mscCategory, string acmCategory,
-            string doi, string doiLinks) 
+            string doi, string doiLinks,
+            List<string> subjects, List<String> authors) 
             : this()
         {
             JournalProcessedId = journalProcessedId;
@@ -90,18 +93,26 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             Title = title;
             Summary = summary;
             Comment = comment;
-            PrimarySubjectCode = primarySubjectCode;
+            PrimarySubjectCode = SubjectCode.FindByCode(primarySubjectCode);
+            PrimarySubjectGroupCode = PrimarySubjectCode.SubjectGroup;
+            PrmiaryDiscipline = PrimarySubjectGroupCode.Discipline;
             JournalReference = journalReference;
             MscCategory = mscCategory;
             AcmCategory = acmCategory;
             Doi = doi;
             DoiLinks = doiLinks;
-            
+
+            ProcessDates();
+            ProcessDerived();
+            AddSubjects(subjects);
+            AddAuthors(authors);
+            AddVersion();
+
             Created = DateTime.UtcNow;       
             LastModified = DateTime.UtcNow;
         }
 
-        public void ProcessDates()
+        private void ProcessDates()
         {
             if (PublishedDate == null || PublishedDate == DateTime.MinValue)
             {
@@ -114,17 +125,13 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
                 HasProcessingError = true;
             }
         }
-
-        public void AddPrimarySubjectGroup(Dictionary<string, string> arxivSubjectDictionary)
-        {
-            arxivSubjectDictionary.TryGetValue(PrimarySubjectCode, out string primGroupCode);
-            PrimarySubjectGroupCode = primGroupCode;
-        }
-        public void ProcessDerived()
+        private void ProcessDerived()
         {
             UpdatedDay = UpdatedDate.Day;
             UpdatedMonth = UpdatedDate.Month;
             UpdatedYear = UpdatedDate.Year;
+
+           
 
             string tag = VersionedArxivId.GetSubStringAfterCharValue('v', true);
             ArxivId = ArxivId.Replace(tag, string.Empty);
@@ -143,7 +150,7 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
         /// 
         /// </summary>
         /// <param name="subjects"></param>
-        public void AddSubjects(List<string> subjects)
+        private void AddSubjects(List<string> subjects)
         {
             try
             {
@@ -164,7 +171,7 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             }
         }
 
-        public void AddAuthors(List<string> authors)
+        private void AddAuthors(List<string> authors)
         {
             try
             {
@@ -190,7 +197,7 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             }
         }
 
-        public void AddVersion()
+        private void AddVersion()
         {
             if (!_paperVersions.Any(x => x.Number == VersionNumber))
             {
