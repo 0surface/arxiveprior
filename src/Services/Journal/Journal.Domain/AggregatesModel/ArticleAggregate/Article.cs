@@ -205,11 +205,143 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             }
         }
 
-        public void UpdateVersion()
+        public void Update(Article updated)
         {
-            if (!_paperVersions.Any(x => x.Number == VersionNumber))
+            if(updated.VersionNumber == VersionNumber)
             {
-                _paperVersions.Add(new PaperVersion(ArxivId, UpdatedDate, VersionNumber));
+                return;
+            }
+            else if (updated.VersionNumber < VersionNumber)
+            {
+                ///'updated' is a Retired vesion, add to vesion collection.
+                if (updated.PaperVersions != null && updated.PaperVersions.Count != 0)
+                {
+                    _paperVersions.Add(updated.PaperVersions.First());
+                }
+                return;
+            }
+            else
+            {
+                //Update to New Version
+                JournalProcessedId = updated.JournalProcessedId;
+                VersionedArxivId =  updated.ArxivId;
+                PublishedDate =  updated.PublishedDate;
+                UpdatedDate =  updated.UpdatedDate;
+                Title =  updated.Title;
+                Summary =  updated.Summary;
+                Comment =  updated.Comment;
+                PrimarySubjectCode = updated.PrimarySubjectCode;
+                PrimarySubjectGroupCode = updated.PrimarySubjectGroupCode;
+                PrmiaryDiscipline = updated.PrmiaryDiscipline;
+                JournalReference =  updated.JournalReference;
+                MscCategory =  updated.MscCategory;
+                AcmCategory =  updated.AcmCategory;
+                Doi =  updated.Doi;
+                DoiLinks =  updated.DoiLinks;
+
+                UpdateSubjects(updated.CategoryArticles);
+                UpdateAuthors(updated.AuthorArticles);
+                UpdateVersion(updated.PaperVersions.FirstOrDefault());
+
+                LastModified = DateTime.UtcNow;
+            }
+        }
+
+        public void UpdateVersion(PaperVersion newVersion)
+        {           
+            if (!_paperVersions.Any(x => x.Number == newVersion?.Number))
+            {
+                _paperVersions.Add(newVersion);
+            }
+        }
+
+        private void UpdateSubjects(List<CategoryArticle> categoryArticleList)
+        {
+            try
+            {
+                if (categoryArticleList == null && categoryArticleList.Count == 0) 
+                    return;
+
+                if (CategoryArticles.Count == 0)
+                {
+                    CategoryArticles.AddRange(categoryArticleList);
+                }
+                else
+                {
+                    var existingCodes = CategoryArticles.Select(e => e.Category.Code).ToList();
+                    var newCodes = categoryArticleList.Select(e => e.Category.Code).ToList();
+
+                    if (existingCodes.Count == newCodes.Count &&
+                        existingCodes.All(newCodes.Contains))
+                    {
+                        //All elemnts match, do nothing
+                        return;
+                    }
+                    else
+                    {
+                        //Add new 
+                        categoryArticleList.ForEach(ca =>
+                        {
+                            if (!existingCodes.Contains(ca.Category.Code))
+                            {
+                                CategoryArticles.Add(ca);
+                            }
+                        });
+
+                        //Remove outdated
+                        CategoryArticles.RemoveAll(ca => newCodes.Contains(ca.Category.Code) == false);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                HasProcessingError = true;
+            }
+        }
+
+        private void UpdateAuthors(List<AuthorArticle> authorArticleList)
+        {
+            try
+            {
+                if (authorArticleList == null || authorArticleList.Count == 0)
+                    return;
+                
+                if(AuthorArticles.Count == 0)
+                {
+                    ///This scenario should never happen. Inserted here for defensive coding.
+                    AuthorArticles.AddRange(authorArticleList);
+                    return;
+                }
+                else
+                {
+                    var existingAuthorNames = AuthorArticles.Select(x => x.Author.Name).ToList();
+                    var newAuthorNames = authorArticleList.Select(x => x.Author.Name).ToList();
+
+                    if (existingAuthorNames.Count == newAuthorNames.Count &&
+                        existingAuthorNames.All(newAuthorNames.Contains))
+                    {
+                        //All elements match, do nothing.
+                        return;
+                    }
+                    else
+                    {
+                        //Add new
+                        authorArticleList.ForEach(aa =>
+                        {
+                            if (existingAuthorNames.Contains(aa.Author.Name) == false)
+                            {
+                                AuthorArticles.Add(aa);
+                            }
+                        });
+
+                        //Remove outdated
+                        AuthorArticles.RemoveAll(aa => newAuthorNames.Contains(aa.Author.Name) == false);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                HasProcessingError = true;
             }
         }
     }
