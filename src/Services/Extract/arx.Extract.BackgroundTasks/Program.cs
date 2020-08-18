@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace arx.Extract.BackgroundTasks
 {
@@ -42,7 +43,7 @@ namespace arx.Extract.BackgroundTasks
                             .AddArchiveFetch()
                             .AddTransformService();
                 })
-            //TODO : Configure SeriLog
+            .ConfigureLogging((host, builder) => builder.UseSerilog(host.Configuration).AddSerilog())
             .Build();
     }
 }

@@ -20,10 +20,14 @@ namespace Journal.Infrastructure
         {
             var configuration = GetConfiguration();
 
+            Log.Logger = CreateSerilogLogger(configuration);
+
             try
             {
+                Log.Information("Configuring Console Application ({ApplicationContext})...", AppName);
                 var host = CreateHostBuilder(args).Build();
 
+                Log.Information("Starting Subject DbContext Migration Seeding ({ApplicationContext})...", AppName);
                 host.MigrateDbContext<SubjectContext>((context, services) =>
                 {
                     var settings = services.GetService<IOptions<JournalConfiguration>>();
@@ -38,13 +42,14 @@ namespace Journal.Infrastructure
 
                 return 0;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", AppName);
                 return 1;
             }
             finally
             {
-
+                Log.CloseAndFlush();
             }
         }
 
@@ -61,7 +66,20 @@ namespace Journal.Infrastructure
                         })
                         .ConfigureLogging((host, builder) => builder.UseSerilog(host.Configuration).AddSerilog());
 
-
+        private static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
+        {
+            var seqServerUrl = configuration["Serilog:SeqServerUrl"];
+            var logstashUrl = configuration["Serilog:LogstashgUrl"];
+            return new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .Enrich.WithProperty("ApplicationContext", AppName)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .WriteTo.Seq(string.IsNullOrWhiteSpace(seqServerUrl) ? "http://seq" : seqServerUrl)
+                .WriteTo.Http(string.IsNullOrWhiteSpace(logstashUrl) ? "http://logstash:8080" : logstashUrl)
+                .ReadFrom.Configuration(configuration)
+                .CreateLogger();
+        }
         private static IConfiguration GetConfiguration()
         {
             var builder = new ConfigurationBuilder()
@@ -70,6 +88,6 @@ namespace Journal.Infrastructure
                 .AddEnvironmentVariables();
 
             return builder.Build();
-        }       
+        }
     }
 }

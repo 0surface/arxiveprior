@@ -16,21 +16,17 @@ namespace arx.Extract.API
             CreateMap<FulfillmentItemEntity, FulfillmentItem>();
         }
 
-        public class AuthorListAggregateResolver : IValueResolver<PublicationItemEntity, PublicationItem, List<AuthorItem>>
+        public class AuthorListAggregateResolver : IValueResolver<PublicationItemEntity, PublicationItem, List<string>>
         {
-            public List<AuthorItem> Resolve(PublicationItemEntity source, PublicationItem destination, List<AuthorItem> destMember, ResolutionContext context)
+            public List<string> Resolve(PublicationItemEntity source, PublicationItem destination, List<string> destMember, ResolutionContext context)
             {
                 if (source?.Authors != null && source.Authors.Count > 0)
                     destination.Authors.AddRange(source.Authors);
 
-                if (source?.AuthorSpillOverListOne != null && source.AuthorSpillOverListOne.Count > 0)
-                    destination.Authors.AddRange(source?.AuthorSpillOverListOne);
+                if (source?.AuthorSpillOverList != null && source.AuthorSpillOverList.Count > 0)
+                    destination.Authors.AddRange(source?.AuthorSpillOverList);
 
-                if (source?.AuthorSpillOverListOne != null && source.AuthorSpillOverListOne.Count > 0)
-                    destination.Authors.AddRange(source.AuthorSpillOverListTwo);
-
-                if (source?.AuthorSpillOverListOne != null && source.AuthorSpillOverListOne.Count > 0)
-                    destination.Authors.AddRange(source.AuthorSpillOverListThree);
+               
 
                 return destination.Authors;
             }

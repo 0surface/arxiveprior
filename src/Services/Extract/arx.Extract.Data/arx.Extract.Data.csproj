@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Common\Common.Types\Common.Types.csproj" />
     <ProjectReference Include="..\arx.Extract.Types\arx.Extract.Types.csproj" />
   </ItemGroup>
 

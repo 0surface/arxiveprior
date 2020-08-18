@@ -76,7 +76,7 @@ namespace arx.Extract.Lib
         public List<EntryLink> Links { get; set; }
 
         [XmlElement("category")]
-        public List<Subjects> Subjects { get; set; }
+        public List<Categories> CategoryCodes { get; set; }
 
         [XmlElement("author")]
         public List<Author> Authors { get; set; }
@@ -101,10 +101,10 @@ namespace arx.Extract.Lib
     }
 
     [XmlRoot("category")]
-    public class Subjects
+    public class Categories
     {
         [XmlAttribute("term")]
-        public string Subject { get; set; }
+        public string CategoryCode { get; set; }
     }
 
     [XmlRoot("link")]

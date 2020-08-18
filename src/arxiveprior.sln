@@ -58,7 +58,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HostExtensions", "HostExten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Host.Customization", "BuildingBlocks\HostExtensions\Host.Customization\Host.Customization.csproj", "{43826768-ED3D-4F9C-905F-0C5E2FA820E9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebHost.Customization", "BuildingBlocks\HostExtensions\WebHost.Customization\WebHost.Customization.csproj", "{4586EF61-3022-4C7F-A967-5C89D8C4CC3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHost.Customization", "BuildingBlocks\HostExtensions\WebHost.Customization\WebHost.Customization.csproj", "{4586EF61-3022-4C7F-A967-5C89D8C4CC3C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{BE522016-A85E-448C-9A21-E143B6AD8515}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Types", "BuildingBlocks\Common\Common.Types\Common.Types.csproj", "{A9A0268A-8C85-4093-BEBA-B7F1CC13531E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,6 +134,10 @@ Global
 		{4586EF61-3022-4C7F-A967-5C89D8C4CC3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4586EF61-3022-4C7F-A967-5C89D8C4CC3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4586EF61-3022-4C7F-A967-5C89D8C4CC3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9A0268A-8C85-4093-BEBA-B7F1CC13531E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9A0268A-8C85-4093-BEBA-B7F1CC13531E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9A0268A-8C85-4093-BEBA-B7F1CC13531E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9A0268A-8C85-4093-BEBA-B7F1CC13531E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -158,6 +166,8 @@ Global
 		{344C1C5E-5264-4B05-81B8-58DA6072CB02} = {E4164F44-3079-4DAA-8FC6-C833CFEA9463}
 		{43826768-ED3D-4F9C-905F-0C5E2FA820E9} = {344C1C5E-5264-4B05-81B8-58DA6072CB02}
 		{4586EF61-3022-4C7F-A967-5C89D8C4CC3C} = {344C1C5E-5264-4B05-81B8-58DA6072CB02}
+		{BE522016-A85E-448C-9A21-E143B6AD8515} = {E4164F44-3079-4DAA-8FC6-C833CFEA9463}
+		{A9A0268A-8C85-4093-BEBA-B7F1CC13531E} = {BE522016-A85E-448C-9A21-E143B6AD8515}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F51A04B3-2737-4B48-A4D1-959A9BE6F830}

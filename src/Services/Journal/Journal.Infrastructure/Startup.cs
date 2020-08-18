@@ -24,9 +24,8 @@ namespace Journal.Infrastructure
         {
             services.AddHealthChecks(Configuration)
                 .AddCustomDbContext(Configuration)
-                .Configure<JournalConfiguration>(this.Configuration)
-                .AddOptions()
-                .AddCustomServices();
+                .Configure<JournalConfiguration>(Configuration)
+                .AddOptions();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -74,29 +73,10 @@ namespace Journal.Infrastructure
                         {
                             sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
                         });
+                    options.UseLazyLoadingProxies();
                 },
                 ServiceLifetime.Scoped //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
                 );
-            return services;
-        }
-
-        public static IServiceCollection AddCustomSwagger(this IServiceCollection services, IConfiguration configuration)
-        {
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "arxiveprior - Journal HTTP API",
-                    Version = "v1",
-                    Description = "The Journal Service HTTP API"
-                });
-            });
-
-            return services;
-        }
-
-        public static IServiceCollection AddCustomServices(this IServiceCollection services)
-        {
             return services;
         }
     }
