@@ -15,6 +15,5 @@ namespace Journal.Infrastructure
         {
 
         }
-
     }
 }

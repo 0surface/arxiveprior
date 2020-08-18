@@ -1,4 +1,5 @@
 ﻿using Common.Util.String;
+using Journal.Domain.AggregatesModel.SubjectAggregate;
 using Journal.Domain.SeedWork;
 using System;
 using System.Collections.Generic;
@@ -94,8 +95,8 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             Summary = summary;
             Comment = comment;
             PrimarySubjectCode = SubjectCode.FindByCode(primarySubjectCode);
-            PrimarySubjectGroupCode = PrimarySubjectCode.SubjectGroup;
-            PrmiaryDiscipline = PrimarySubjectGroupCode.Discipline;
+            PrimarySubjectGroupCode = SubjectGroup.FindByCode(PrimarySubjectCode.SubjectGroupCode);
+            PrmiaryDiscipline = Discipline.FindByName(PrimarySubjectGroupCode.DisciplineName);
             JournalReference = journalReference;
             MscCategory = mscCategory;
             AcmCategory = acmCategory;
@@ -270,28 +271,28 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
                 }
                 else
                 {
-                    var existingCodes = CategoryArticles.Select(e => e.Category.Code).ToList();
-                    var newCodes = categoryArticleList.Select(e => e.Category.Code).ToList();
+                    var existingCodes = CategoryArticles.Select(e => e.Category.SubjectCode).ToList();
+                    var newCodes = categoryArticleList.Select(e => e.Category.SubjectCode).ToList();
 
                     if (existingCodes.Count == newCodes.Count &&
                         existingCodes.All(newCodes.Contains))
                     {
-                        //All elemnts match, do nothing
+                        //All elements match, do nothing
                         return;
                     }
                     else
                     {
-                        //Add new 
+                        //Add new, if not in list
                         categoryArticleList.ForEach(ca =>
                         {
-                            if (!existingCodes.Contains(ca.Category.Code))
+                            if (!existingCodes.Contains(ca.Category.SubjectCode))
                             {
                                 CategoryArticles.Add(ca);
                             }
                         });
 
                         //Remove outdated
-                        CategoryArticles.RemoveAll(ca => newCodes.Contains(ca.Category.Code) == false);
+                        CategoryArticles.RemoveAll(ca => newCodes.Contains(ca.Category.SubjectCode) == false);
                     }
                 }
             }
