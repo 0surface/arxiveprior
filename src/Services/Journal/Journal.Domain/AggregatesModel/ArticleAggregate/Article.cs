@@ -207,7 +207,9 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
 
         public void Update(Article updated)
         {
-            if(updated.VersionNumber == VersionNumber)
+            if(updated == null) return;
+
+            if (updated.VersionNumber == VersionNumber)
             {
                 return;
             }
