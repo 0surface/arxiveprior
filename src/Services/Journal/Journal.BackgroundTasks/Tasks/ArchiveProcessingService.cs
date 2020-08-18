@@ -110,8 +110,9 @@ namespace Journal.BackgroundTasks.Tasks
         private async Task<int> RunArchiveJournalProcessing(CancellationToken stoppingToken)
         {
             // 1. Query fulfilment table to find unprocessed archive extractions, get oldest if any
-            var (fromDate, toDate) = _fulfillmentRepository.FindLatestProcessedQueryDates(ProcessTypeEnum.Archive);
-            if (fromDate == DateTime.MinValue || toDate == DateTime.MinValue)
+            var (found,fromDate, toDate) = _fulfillmentRepository.FindLatestProcessedQueryDates(ProcessTypeEnum.Archive);
+
+            if (!found)
             {
                 //First ever entry scenario
                 //Ask extraction api for  'newest' archive query from & todate record
@@ -128,9 +129,12 @@ namespace Journal.BackgroundTasks.Tasks
             DateTime extractionQueryFromDate = new DateTime();//mock value
             DateTime extractionQueryToDate = new DateTime(); //mock value
 
-            var newFulfillment = new Fulfillment(string.Empty, extractionFulfillmentId, ProcessTypeEnum.Archive, extractionQueryFromDate, extractionQueryToDate);
+            var fulfillmentItem = new Fulfillment(string.Empty, extractionFulfillmentId,
+                                    ProcessTypeEnum.Archive,
+                                    extractionQueryFromDate,
+                                    extractionQueryToDate);
 
-            var fulfillment = _fulfillmentRepository.Save(newFulfillment);
+            var newFulfillment = _fulfillmentRepository.Save(fulfillmentItem);
 
             // using 1 or 2, ask extraction  api for publication data for the extractionId in 1 or 2     
             List<ArxivPublication> arxivPublications = new List<ArxivPublication>();
@@ -140,61 +144,59 @@ namespace Journal.BackgroundTasks.Tasks
             stopwatch.Start();
 
             // invoke transform service to convert to articles
-            var (success, allArticles) = _transformService.MapToDomain(arxivPublications, fulfillment.Id);
+            var (success, allArticles) = _transformService.MapToDomain(arxivPublications, newFulfillment.Id);
+
             if (!success)
             {
                 newFulfillment.SetJobAsFailed();
-                Log.Error($"Fulfillment Id {fulfillment.Id} - Mapping Publications to Articles failed");
+                Log.Error($"Fulfillment Id {newFulfillment.Id} - Mapping Publications to Articles failed");
                 await StopAsync(stoppingToken);
                 return await Task.FromResult(0);
             }
-
-            int updatedCount = 0;
-            int insertedCount = 0;
-            // Query Article db for the subset that already exist by (canonical) arxiv id
-            var ids = allArticles?.Select(x => x.ArxivId)?.ToList();
-
-            ///Eager Load all articles in DB with matchin ArxivId
-            var existingArticles = GetExistingArticlesByArxivId(ids);
-
-            //Get List of ecisting arxiv Ids
-            List<string> existingIds = existingArticles?.Select(x => x.ArxivId)?.ToList() ?? new List<string>();
-
-            //Select articles to be updated
-            var tobeUpdatedArticles = allArticles.Where(x => existingIds.Contains(x.ArxivId))
-                                                ?.OrderBy(x => x.ArxivId)
-                                                ?.ToList() ?? new List<Article>();
-
-            // Perform 'update' operations on this subset, in the dbContext
-            if (tobeUpdatedArticles.Count > 0)
+            else
             {
-                updatedCount = tobeUpdatedArticles.Count;
-                _articleContext.Articles.AttachRange(tobeUpdatedArticles);
-            }
 
-            //Select articles to be inserted
-            var tobeInsertedArticles = allArticles.Where(x => existingIds.Contains(x.ArxivId) == false)
-                                                ?.OrderBy(x => x.ArxivId)
-                                                ?.ToList() ?? new List<Article>();
+                int updatedCount = 0;
+                int insertedCount = 0;
+                string[] existingArxivIds = { };
 
-            // Perform 'add/insert' operations on this 'new' subset
-            if (tobeInsertedArticles.Count() > 0)
-            {
-                foreach (var inserted in tobeInsertedArticles)
+                // Query Article db for the subset that already exist by (canonical) arxiv id
+                var ids = allArticles?.Select(x => x.ArxivId)?.ToArray();
+
+                ///Eager Load all articles in DB with matchin ArxivId
+                List<Article> existingArticles = GetExistingArticlesByArxivId(ids);
+
+                if(existingArticles != null && existingArticles.Count > 0)
+                {
+                    //Get List of existing arxiv Ids
+                    existingArxivIds = existingArticles?.Select(x => x.ArxivId)?.ToArray();
+
+                    // Perform 'update' operations on this subset, in the dbContext
+                    foreach (var existing in existingArticles)
+                    {
+                       var newArticleVersion = allArticles.Where(x => x.ArxivId == existing.ArxivId).FirstOrDefault();
+                        existing.Update(newArticleVersion);
+                        _articleContext.Articles.Attach(existing);
+                        updatedCount++;
+                    }
+                }
+
+                //Select articles to be inserted
+                var tobeInsertedArticles = allArticles.Where(x => existingArxivIds.Contains(x.ArxivId) == false)?.ToList();
+
+                // Perform 'add/insert' or 'update' operations on this 'new' subset
+                foreach (var inserted in tobeInsertedArticles ?? new List<Article>())
                 {
                     // Query the 'new' articles sub set for duplicates i.e. different version of same arxivid
-                    if (_articleContext.Articles.Any(a => a.ArxivId == inserted.ArxivId))
+                    var existing = _articleContext.Articles.Where(a => a.ArxivId == inserted.ArxivId).FirstOrDefault();
+
+                    if (existing != default(Article))
                     {
                         ///The scenario where an article to be 'inserted' has an existing version already inserted
-                        ///in the dbConetxt witihn this processing session. The correct action is 'updated
-                        var article = _articleContext.Articles.Where(a => a.ArxivId == inserted.ArxivId).FirstOrDefault();
-
-                        if (article != null)
-                        {
-                            article.Update(inserted);
-                            _articleContext.Articles.Attach(article);
-                            updatedCount++;
-                        }
+                        ///in the dbConetxt witihn this processing session. The correct action is to call domain method 'Update'.
+                        existing.Update(inserted);
+                        _articleContext.Articles.Attach(existing);
+                        updatedCount++;
                     }
                     else
                     {
@@ -202,22 +204,24 @@ namespace Journal.BackgroundTasks.Tasks
                         insertedCount++;
                     }
                 }
+                
+
+                stopwatch.Stop();
+
+                // update journal fulfillment entry values (set as processed)
+                newFulfillment.SetProcessingTime(stopwatch.ElapsedMilliseconds);
+                newFulfillment.UpdateCounts(allArticles.Count, insertedCount, updatedCount,
+                                            tobeInsertedArticles.Count + existingArticles.Count);
+                newFulfillment.SetJobAsCompeleted();
+
+                //return journal fulfillment id
+                return _fulfillmentRepository.Save(newFulfillment).Id;
             }
-            stopwatch.Stop();
-
-            // update journal fulfillment entry values (set as processed)
-            newFulfillment.SetProcessingTime(stopwatch.ElapsedMilliseconds);
-            newFulfillment.UpdateCounts(allArticles.Count, insertedCount, updatedCount,
-                                        tobeInsertedArticles.Count + tobeUpdatedArticles.Count);
-            newFulfillment.SetJobAsCompeleted();
-
-            //return journal fulfillment id
-            return _fulfillmentRepository.Save(newFulfillment).Id;
         }
 
-        private List<Article> GetExistingArticlesByArxivId(List<string> arxivIds)
+        private List<Article> GetExistingArticlesByArxivId(string[] arxivIds)
         {
-            if (arxivIds == null | arxivIds.Count == 0)
+            if (arxivIds == null | arxivIds.Length == 0)
                 return new List<Article>();
 
             return _articleContext.Articles
@@ -225,8 +229,8 @@ namespace Journal.BackgroundTasks.Tasks
                                 .Include(x => x.PaperVersions)
                                 .Include(x => x.CategoryArticles)
                                 .Where(x => arxivIds.Contains(x.ArxivId))
-                                .OrderBy(x => x.ArxivId)
-                                .ToList();
+                                ?.OrderBy(x => x.ArxivId)
+                                ?.ToList() ?? new List<Article>();
         }
     }
 }

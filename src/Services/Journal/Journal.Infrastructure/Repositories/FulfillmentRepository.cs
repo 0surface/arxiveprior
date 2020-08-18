@@ -8,7 +8,7 @@ namespace Journal.Infrastructure.Repositories
     {
         Fulfillment Save(Fulfillment fulfillment);
 
-        (DateTime fromDate, DateTime toDate) FindLatestProcessedQueryDates(ProcessTypeEnum processType);
+        (bool found, DateTime fromDate, DateTime toDate) FindLatestProcessedQueryDates(ProcessTypeEnum processType);
     }
 
     public class FulfillmentRepository : IFulfillmentRepository
@@ -27,7 +27,7 @@ namespace Journal.Infrastructure.Repositories
             return fulfillment;
         }
 
-        public (DateTime fromDate, DateTime toDate) FindLatestProcessedQueryDates(ProcessTypeEnum processType)
+        public (bool found, DateTime fromDate, DateTime toDate) FindLatestProcessedQueryDates(ProcessTypeEnum processType)
         {
             var record = _context.Fulfillments
                             .Where(x => x.JournalType == processType && x.IsProcessed)
@@ -35,8 +35,8 @@ namespace Journal.Infrastructure.Repositories
                             .FirstOrDefault();
 
             return record == null ?
-                    (DateTime.MinValue, DateTime.MinValue) :
-                    (record.QueryFromDate, record.QueryToDate);
+                    (false, DateTime.MinValue, DateTime.MinValue) :
+                    (true, record.QueryFromDate, record.QueryToDate);
         }
     }
 }
