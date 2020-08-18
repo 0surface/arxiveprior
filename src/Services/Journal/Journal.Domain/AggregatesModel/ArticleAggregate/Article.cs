@@ -95,8 +95,8 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             Summary = summary;
             Comment = comment;
             PrimarySubjectCode = SubjectCode.FindByCode(primarySubjectCode);
-            PrimarySubjectGroupCode = PrimarySubjectCode.SubjectGroup;
-            PrmiaryDiscipline = PrimarySubjectGroupCode.Discipline;
+            PrimarySubjectGroupCode = SubjectGroup.FindByCode(PrimarySubjectCode.SubjectGroupCode);
+            PrmiaryDiscipline = Discipline.FindByName(PrimarySubjectGroupCode.DisciplineName);
             JournalReference = journalReference;
             MscCategory = mscCategory;
             AcmCategory = acmCategory;

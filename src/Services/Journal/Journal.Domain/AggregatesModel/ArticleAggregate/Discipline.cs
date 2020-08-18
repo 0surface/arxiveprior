@@ -1,10 +1,8 @@
 ﻿using Journal.Domain.SeedWork;
+using System.Linq;
 
 namespace Journal.Domain.AggregatesModel.ArticleAggregate
 {
-    /// <remarks>
-    /// Discpline class should be marked as abstract with protected constructor to encapsulate known discpline types.
-    /// </remarks>
     public class Discipline
         : Enumeration
     {
@@ -21,5 +19,8 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
              : base(id, name)
         {
         }
+
+        public static Discipline FindByName(string name)
+            => GetAll<Discipline>().SingleOrDefault(s => s.Name == name.Trim());
     }
 }

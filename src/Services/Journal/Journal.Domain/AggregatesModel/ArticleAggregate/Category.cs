@@ -16,8 +16,8 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
         {
             SubjectCode = SubjectCode.FindByCode(code);
             Name = SubjectCode.Description;
-            SubjectGroup = SubjectCode.SubjectGroup;
-            Discipline = SubjectGroup.Discipline;
+            SubjectGroup = SubjectGroup.FindByCode(SubjectCode.SubjectGroupCode); 
+            Discipline = Discipline.FindByName(SubjectGroup.DisciplineName);
         }
     }
 }
