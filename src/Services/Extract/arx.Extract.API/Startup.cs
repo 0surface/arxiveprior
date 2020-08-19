@@ -28,6 +28,7 @@ namespace arx.Extract.API
             services.AddControllers();
             services.Configure<StorageConfiguration>(storageConfig)
                     .AddCustomSwagger()
+                    .AddGrpc()
                     .AddHealthChecks(storageConfig)
                     .AddConfiguredAutoMapper()
                     .AddPublicationService(storageConfig)
@@ -54,12 +55,16 @@ namespace arx.Extract.API
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGrpcService<JournalService>();
+
                 endpoints.MapControllers();
+
                 endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
                 {
                     Predicate = _ => true,
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                 });
+
                 endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
                 {
                     Predicate = r => r.Name.Contains("self")
@@ -151,6 +156,15 @@ namespace arx.Extract.API
 
             IMapper mapper = mappingConfig.CreateMapper();
             return mapper;
+        }
+
+        public static IServiceCollection AddGrpc(this IServiceCollection services)
+        {
+            services.AddGrpc(opt =>
+            {
+                opt.EnableDetailedErrors = true;
+            });
+            return services;
         }
 
         #endregion Service Collection
