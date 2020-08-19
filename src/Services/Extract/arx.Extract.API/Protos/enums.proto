@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "arx.Extract.API.Services";
+
+enum ResponseStatus {
+	INVALID = 0;
+	SUCCESS = 1;
+	FAILURE = 2;
+}
+
+enum ProcessedDataType {
+	JOURNAL = 0;
+	ARCHIVE = 1;
+	CATCHUP = 2;
+}

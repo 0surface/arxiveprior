@@ -1,0 +1,43 @@
+﻿syntax  = "proto3";
+
+option csharp_namespace = "arx.Extract.API.Services";
+
+import "Protos/enums.proto";
+import "google/protobuf/timestamp.proto";
+
+service ExtractService {
+	rpc GetExtractedPublications (PublicationRequest) returns (PublicationResponse);
+}
+
+message PublicationRequest {
+    ProcessedDataType processedDataType = 1;
+	google.protobuf.Timestamp fromDate = 2;
+	google.protobuf.Timestamp toDate = 3;
+}
+
+message PublicationResponse {
+    repeated Publication publications = 1;
+    string fulfillmentId  = 2;
+    google.protobuf.Timestamp queryFromDate = 3;
+	google.protobuf.Timestamp queryToDate = 4;
+    ResponseStatus status = 5;
+    string errorMessage = 6;
+}
+
+message Publication {
+	string arxivId = 1;
+    google.protobuf.Timestamp publishedDate  = 2;
+    google.protobuf.Timestamp updatedDate = 3;
+    string title = 4;
+    string abstract = 5;
+    string comment = 6;
+    string primarySubjectCode  = 7;
+    repeated string subjectCodes = 8;
+    string mscCodes  = 9;
+    string acmCodes  = 10;
+    string journalReference = 11;
+    string doi  = 12;
+    string doiLinks  = 13;
+    bool authorListTruncated = 14;
+    repeated string authors  = 15;
+}
