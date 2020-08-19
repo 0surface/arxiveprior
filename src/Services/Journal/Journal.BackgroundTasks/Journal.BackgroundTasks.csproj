@@ -9,6 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.9.1" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.23.2" />
+    <PackageReference Include="Grpc.Tools" Version="2.23.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.5" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="Serilog" Version="2.9.0" />
@@ -26,6 +32,15 @@
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBus\EventBus.csproj" />
     <ProjectReference Include="..\Journal.Domain\Journal.Domain.csproj" />
     <ProjectReference Include="..\Journal.Infrastructure\Journal.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\Extract\arx.Extract.API\Protos\enums.proto" GrpcServices="None">
+      <Link>Protos\enums.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\Extract\arx.Extract.API\Protos\ExtractService.proto" GrpcServices="Client">
+      <Link>Protos\ExtractService.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
   <ItemGroup>
