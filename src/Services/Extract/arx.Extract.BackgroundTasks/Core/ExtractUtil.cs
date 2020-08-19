@@ -48,15 +48,25 @@ namespace arx.Extract.BackgroundTasks.Core
 
             if (lastFulfillment == null || lastFulfillment.QueryFromDate == DateTime.MinValue)
             {
-                queryToDate = DateTime.UtcNow.AddDays(-2).Date;
-                queryFromDate = queryToDate.AddDays(-1 * queryDateInterval).Date;
+                DateTime initDate = DateTime.UtcNow.AddDays(-2);
+                queryToDate = initDate.AddSeconds(-1).Date;
+                queryFromDate = initDate.AddDays(-1 * queryDateInterval).Date;
                 return (queryDateInterval, queryFromDate, queryToDate);
             }
 
             TimeSpan? span = (lastFulfillment?.QueryToDate - lastFulfillment?.QueryFromDate);
-            int lastFulfillmentSpanDays = span.HasValue ? Math.Abs(span.Value.Days) : 0;
-            queryToDate = lastFulfillment.QueryFromDate.AddDays(-1).Date;
-            queryFromDate = queryToDate.AddDays(-1 * lastFulfillmentSpanDays).Date;
+            
+            //Default to 1 day intervals in case the span is zero (e.g. appsettings misread incorrectly)
+            int lastFulfillmentSpanDays = span.HasValue ? Math.Abs(span.Value.Days) : 1;
+
+            /* 1. Use the last 'From Date'  as a reference. 
+             * 2. Make the current 'toDate' start just one second before the reference Date
+             * 3. Make the current 'fromDate' start n days before the reference Date (where n = lastFulfillmentSpanDays)
+             * (2) & (3) ensure that the 'toDate' values have HH:mm:ss = 23:59:59 & 'fromDate' values have HH:mm:ss = 00:00:00
+             */
+            DateTime referenceDate = lastFulfillment.QueryFromDate;
+            queryToDate = referenceDate.AddSeconds(-1).Date;
+            queryFromDate = referenceDate.AddDays(-1 * lastFulfillmentSpanDays).Date;
 
             return (lastFulfillmentSpanDays, queryFromDate, queryToDate);
         }
