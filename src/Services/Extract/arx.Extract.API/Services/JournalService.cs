@@ -2,6 +2,7 @@
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,17 @@ namespace arx.Extract.API.Services
     public class JournalService : ExtractService.ExtractServiceBase
     {
         private readonly IMapper _mapper;
+        private readonly ILogger<JournalService> _logger;
         private readonly IPublicationRepository _publicationRepo;
         private readonly IFulfillmentRepository _fulfillmentRepo;
 
         public JournalService(IMapper mapper,
+            ILogger<JournalService> logger,
             IPublicationRepository publicationRepo,
             IFulfillmentRepository fulfillmentRepo)
         {
             _mapper = mapper;
+            _logger = logger;
             _publicationRepo = publicationRepo;
             _fulfillmentRepo = fulfillmentRepo;
         }
@@ -52,7 +56,7 @@ namespace arx.Extract.API.Services
                 {
                     string msg = $"Unable to find Archive Fulfillment record after queryFromDate [{queryFromDate}]";
                     response.ErrorMessage = msg;
-                    Log.Fatal(msg);
+                    _logger.LogError(msg);
                     return await Task.FromResult(response);
                 }
                 else
@@ -70,8 +74,8 @@ namespace arx.Extract.API.Services
             }
             catch (Exception ex)
             {
-                string msg = $"Attmepting to retrieve Archive Publications data.[{ ex.Message}]";
-                Log.Fatal(ex, msg);
+                string msg = $"Attmepting to retrieve Archive Publications data.[{ ex.Message}]";                
+                _logger.LogError(ex, msg);
                 response.ErrorMessage = msg;
                 return response;
             }
