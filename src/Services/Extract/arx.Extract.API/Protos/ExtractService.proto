@@ -2,7 +2,7 @@
 
 option csharp_namespace = "arx.Extract.API.Services";
 
-import "Protos/enums.proto";
+import "enums.proto";
 import "google/protobuf/timestamp.proto";
 
 service ExtractService {
