@@ -1,5 +1,6 @@
 ﻿using arx.Extract.Data.Common;
 using arx.Extract.Data.Entities;
+using arx.Extract.Types;
 using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace arx.Extract.Data.Repository
         Task<List<FulfillmentEntity>> GetFulfillments(string jobName);
         Task<List<FulfillmentEntity>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate);
         Task<FulfillmentEntity> GetLastSuccessfulFulfillment(string jobName);
+        Task<FulfillmentEntity> GetLastSuccessfulArchiveFulfillment(DateTime queryFromDate);
         Task<List<FulfillmentEntity>> GetFailedFulfillments(string jobName);
     }
     public class FulfillmentRepository : TableStorage, IFulfillmentRepository
@@ -62,6 +64,32 @@ namespace arx.Extract.Data.Repository
                     ?.OrderByDescending(x => x.QueryFromDate)
                     ?.ToList()
                     ?? new List<FulfillmentEntity>();
+        }
+
+        public async Task<FulfillmentEntity> GetLastSuccessfulArchiveFulfillment(DateTime queryFromDate)
+        {
+            var t = typeof(FulfillmentEntity);
+
+            ///Walk 5 seconds away from the given queryFromDate in both directions, 
+            /// to find the desired queryToDate which should only be 1 second behind the queryFromDate value.
+            /// Example, if queryFromDate = 02/08/2020 00:00:00 then the query is in this range [01/08/2020 23:59:55 , 02/08/2020 00:05:00 ]
+            var lessThan = queryFromDate.AddSeconds(5);
+            var greaterThan = queryFromDate.AddSeconds(-5);
+
+            var conditions = new List<QueryFilterCondition>()
+            {
+                new QueryFilterCondition (string.Empty, t.GetProperty("Type").Name, QueryComparisons.Equal, ExtractTypeEnum.Archive.ToString()),
+                new QueryFilterCondition ("datetime", t.GetProperty("QueryToDate").Name, QueryComparisons.GreaterThan, greaterThan),
+                 new QueryFilterCondition ("datetime", t.GetProperty("QueryToDate").Name, QueryComparisons.LessThan, lessThan)
+            };
+
+            var tableQuery = QueryFilterUtil.AndQueryFilters<FulfillmentEntity>(conditions);
+
+            var response = await Query(tableQuery);
+
+            return response
+                    ?.OrderByDescending(x => x.QueryFromDate)
+                    ?.FirstOrDefault();
         }
 
         public async Task<FulfillmentEntity> GetLastSuccessfulFulfillment(string jobName)
