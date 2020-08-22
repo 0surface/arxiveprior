@@ -18,9 +18,8 @@ namespace Journal.Infrastructure.Factories
                             .AddEnvironmentVariables()
                             .Build();
 
-            var optionsBuilder = new DbContextOptionsBuilder<ArticleContext>();
-
-            optionsBuilder.UseSqlServer(config["ConnectionString"], sqlServerOptionsAction: o => o.MigrationsAssembly("Journal.Infrastructure"));
+            var optionsBuilder = new DbContextOptionsBuilder<ArticleContext>()
+                .UseSqlServer(config["ConnectionString"], sqlServerOptionsAction: o => o.MigrationsAssembly("Journal.Infrastructure"));
 
             return new ArticleContext(optionsBuilder.Options);
         }
