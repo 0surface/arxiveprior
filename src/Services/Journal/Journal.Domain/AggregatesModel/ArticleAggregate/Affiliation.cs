@@ -1,4 +1,5 @@
 ﻿using Journal.Domain.SeedWork;
+using System.Collections.Generic;
 
 namespace Journal.Domain.AggregatesModel.ArticleAggregate
 {
@@ -7,9 +8,17 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
     {
         public string Name { get; private set; }
 
-        public Affiliation(string name)
+        public List<AuthorAffiliation> AuthorAffiliations { get; private set; }
+
+        protected Affiliation()
         {
-            Name = name;
+            AuthorAffiliations = new List<AuthorAffiliation>();
+        }
+
+        public Affiliation(string affiliateName) 
+            : base()
+        {
+            Name = affiliateName;
         }
     }
 }
