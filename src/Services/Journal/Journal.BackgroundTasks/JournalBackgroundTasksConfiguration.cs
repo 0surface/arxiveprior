@@ -5,5 +5,6 @@
         public string ConnectionString { get; set; }
         public bool ArchiveModeIsActive { get; set; }
         public int PostProcessingWaitTimeInMilliSeconds { get; set; }
+        public string GrpcExtractUrl { get; set; }
     }
 }
