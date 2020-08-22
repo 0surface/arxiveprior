@@ -3,7 +3,6 @@ using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -27,6 +26,7 @@ namespace arx.Extract.API.Services
             _publicationRepo = publicationRepo;
             _fulfillmentRepo = fulfillmentRepo;
         }
+
         public override Task<PublicationResponse> GetExtractedPublications(PublicationRequest request, ServerCallContext context)
         {
             PublicationResponse response = new PublicationResponse() { Status = ResponseStatus.Failure };
@@ -74,7 +74,7 @@ namespace arx.Extract.API.Services
             }
             catch (Exception ex)
             {
-                string msg = $"Attmepting to retrieve Archive Publications data.[{ ex.Message}]";                
+                string msg = $"Attmepting to retrieve Archive Publications data.[{ ex.Message}]";
                 _logger.LogError(ex, msg);
                 response.ErrorMessage = msg;
                 return response;
@@ -82,4 +82,3 @@ namespace arx.Extract.API.Services
         }
     }
 }
-
