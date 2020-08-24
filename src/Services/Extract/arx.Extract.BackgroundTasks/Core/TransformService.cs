@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace arx.Extract.BackgroundTasks.Core
@@ -142,7 +143,7 @@ namespace arx.Extract.BackgroundTasks.Core
         {
             List<string> result = new List<string>();
 
-            if (authorEntryList == null || authorEntryList.Count() == 0)
+            if (authorEntryList == null || authorEntryList.Count == 0)
                 return result;
 
             authorEntryList.ForEach(entry =>
@@ -160,20 +161,20 @@ namespace arx.Extract.BackgroundTasks.Core
 
         public static bool IsAcmCode(string value)
         {
-            return (value.Contains(';')) // "A.O.O; B.0.0"
+            return (value.Contains(';', StringComparison.InvariantCulture)) // "A.O.O; B.0.0"
                 || (value.Length == 3 && value[1] == '.') //A.0
                 || (value.Length >= 5 && value[1] == '.' && value[3] == '.'); // A.0.0
         }
 
         public static bool IsMcsCode(string value)
         {
-            return value.Contains(',') // "00A00, 00B00"                
+            return value.Contains(',', StringComparison.Ordinal) // "00A00, 00B00"                
                 || (value.Length >= 3 && char.IsNumber(value[0]) && char.IsNumber(value[1])) //03F, 42Bxx 
-                || value.ToLower().Contains("primary")
-                || value.ToLower().Contains("secondary")//["90C17 (Primary), 90C25 (Secondary), 90C34 (Tertiary)"]                
-                || value.ToLower().Contains("tertiary")
-                || value.Contains(':') //2010 MSC: 60H15
-                || value.Contains('[') || value.Contains('(')  //[2010] 11T71
+                || value.ToLower().Contains("primary", StringComparison.OrdinalIgnoreCase)
+                || value.ToLower().Contains("secondary", StringComparison.OrdinalIgnoreCase)//["90C17 (Primary), 90C25 (Secondary), 90C34 (Tertiary)"]                
+                || value.ToLower().Contains("tertiary", StringComparison.OrdinalIgnoreCase)
+                || value.Contains(':',StringComparison.Ordinal) //2010 MSC: 60H15
+                || value.Contains('[', StringComparison.Ordinal) || value.Contains('(', StringComparison.Ordinal)  //[2010] 11T71
                 || value.Length == 2; // 35 85
         }
     }

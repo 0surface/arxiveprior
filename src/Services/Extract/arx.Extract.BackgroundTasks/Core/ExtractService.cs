@@ -26,7 +26,7 @@ namespace arx.Extract.BackgroundTasks.Core
             IFulfillmentRepository fulfillmentRepository,
             IFulfillmentItemRepository fulfillmentItemRepository)
         {
-            _config = configSettings?.Value ?? throw new ArgumentException(nameof(configSettings));
+            _config = configSettings?.Value ?? throw new ArgumentException("IOptions<BackgroundTasksConfiguration> configuration is null");
             _logger = logger ?? throw new ArgumentNullException(nameof(logger)); ;
             _jobRepository = jobRepository;
             _fulfillmentRepository = fulfillmentRepository;

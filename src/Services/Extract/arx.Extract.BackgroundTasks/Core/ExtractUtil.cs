@@ -41,34 +41,45 @@ namespace arx.Extract.BackgroundTasks.Core
         /// <param name="lastFulfillment"></param>
         /// <param name="queryDateInterval"></param>
         /// <returns>(int, DateTime, DateTime)</returns>
-        public static (int, DateTime, DateTime) CalculateArchiveQueryDates(FulfillmentEntity lastFulfillment, int queryDateInterval)
+        public static (int, DateTime, DateTime) CalculateArchiveQueryDates
+                        (DateTime lastFulfillmentQueryFromDate, DateTime lastFulfillmentQueryToDate, int queryDateInterval)
         {
-            DateTime queryFromDate;
-            DateTime queryToDate;
-
-            if (lastFulfillment == null || lastFulfillment.QueryFromDate == DateTime.MinValue)
+            if (lastFulfillmentQueryFromDate == DateTime.MinValue || lastFulfillmentQueryToDate == DateTime.MinValue)
             {
-                DateTime initDate = DateTime.UtcNow.AddDays(-2);
-                queryToDate = initDate.AddSeconds(-1).Date;
-                queryFromDate = initDate.AddDays(-1 * queryDateInterval).Date;
-                return (queryDateInterval, queryFromDate, queryToDate);
+                //Start from Two days before current DateTime.
+                DateTime initDate = DateTime.UtcNow.Date.AddDays(-2);                
+                var (initFrom, initTo) = GetArchiveDates(initDate, queryDateInterval);
+                return (queryDateInterval, initFrom, initTo);
             }
 
-            TimeSpan? span = (lastFulfillment?.QueryToDate - lastFulfillment?.QueryFromDate);
-            
-            //Default to 1 day intervals in case the span is zero (e.g. appsettings misread incorrectly)
-            int lastFulfillmentSpanDays = span.HasValue ? Math.Abs(span.Value.Days) : 1;
+            TimeSpan? span = lastFulfillmentQueryToDate - lastFulfillmentQueryFromDate;
 
-            /* 1. Use the last 'From Date'  as a reference. 
-             * 2. Make the current 'toDate' start just one second before the reference Date
-             * 3. Make the current 'fromDate' start n days before the reference Date (where n = lastFulfillmentSpanDays)
+            //Default to 1 day intervals in case the span is not found (e.g. appsettings misread incorrectly)
+            int lastFulfillmentSpanDays = (span.HasValue && span.Value.Days != 0) ? Math.Abs(span.Value.Days) : 1;
+
+            var (queryFrom, queryTo) = GetArchiveDates(lastFulfillmentQueryFromDate, lastFulfillmentSpanDays);
+
+            return (lastFulfillmentSpanDays, queryFrom, queryTo);
+        }
+
+        /// <summary>
+        ///  Returns Archive Query From and To Dates from the given span and reference (FromDate) values.
+        ///  Expects a non null and valid referenceDate value as parameter.
+        ///  Expects a non zero  querySpanInDays value
+        /// </summary>
+        /// <param name="referenceDate"></param>
+        /// <param name="querySpanInDays"></param>
+        /// <returns>Tuple<DateTime,DateTime></returns>
+        private static (DateTime fromDate, DateTime toDate) GetArchiveDates (DateTime referenceDate, int querySpanInDays) 
+        {
+            /* 1. Use the last 'From Date'  as a reference Date. 
+             * 2. Make the current Archive 'toDate' start just one second before the reference Date
+             * 3. Make the current Archive 'fromDate' start n days before the reference Date(where n = querySpanInDays)
              * (2) & (3) ensure that the 'toDate' values have HH:mm:ss = 23:59:59 & 'fromDate' values have HH:mm:ss = 00:00:00
              */
-            DateTime referenceDate = lastFulfillment.QueryFromDate;
-            queryToDate = referenceDate.AddSeconds(-1).Date;
-            queryFromDate = referenceDate.AddDays(-1 * lastFulfillmentSpanDays).Date;
-
-            return (lastFulfillmentSpanDays, queryFromDate, queryToDate);
+            DateTime queryToDate = referenceDate.AddSeconds(-1);
+            DateTime queryFromDate = referenceDate.AddDays(-1 * querySpanInDays).Date;
+            return (queryFromDate, queryToDate);
         }
 
         /// <summary>
@@ -83,9 +94,11 @@ namespace arx.Extract.BackgroundTasks.Core
         {
             /* Tuple(FromDate,ToDate) */
             List<ExtractQueryDates> result = new List<ExtractQueryDates>();
+
             try
             {
-                var (lastSpanDays, nextFromDate, nextToDate) = CalculateArchiveQueryDates(lastFulfillment, queryDateInterval);
+                var (lastSpanDays, nextFromDate, nextToDate) =
+                    CalculateArchiveQueryDates(lastFulfillment.QueryFromDate, lastFulfillment.QueryToDate, queryDateInterval);
 
                 /* queryDateInterval is optimal */
                 if (queryDateInterval >= lastSpanDays)
@@ -94,26 +107,39 @@ namespace arx.Extract.BackgroundTasks.Core
                     return result;
                 }
 
-                /* lastSpanDays is too big, needs to be chuncked. Requires more than one set of (from, to) query dates / fulfillment items */
+                /* lastSpanDays is too big, needs to be chuncked. 
+                 * Requires more than one set of (from, to) query dates / fulfillment items */
 
-                int mod = lastSpanDays % queryDateInterval;
-                int chunkSize = (int)Math.Floor((double)lastSpanDays / queryDateInterval);
-                int chunks = mod != 0 ? ((queryDateInterval - mod) / lastSpanDays) + 1 : queryDateInterval / lastSpanDays;
+                DateTime referenceDate = nextToDate.AddSeconds(1);
 
-                /* Create Query date interval Chucks*/
-                for (int i = 0; i < chunks; i++)
+                int chunkSize = queryDateInterval;
+
+                int remainder = lastSpanDays % queryDateInterval;
+
+                int noOfChunks = remainder == 0 ?
+                    lastSpanDays / queryDateInterval
+                    : ((lastSpanDays - remainder) / queryDateInterval);
+
+
+                for (int i = 0; i < noOfChunks; i++)
                 {
-                    var toDate = i == 0 ? nextToDate : result[i].QueryFromDate.AddDays(-1);
-                    var fromDate = toDate.AddDays(-1 * chunkSize);
-                    result.Add(new ExtractQueryDates(nextFromDate, nextToDate));
+                    if (i == 0)
+                    {
+                        var (initFromDate, initToDate) = GetArchiveDates(referenceDate, chunkSize);
+                        result.Add(new ExtractQueryDates(initFromDate, initToDate));
+                    }
+                    else
+                    {
+                        var (fromDate, toDate) = GetArchiveDates(result[i - 1].QueryFromDate, chunkSize);
+                        result.Add(new ExtractQueryDates(fromDate, toDate));
+                    }
                 }
-
-                /* If chunk count is an odd number, add the last Query date interval Chuck */
-                if (mod != 0)
+                if (remainder != 0)
                 {
-                    var lastToDate = result.Last().QueryFromDate.AddDays(-1);
-                    var lastFromDate = lastToDate.AddDays(-1 * mod);
-                    result.Add(new ExtractQueryDates(lastFromDate, lastToDate));
+                    /* Since chunk count is an odd number, add the last Query date interval Chunck */
+                    int remainderIntervalInDays = (result.Last().QueryFromDate - nextFromDate).Days;
+                    var (lastfromDate, lastToDate) = GetArchiveDates(result.Last().QueryFromDate, remainderIntervalInDays);
+                    result.Add(new ExtractQueryDates(lastfromDate, lastToDate));
                 }
             }
             catch (Exception)
@@ -158,7 +184,8 @@ namespace arx.Extract.BackgroundTasks.Core
             item.PartitionKey = item.JobName;
             item.RowKey = item.FulfillmentId.ToString();
 
-            var (_, fromDate, toDate) = ExtractUtil.CalculateArchiveQueryDates(lastFulfillment, averageQueryDateInterval);
+            var (_, fromDate, toDate) = ExtractUtil.CalculateArchiveQueryDates
+                (lastFulfillment.QueryFromDate, lastFulfillment.QueryToDate, averageQueryDateInterval);
 
             item.QueryFromDate = fromDate;
             item.QueryToDate = toDate;
