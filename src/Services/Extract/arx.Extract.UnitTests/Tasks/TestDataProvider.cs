@@ -25,19 +25,19 @@ namespace arx.Extract.UnitTests.Tasks
     {
         private readonly List<object[]> _data = new List<object[]>
         {
-            new object[]{ new FulfillmentEntity(){ QueryFromDate = new DateTime(2020, 08, 08), QueryToDate = new DateTime(2020, 08, 13) },5
-                , new List<ExtractQueryDates>(){ new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 08, 03), QueryToDate = new DateTime(2020, 08, 07, 23, 59, 59) }} },
+            new object[]{ new DateTime(2020, 08, 08), new DateTime(2020, 08, 13), 5,
+                 new List<ExtractQueryDates>(){ new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 08, 03), QueryToDate = new DateTime(2020, 08, 07, 23, 59, 59) }} },
 
-            new object[]{ new FulfillmentEntity(){ QueryFromDate = new DateTime(2020, 08, 07), QueryToDate = new DateTime(2020, 08, 13) },3
-                , new List<ExtractQueryDates>(){ new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 08, 04), QueryToDate = new DateTime(2020, 08, 06, 23, 59, 59) },
+            new object[]{  new DateTime(2020, 08, 07),  new DateTime(2020, 08, 13), 3,
+                 new List<ExtractQueryDates>(){ new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 08, 04), QueryToDate = new DateTime(2020, 08, 06, 23, 59, 59) },
                                                 new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 08, 01), QueryToDate = new DateTime(2020, 08, 03, 23, 59, 59) }} },
 
             /* chunck 1 = 04-08-2020 --> 06-08-2020 23:59:59  has 3 days interval
              * chunck 2 = 01-08-2020 --> 03-08-2020 23:59:59  has 3 days interval
              * chunck 3 = 30-07-2020 --> 31-07-2020 23:59:59  has 2 days interval ( 8 - 2 * 3 = 2)
              */
-            new object[]{ new FulfillmentEntity(){ QueryFromDate = new DateTime(2020, 08, 07), QueryToDate = new DateTime(2020, 08, 15) },3
-                , new List<ExtractQueryDates>(){ new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 08, 04), QueryToDate = new DateTime(2020, 08, 06, 23, 59, 59) },
+            new object[]{  new DateTime(2020, 08, 07),  new DateTime(2020, 08, 15), 3,
+                 new List<ExtractQueryDates>(){ new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 08, 04), QueryToDate = new DateTime(2020, 08, 06, 23, 59, 59) },
                                                 new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 08, 01), QueryToDate = new DateTime(2020, 08, 03, 23, 59, 59) },
                                                 new ExtractQueryDates() { QueryFromDate = new DateTime(2020, 07, 30), QueryToDate = new DateTime(2020, 07, 31, 23, 59, 59) }} }
         };

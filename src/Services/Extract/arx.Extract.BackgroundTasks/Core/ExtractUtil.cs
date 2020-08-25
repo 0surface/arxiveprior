@@ -91,18 +91,20 @@ namespace arx.Extract.BackgroundTasks.Core
         /// <param name="lastFulfillment">FulfillmentEntity</param>
         /// <param name="queryDateInterval">int</param>
         /// <returns>List<Tuple<DateTime, DateTime>></returns>
-        public static List<ExtractQueryDates> GetRequestChunkedArchiveDates(FulfillmentEntity lastFulfillment, int queryDateInterval)
+        public static List<ExtractQueryDates> GetRequestChunkedArchiveDates(
+                    DateTime lastFulfillmentQueryFromDate, DateTime lastFulfillmentQueryToDate, int queryDateInterval)
         {
             /* Tuple(FromDate,ToDate) */
             List<ExtractQueryDates> result = new List<ExtractQueryDates>();
 
             try
             {
-                var (lastSpanDays, nextFromDate, nextToDate) = CalculateArchiveQueryDates(lastFulfillment.QueryFromDate
-                                                            , lastFulfillment.QueryToDate
-                                                            , queryDateInterval);
+                var (lastSpanDays, nextFromDate, nextToDate)
+                    = CalculateArchiveQueryDates(lastFulfillmentQueryFromDate,
+                                                lastFulfillmentQueryToDate,
+                                                queryDateInterval);
 
-                /* queryDateInterval is optimal */
+                /* QueryDateInterval is optimal. Chunking/Segmenting the query date interval is not required. */
                 if (queryDateInterval >= lastSpanDays)
                 {
                     result.Add(new ExtractQueryDates(nextFromDate, nextToDate));
@@ -181,7 +183,7 @@ namespace arx.Extract.BackgroundTasks.Core
         /// <param name="averageQueryDateInterval"></param>
         /// <param name="isFirstFulfillment"></param>
         /// <returns>FulfillmentEntity</returns>
-        public static FulfillmentEntity MakeNewFulfillment(JobEntity job, FulfillmentEntity lastFulfillment, int averageQueryDateInterval, bool isFirstFulfillment)
+        public static FulfillmentEntity MakeNewFulfillment(JobEntity job, DateTime previousQueryFromDate, DateTime previousQueryToDate, int averageQueryDateInterval)
         {
             FulfillmentEntity item = new FulfillmentEntity()
             {
@@ -192,22 +194,16 @@ namespace arx.Extract.BackgroundTasks.Core
                 JobCompletedDate = new DateTime(1970, 01, 01)
             };
 
-            if (isFirstFulfillment)
-            {
-                item.QueryFromDate = DateTime.MinValue;
-                item.QueryToDate = DateTime.MinValue;
-            }
-
             item.PartitionKey = item.JobName;
             item.RowKey = item.FulfillmentId.ToString();
 
-            var (_, fromDate, toDate) = 
-                CalculateArchiveQueryDates(lastFulfillment.QueryFromDate, 
-                                            lastFulfillment.QueryToDate, 
-                                            averageQueryDateInterval);
+            var (_, newFromDate, newQueryToDate) = 
+                        CalculateArchiveQueryDates(previousQueryFromDate,
+                                                    previousQueryToDate, 
+                                                    averageQueryDateInterval);
 
-            item.QueryFromDate = fromDate;
-            item.QueryToDate = toDate;
+            item.QueryFromDate = newFromDate;
+            item.QueryToDate = newQueryToDate;
 
             return item;
         }

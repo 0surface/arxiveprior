@@ -73,7 +73,26 @@ namespace arx.Extract.BackgroundTasks.Core
             {
                 int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));
 
-                FulfillmentEntity newFulfillment = ExtractUtil.MakeNewFulfillment(job, lastFulfillment, minQueryDateInterval, isFirstFulfillment);
+                DateTime previousQueryFromDate = DateTime.MinValue;
+                DateTime previousQueryToDate = DateTime.MinValue;
+
+                if (!isFirstFulfillment
+                    && (lastFulfillment == null || lastFulfillment?.QueryFromDate == null || lastFulfillment?.QueryToDate == null))
+                {
+                    _logger.LogCritical("Error - Unable to find previous lastFulfillment Entit. Returned value is null");
+                    return (false, null, null);
+                }
+                else if (!isFirstFulfillment)
+                {
+                    previousQueryFromDate = lastFulfillment.QueryFromDate;
+                    previousQueryToDate = lastFulfillment.QueryToDate;
+                }
+
+                FulfillmentEntity newFulfillment 
+                    = ExtractUtil.MakeNewFulfillment(job,
+                                                    previousQueryFromDate, 
+                                                    previousQueryToDate, 
+                                                    minQueryDateInterval);
 
                 if (ExtractUtil.HasPassedTerminationDate(_config.ArchiveTerminateDate, newFulfillment.QueryToDate))
                 {
@@ -86,7 +105,7 @@ namespace arx.Extract.BackgroundTasks.Core
 
                 if (newFulfillment == null)
                 {
-                    _logger.LogCritical("Error persisting New Fulfilment to Storage - [{0}]-[{1}] - Query From [{2}] To [{3}]",
+                    _logger.LogCritical("Error persisting New Extract Fulfillment to Storage - [{0}]-[{1}] - Query From [{2}] To [{3}]",
                             newFulfillment.JobName, newFulfillment.FulfillmentId, newFulfillment.QueryFromDate.ToString("dd MMMM yyyy")
                             , newFulfillment.QueryToDate.ToString("dd MMMM yyyy"));
                     return (false, null, null);
@@ -101,12 +120,26 @@ namespace arx.Extract.BackgroundTasks.Core
 
                     foreach (var jobItem in jobItems)
                     {
-                        //For an optimal choice of query interval date values per query, the loop below will only be executed once.
-                        foreach (var interval in ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval))
+                        if (isFirstFulfillment)
                         {
-                            if (ExtractUtil.HasPassedTerminationDate(_config.ArchiveTerminateDate, interval.QueryToDate) == false)
+                            var initialInterval = ExtractUtil.GetRequestChunkedArchiveDates
+                                                    (DateTime.MinValue, DateTime.MinValue, jobItem.QueryDateInterval).FirstOrDefault();
+
+                            if (ExtractUtil.HasPassedTerminationDate(_config.ArchiveTerminateDate, initialInterval.QueryToDate) == false)
                             {
-                                newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
+                                newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, initialInterval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
+                            }
+                        }
+                        else
+                        {
+                            //For an optimal choice of query interval date values per query, the loop below will only be executed once.
+                            foreach (var interval in ExtractUtil.GetRequestChunkedArchiveDates
+                                                    (lastFulfillment.QueryFromDate,lastFulfillment.QueryToDate, jobItem.QueryDateInterval))
+                            {
+                                if (ExtractUtil.HasPassedTerminationDate(_config.ArchiveTerminateDate, interval.QueryToDate) == false)
+                                {
+                                    newFulfillmentItems.Add(ExtractUtil.MakeNewFulfillmentItem(jobItem, interval, job.QueryBaseUrl, newFulfillment.FulfillmentId));
+                                }
                             }
                         }
                     }
@@ -116,15 +149,16 @@ namespace arx.Extract.BackgroundTasks.Core
                     if (fulfillmentItems == null || fulfillmentItems.Count == 0)
                     {
                         _logger.LogCritical($"Error persisting [{fulfillmentItems.Count}] New Fulfillment Items from Fulfillment to Storage {newFulfillment.FulfillmentId} - @{DateTime.UtcNow}");
-                       
+
                         return (false, null, null);
                     }
 
                     return (true, newFulfillment, fulfillmentItems);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogCritical("Exception thrown in CreateArchiveFulfillmentSaga", ex);
                 return (false, null, null);
             }
         }

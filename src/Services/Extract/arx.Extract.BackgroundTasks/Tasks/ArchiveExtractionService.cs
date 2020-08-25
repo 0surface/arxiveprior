@@ -297,11 +297,11 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                         //Persist to Storage
                         await _extractService.UpdateFulfilment(newFulfillment);
+
+                        return newFulfillment.FulfillmentId.ToString();
                     }
-                    return newFulfillment.FulfillmentId.ToString();
                 }
             }
-
             return string.Empty;
         }
 

@@ -28,10 +28,10 @@ namespace arx.Extract.UnitTests.Tasks
 
         [Theory]
         [ClassData(typeof(ChunkedArchiveDatesTestDataGenerator))]
-        public void GetRequestChunkedArchiveDates_Params_ReturnsCorrectResults(FulfillmentEntity fulfillment, int queryInterval, List<ExtractQueryDates> expected)
+        public void GetRequestChunkedArchiveDates_Params_ReturnsCorrectResults(DateTime fromDate,DateTime toDate, int queryInterval, List<ExtractQueryDates> expected)
         {
             //Act 
-            var sut = ExtractUtil.GetRequestChunkedArchiveDates(fulfillment, queryInterval);
+            var sut = ExtractUtil.GetRequestChunkedArchiveDates(fromDate, toDate, queryInterval);
 
             //Assert
             sut.Should().BeEquivalentTo(expected);
