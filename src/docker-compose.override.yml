@@ -7,6 +7,12 @@ version: '3.4'
 # An external IP or DNS name has to be used (instead localhost and the 10.0.75.1 IP) when testing the Web apps and the Xamarin apps from remote machines/devices using the same WiFi, for instance.
 
 services:
+
+  rabbitmq:
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
   seq:
     environment:
       - ACCEPT_EULA=Y
@@ -21,12 +27,6 @@ services:
       - "5433:1433"
     volumes:
       - arxiveprior-sqldata:/var/opt/mssql
-    
-
-  rabbitmq:
-    ports:
-      - "15672:15672"
-      - "5672:5672"
 
   arx.extract.api:
     environment:
@@ -73,16 +73,17 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - DOTNET_ENVIRONMENT=Development      
+      - DOTNET_ENVIRONMENT=Development
+      - ConnectionString=${ARX_AZURE_JOURNAL_DB:-Server=sqldata;Database=arxiveprior.Services.JournalDb;User Id=sa;Password=Pass@word}
+      - EventBusConnection=${ARX_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=${ARX_SERVICE_BUS_USERNAME}
+      - EventBusPassword=${ARX_SERVICE_BUS_PASSWORD}
+      - AzureServiceBusEnabled=False
   
   journal.infrastructure:
     environment:
        - ASPNETCORE_ENVIRONMENT=Development
-       - ConnectionString=${ARX_AZURE_JOURNAL_DB:-Server=sqldata;Database=arxiveprior.Services.JournalDb;User Id=sa;Password=Pass@word}
-       - EventBusConnection=${ARX_AZURE_SERVICE_BUS:-rabbitmq}
-       - EventBusUserName=${ARX_SERVICE_BUS_USERNAME}
-       - EventBusPassword=${ARX_SERVICE_BUS_PASSWORD}
-       - AzureServiceBusEnabled=False
+       - ConnectionString=${ARX_AZURE_JOURNAL_DB:-Server=sqldata;Database=arxiveprior.Services.JournalDb;User Id=sa;Password=Pass@word}     
 
 volumes:
 

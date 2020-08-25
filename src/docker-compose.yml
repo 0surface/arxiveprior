@@ -1,14 +1,14 @@
 version: '3.4'
 
 services:
+ rabbitmq:
+    image: rabbitmq:3.8.7
+
   seq:
     image: datalust/seq:latest
 
   sqldata:
-    image: mcr.microsoft.com/mssql/server:2017-latest
-
-  rabbitmq:
-    image: rabbitmq:3.8-management-alpine
+    image: mcr.microsoft.com/mssql/server:2017-latest  
 
   arx.extract.api:
     image: ${DOCKER_REGISTRY-}arxextractapi
