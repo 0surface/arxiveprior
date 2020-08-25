@@ -11,8 +11,7 @@ service ExtractService {
 
 message PublicationRequest {
     ProcessedDataType processedDataType = 1;
-	google.protobuf.Timestamp fromDate = 2;
-	google.protobuf.Timestamp toDate = 3;
+    string fulfillmentId  = 2;
 }
 
 message PublicationResponse {

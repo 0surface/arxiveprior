@@ -1,8 +1,10 @@
-﻿using arx.Extract.Data.Repository;
+﻿using arx.Extract.Data.Entities;
+using arx.Extract.Data.Repository;
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,51 +14,30 @@ namespace arx.Extract.API.Services
     public class JournalService : ExtractService.ExtractServiceBase
     {
         private readonly IMapper _mapper;
-        private readonly ILogger<JournalService> _logger;
         private readonly IPublicationRepository _publicationRepo;
         private readonly IFulfillmentRepository _fulfillmentRepo;
 
         public JournalService(IMapper mapper,
-            ILogger<JournalService> logger,
             IPublicationRepository publicationRepo,
             IFulfillmentRepository fulfillmentRepo)
         {
             _mapper = mapper;
-            _logger = logger;
             _publicationRepo = publicationRepo;
             _fulfillmentRepo = fulfillmentRepo;
         }
 
-        public override Task<PublicationResponse> GetExtractedPublications(PublicationRequest request, ServerCallContext context)
+        public override async Task<PublicationResponse> GetExtractedPublications(PublicationRequest request, ServerCallContext context)
         {
             PublicationResponse response = new PublicationResponse() { Status = ResponseStatus.Failure };
-
-            //Validate Input DateTime value
-            DateTime queryFromDate = request.FromDate != null ? request.FromDate.ToDateTime() : DateTime.MinValue;
-            if (queryFromDate == DateTime.MinValue)
-            {
-                response.Status = ResponseStatus.Invalid;
-                return Task.FromResult(response);
-            }
-
-            if (request.ProcessedDataType == ProcessedDataType.Archive)
-                return GetArchivePublications(response, queryFromDate);
-
-
-            return Task.FromResult(response);
-        }
-
-        private async Task<PublicationResponse> GetArchivePublications(PublicationResponse response, DateTime queryFromDate)
-        {
             try
             {
-                var fulfillment = _fulfillmentRepo.GetLastSuccessfulArchiveFulfillment(queryFromDate).Result;
+                FulfillmentEntity fulfillment = await _fulfillmentRepo.GetFulfillment(request.FulfillmentId);
 
                 if (fulfillment == null)
                 {
-                    string msg = $"Unable to find Archive Fulfillment record after queryFromDate [{queryFromDate}]";
+                    string msg = $"Unable to find Archive Fulfillment record  [{request.FulfillmentId}]";
                     response.ErrorMessage = msg;
-                    _logger.LogError(msg);
+                    Log.Error(msg);
                     return await Task.FromResult(response);
                 }
                 else
@@ -75,7 +56,7 @@ namespace arx.Extract.API.Services
             catch (Exception ex)
             {
                 string msg = $"Attmepting to retrieve Archive Publications data.[{ ex.Message}]";
-                _logger.LogError(ex, msg);
+                Log.Fatal(ex, msg);
                 response.ErrorMessage = msg;
                 return response;
             }

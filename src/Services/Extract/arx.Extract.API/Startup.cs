@@ -31,7 +31,7 @@ namespace arx.Extract.API
                     .AddGrpc()
                     .AddHealthChecks(storageConfig)
                     .AddConfiguredAutoMapper()
-                    .AddPublicationService(storageConfig)
+                    .AddJournalService(storageConfig)
                     .AddFulfillmentService(storageConfig)
                     .AddFulfillmentItemService(storageConfig);
         }
@@ -105,14 +105,17 @@ namespace arx.Extract.API
             return services;
         }
 
-        public static IServiceCollection AddPublicationService(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddJournalService(this IServiceCollection services, IConfiguration configuration)
         {
             var storageConnectionString = configuration["StorageConnectionString"];
-            var tableName = configuration["PublicationTableName"];
+            var publicationTableName = configuration["PublicationTableName"];
+            var fulfillmentTableName = configuration["FulfillmentTableName"];
 
-            services.AddScoped<IPublicationsService>(opt =>
+            services.AddScoped<JournalService>(opt =>
             {
-                return new PublicationsService(new PublicationRepository(storageConnectionString, tableName), ConfigureAutoMapper());
+                return new JournalService(ConfigureAutoMapper(),
+                    new PublicationRepository(storageConnectionString, publicationTableName),
+                    new FulfillmentRepository(storageConnectionString, fulfillmentTableName));
             });
             return services;
         }

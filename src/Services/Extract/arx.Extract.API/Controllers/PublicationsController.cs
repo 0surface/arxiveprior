@@ -1,6 +1,10 @@
 ﻿using arx.Extract.API.Services;
+using arx.Extract.Data.Repository;
+using arx.Extract.Types;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -9,12 +13,14 @@ namespace arx.Extract.API.Controllers
     [Route("api/v1/[controller]")]
     [ApiController]
     public class PublicationsController : Controller
-    {
-        private readonly IPublicationsService _service;
+    {        
+        private readonly IPublicationRepository _repo;
+        private readonly IMapper _mapper;
 
-        public PublicationsController(IPublicationsService service)
-        {
-            _service = service;
+        public PublicationsController(IPublicationRepository repo, IMapper mapper)
+        {     
+            _repo = repo;
+            _mapper = mapper;
         }
 
         [HttpGet("subjectbetweendates")]
@@ -30,7 +36,9 @@ namespace arx.Extract.API.Controllers
                 || updatedFromDate > updatedToDate)
                 return StatusCode((int)HttpStatusCode.BadRequest);
 
-            var result = await _service.GetBySubjectCodeByUpdatedDates(subjectCode, updatedFromDate, updatedToDate);
+            var entities = await _repo.GetSubjectInclusiveBetweenDates(subjectCode, updatedFromDate, updatedToDate);
+
+            var result = (entities.Count > 0) ? _mapper.Map<List<PublicationItem>>(entities) : null;           
 
             if (result == null)
                 return StatusCode((int)HttpStatusCode.InternalServerError);
@@ -51,7 +59,9 @@ namespace arx.Extract.API.Controllers
             if(string.IsNullOrEmpty(fulfilmentId))
                 return StatusCode((int)HttpStatusCode.BadRequest);
 
-            var result = await _service.GetByFulfilmentId(fulfilmentId);
+            var entities = await _repo.GetByFulfilmentId(fulfilmentId);
+
+            var result = (entities.Count > 0) ? _mapper.Map<List<PublicationItem>>(entities) : null;
 
             if (result == null)
                 return StatusCode((int)HttpStatusCode.InternalServerError);
