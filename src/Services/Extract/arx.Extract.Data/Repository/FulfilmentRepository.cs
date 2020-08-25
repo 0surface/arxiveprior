@@ -12,6 +12,7 @@ namespace arx.Extract.Data.Repository
     public interface IFulfillmentRepository
     {
         Task<FulfillmentEntity> SaveFulfillment(FulfillmentEntity jobRecord);
+        Task<FulfillmentEntity> GetFulfillment(string FulfillmentId);
 
         Task<List<FulfillmentEntity>> GetFulfillments(string jobName);
         Task<List<FulfillmentEntity>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate);
@@ -119,6 +120,13 @@ namespace arx.Extract.Data.Repository
                     ?.OrderByDescending(x => x.JobCompletedDate)
                     ?.ToList()
                     ?? new List<FulfillmentEntity>();
+        }
+
+        public async Task<FulfillmentEntity> GetFulfillment(string fulfillmentId)
+        {
+            var items = await QueryByRow<FulfillmentEntity>(fulfillmentId);
+
+            return items?.FirstOrDefault();
         }
     }
 }
