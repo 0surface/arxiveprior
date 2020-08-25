@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Journal.Infrastructure.Migrations.Article
+namespace Journal.Infrastructure.Migrations.Journal
 {
-    public partial class update_02 : Migration
+    public partial class update_02_Journal : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -49,6 +49,33 @@ namespace Journal.Infrastructure.Migrations.Article
                 });
 
             migrationBuilder.CreateTable(
+                name: "Fulfillments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EventId = table.Column<string>(nullable: true),
+                    ExtractionFulfillmentId = table.Column<string>(nullable: true),
+                    JournalType = table.Column<int>(nullable: false),
+                    ArticlesCount = table.Column<int>(nullable: false),
+                    QueryFromDate = table.Column<DateTime>(nullable: false),
+                    QueryToDate = table.Column<DateTime>(nullable: false),
+                    InsertedCount = table.Column<int>(nullable: false),
+                    UpdatedCount = table.Column<int>(nullable: false),
+                    TotalProcessedCount = table.Column<int>(nullable: false),
+                    ProcessingTimeInMilliseconds = table.Column<double>(nullable: false),
+                    IsPending = table.Column<bool>(nullable: false),
+                    IsProcessed = table.Column<bool>(nullable: false),
+                    JobStartedDate = table.Column<DateTime>(nullable: false),
+                    JobCompletedDate = table.Column<DateTime>(nullable: false),
+                    Created = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Fulfillments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SubjectCode",
                 columns: table => new
                 {
@@ -75,6 +102,24 @@ namespace Journal.Infrastructure.Migrations.Article
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubjectGroup", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Subjects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Code = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    GroupCode = table.Column<string>(nullable: true),
+                    GroupName = table.Column<string>(nullable: true),
+                    Discipline = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Subjects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -323,6 +368,12 @@ namespace Journal.Infrastructure.Migrations.Article
 
             migrationBuilder.DropTable(
                 name: "CategoryArticle");
+
+            migrationBuilder.DropTable(
+                name: "Fulfillments");
+
+            migrationBuilder.DropTable(
+                name: "Subjects");
 
             migrationBuilder.DropTable(
                 name: "Version");

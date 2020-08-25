@@ -4,14 +4,16 @@ using Journal.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Journal.Infrastructure.Migrations.Article
+namespace Journal.Infrastructure.Migrations.Journal
 {
-    [DbContext(typeof(ArticleContext))]
-    partial class ArticleContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(JournalContext))]
+    [Migration("20200822235411_update_0.2_Journal")]
+    partial class update_02_Journal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -309,6 +311,93 @@ namespace Journal.Infrastructure.Migrations.Article
                     b.ToTable("SubjectGroup");
                 });
 
+            modelBuilder.Entity("Journal.Domain.AggregatesModel.JobAggregate.Fulfillment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ArticlesCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EventId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtractionFulfillmentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InsertedCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPending")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsProcessed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JobCompletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("JobStartedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("JournalType")
+                        .HasColumnType("int");
+
+                    b.Property<double>("ProcessingTimeInMilliseconds")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("QueryFromDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("QueryToDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TotalProcessedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UpdatedCount")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Fulfillments");
+                });
+
+            modelBuilder.Entity("Journal.Domain.AggregatesModel.SubjectAggregate.Subject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Discipline")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GroupCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GroupName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subjects");
+                });
+
             modelBuilder.Entity("Journal.Domain.AggregatesModel.ArticleAggregate.Article", b =>
                 {
                     b.HasOne("Journal.Domain.AggregatesModel.ArticleAggregate.SubjectCode", "PrimarySubjectCode")
@@ -327,7 +416,7 @@ namespace Journal.Infrastructure.Migrations.Article
             modelBuilder.Entity("Journal.Domain.AggregatesModel.ArticleAggregate.AuthorAffiliation", b =>
                 {
                     b.HasOne("Journal.Domain.AggregatesModel.ArticleAggregate.Affiliation", "Affiliation")
-                        .WithMany()
+                        .WithMany("AuthorAffiliations")
                         .HasForeignKey("AffiliationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
