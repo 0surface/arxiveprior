@@ -1,14 +1,18 @@
 ﻿using Autofac;
+using AutoMapper;
 using EventBus;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
 using EventBusServiceBus;
+using Journal.Infrastructure;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Serilog;
+using System.Reflection;
 
 namespace Journal.BackgroundTasks
 {
@@ -67,7 +71,8 @@ namespace Journal.BackgroundTasks
 
                     if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
                     {
-                        retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                        retryCount = int.TryParse(configuration["EventBusRetryCount"], out int val) ?
+                                       val : retryCount;
                     }
 
                     return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
@@ -84,7 +89,7 @@ namespace Journal.BackgroundTasks
 
                     if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
                     {
-                        retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                        retryCount = int.TryParse(configuration["EventBusRetryCount"], out int val) ? val : retryCount;
                     }
 
                     return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
@@ -93,6 +98,42 @@ namespace Journal.BackgroundTasks
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
 
+            return services;
+        }
+
+        public static IServiceCollection AddCustomDbContext(this IServiceCollection services, string connectionString)
+        {
+            services.AddDbContext<JournalContext>(options =>
+            {
+                options.UseSqlServer(connectionString,
+                    sqlServerOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                    });
+            },
+                ServiceLifetime.Scoped //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
+            );
+
+            services.AddDbContext<SubjectContext>(options =>
+            {
+                options.UseSqlServer(connectionString,
+                    sqlServerOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                    });
+            },
+                ServiceLifetime.Scoped
+            );
+
+            services.AddDbContext<FulfillmentContext>
+                (options => options.UseSqlServer(connectionString), ServiceLifetime.Scoped);
+
+            return services;
+        }
+
+        public static IServiceCollection AddConfiguredAutoMapper(this IServiceCollection services)
+        {
+            services.AddSingleton(ConfigureAutoMapper());
             return services;
         }
 
@@ -112,6 +153,17 @@ namespace Journal.BackgroundTasks
                 .CreateLogger();
 
             return builder;
+        }
+
+        private static IMapper ConfigureAutoMapper()
+        {
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new JournalTasksAutoMapperProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            return mapper;
         }
     }
 }
