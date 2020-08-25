@@ -24,22 +24,24 @@ namespace Journal.Domain.AggregatesModel.JobAggregate
         public DateTime JobStartedDate { get; private set; }
         public DateTime JobCompletedDate { get; private set; }
 
+        public DateTime Created { get; private set; }
+
         protected Fulfillment()
         {
             JobStartedDate = DateTime.MinValue;
             JobCompletedDate = DateTime.MinValue;
+            QueryFromDate = DateTime.MinValue;
+            QueryToDate = DateTime.MinValue;
             JournalType = ProcessTypeEnum.Journal;
             IsPending = true;
+            Created = DateTime.UtcNow;
         }
 
-        public Fulfillment(string eventId, string extractionId, ProcessTypeEnum type,
-            DateTime queryFromDate, DateTime queryToDate) : base()
+        public Fulfillment(string eventId, string extractionId, ProcessTypeEnum type) : base()
         {
             EventId = eventId;
             ExtractionFulfillmentId = extractionId;
             JournalType = type;
-            QueryFromDate = queryFromDate;
-            QueryToDate = queryToDate;
         }
 
         public void UpdateCounts(int articles, int inserted, int updated, int total)
