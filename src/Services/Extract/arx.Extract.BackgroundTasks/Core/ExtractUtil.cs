@@ -42,9 +42,10 @@ namespace arx.Extract.BackgroundTasks.Core
         /// <param name="queryDateInterval"></param>
         /// <returns>(int, DateTime, DateTime)</returns>
         public static (int, DateTime, DateTime) CalculateArchiveQueryDates
-                        (DateTime lastFulfillmentQueryFromDate, DateTime lastFulfillmentQueryToDate, int queryDateInterval)
+                        (DateTime? lastFulfillmentQueryFromDate, DateTime? lastFulfillmentQueryToDate, int queryDateInterval)
         {
-            if (lastFulfillmentQueryFromDate == DateTime.MinValue || lastFulfillmentQueryToDate == DateTime.MinValue)
+            if (!lastFulfillmentQueryFromDate.HasValue || !lastFulfillmentQueryToDate.HasValue ||
+                lastFulfillmentQueryFromDate == DateTime.MinValue || lastFulfillmentQueryToDate == DateTime.MinValue)
             {
                 //Start from Two days before current DateTime.
                 DateTime initDate = DateTime.UtcNow.Date.AddDays(-2);                
@@ -57,7 +58,7 @@ namespace arx.Extract.BackgroundTasks.Core
             //Default to 1 day intervals in case the span is not found (e.g. appsettings misread incorrectly)
             int lastFulfillmentSpanDays = (span.HasValue && span.Value.Days != 0) ? Math.Abs(span.Value.Days) : 1;
 
-            var (queryFrom, queryTo) = GetArchiveDates(lastFulfillmentQueryFromDate, lastFulfillmentSpanDays);
+            var (queryFrom, queryTo) = GetArchiveDates(lastFulfillmentQueryFromDate.Value, lastFulfillmentSpanDays);
 
             return (lastFulfillmentSpanDays, queryFrom, queryTo);
         }
@@ -97,8 +98,9 @@ namespace arx.Extract.BackgroundTasks.Core
 
             try
             {
-                var (lastSpanDays, nextFromDate, nextToDate) =
-                    CalculateArchiveQueryDates(lastFulfillment.QueryFromDate, lastFulfillment.QueryToDate, queryDateInterval);
+                var (lastSpanDays, nextFromDate, nextToDate) = CalculateArchiveQueryDates(lastFulfillment?.QueryFromDate
+                                                            , lastFulfillment?.QueryToDate
+                                                            , queryDateInterval);
 
                 /* queryDateInterval is optimal */
                 if (queryDateInterval >= lastSpanDays)
@@ -185,7 +187,7 @@ namespace arx.Extract.BackgroundTasks.Core
             item.RowKey = item.FulfillmentId.ToString();
 
             var (_, fromDate, toDate) = ExtractUtil.CalculateArchiveQueryDates
-                (lastFulfillment.QueryFromDate, lastFulfillment.QueryToDate, averageQueryDateInterval);
+                (lastFulfillment?.QueryFromDate, lastFulfillment?.QueryToDate, averageQueryDateInterval);
 
             item.QueryFromDate = fromDate;
             item.QueryToDate = toDate;
