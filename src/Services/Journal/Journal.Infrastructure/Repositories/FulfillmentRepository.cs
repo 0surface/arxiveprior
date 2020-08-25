@@ -1,5 +1,4 @@
 ﻿using Journal.Domain.AggregatesModel.JobAggregate;
-using System;
 using System.Linq;
 
 namespace Journal.Infrastructure.Repositories
@@ -7,8 +6,7 @@ namespace Journal.Infrastructure.Repositories
     public interface IFulfillmentRepository
     {
         Fulfillment Save(Fulfillment fulfillment);
-
-        (bool found, DateTime fromDate, DateTime toDate) FindLatestProcessedQueryDates(ProcessTypeEnum processType);
+        (bool found, Fulfillment fulfillment) FindNextUnprocessedFulfillment(ProcessTypeEnum processType);
     }
 
     public class FulfillmentRepository : IFulfillmentRepository
@@ -27,16 +25,19 @@ namespace Journal.Infrastructure.Repositories
             return fulfillment;
         }
 
-        public (bool found, DateTime fromDate, DateTime toDate) FindLatestProcessedQueryDates(ProcessTypeEnum processType)
+        public (bool found, Fulfillment fulfillment) FindNextUnprocessedFulfillment(ProcessTypeEnum processType)
         {
             var record = _context.Fulfillments
-                            .Where(x => x.JournalType == processType && x.IsProcessed)
-                            .OrderByDescending(x => x.JobCompletedDate)
-                            .FirstOrDefault();
+                .Where(x => x.JournalType == processType)
+                .Where(x => !x.IsPending
+                            && !x.IsProcessed
+                            && !string.IsNullOrEmpty(x.ExtractionFulfillmentId))
+                .OrderBy(x => x.Created)
+                .FirstOrDefault();
 
             return record == null ?
-                    (false, DateTime.MinValue, DateTime.MinValue) :
-                    (true, record.QueryFromDate, record.QueryToDate);
+                (false, null) :
+                (true, record);
         }
     }
 }
