@@ -44,6 +44,6 @@ namespace Common.Types
         public string DoiLinks { get; set; }
 
         public bool AuthorListTruncated { get; set; }
-        public List<string> Authors { get; set; }
+        public List<string> Authors { get; set; } = new List<string>();
     }
 }
