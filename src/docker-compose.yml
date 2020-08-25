@@ -1,7 +1,7 @@
 version: '3.4'
 
 services:
- rabbitmq:
+  rabbitmq:
     image: rabbitmq:3.8.7
 
   seq:
