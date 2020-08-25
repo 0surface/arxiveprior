@@ -1,15 +1,11 @@
-﻿using Castle.DynamicProxy.Contributors;
-using Journal.Domain.AggregatesModel.ArticleAggregate;
+﻿using Journal.Domain.AggregatesModel.ArticleAggregate;
 using Journal.Domain.AggregatesModel.JobAggregate;
-using Journal.Domain.AggregatesModel.SubjectAggregate;
 using Journal.Infrastructure.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Journal.Infrastructure
 {
@@ -21,7 +17,6 @@ namespace Journal.Infrastructure
         public DbSet<Author> Authors { get; set; }
         public DbSet<PaperVersion> PaperVersions { get; set; }
         public DbSet<Fulfillment> Fulfillments { get; set; }
-        public DbSet<Subject> Subjects { get; set; }
 
         public JournalContext(DbContextOptions<JournalContext> options) : base(options) { }
 
