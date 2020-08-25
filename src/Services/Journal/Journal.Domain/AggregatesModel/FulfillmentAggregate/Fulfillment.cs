@@ -42,6 +42,7 @@ namespace Journal.Domain.AggregatesModel.JobAggregate
             EventId = eventId;
             ExtractionFulfillmentId = extractionId;
             JournalType = type;
+            Created = DateTime.UtcNow;
         }
 
         public void UpdateCounts(int articles, int inserted, int updated, int total)
