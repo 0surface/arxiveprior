@@ -46,8 +46,8 @@ namespace Journal.API
             services.AddHealthChecks(Configuration)
                     .AddConfiguredAutoMapper()
                     .AddCustomDbContext(Configuration)
-                    .AddEventBus(Configuration.GetSection("EventBus"))
                     .AddCustomIntegrations(Configuration.GetSection("EventBus"))
+                    .RegisterEventBus(Configuration.GetSection("EventBus"))
                     .AddCustomSwagger()
                     .AddCustomServices();
 
@@ -215,7 +215,7 @@ namespace Journal.API
             return services;
         }
 
-        public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection RegisterEventBus(this IServiceCollection services, IConfiguration configuration)
         {
             var subscriptionClientName = configuration["SubscriptionClientName"];
 
@@ -228,12 +228,11 @@ namespace Journal.API
                     var logger = sp.GetRequiredService<ILogger<AzureServiceBus>>();
                     var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
-                    return new AzureServiceBus(serviceBusPersisterConnection, logger,
-                        eventBusSubcriptionsManager, subscriptionClientName, iLifetimeScope);
+                    return new AzureServiceBus(serviceBusPersisterConnection, logger, eventBusSubcriptionsManager, subscriptionClientName, iLifetimeScope);
                 });
             }
             else
-            {
+            {            
                 services.AddSingleton<IEventBus, EventBusRabbitMQ.EventBusRabbitMQ>(sp =>
                 {
                     var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
@@ -242,9 +241,10 @@ namespace Journal.API
                     var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
                     var retryCount = 5;
+
                     if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
                     {
-                        retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                        retryCount = int.TryParse(configuration["EventBusRetryCount"], out int val) ? val : retryCount;
                     }
 
                     return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
@@ -252,6 +252,8 @@ namespace Journal.API
             }
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+
+            services.AddTransient<ArchiveExtractionSucceededIntegrationEventHandler>();
 
             return services;
         }
