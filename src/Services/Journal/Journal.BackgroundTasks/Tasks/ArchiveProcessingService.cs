@@ -1,7 +1,7 @@
-﻿using Common.Types;
-using EventBus.Abstractions;
-using Journal.BackgroundTasks.Core;
+﻿using EventBus.Abstractions;
 using Journal.BackgroundTasks.Events;
+using Journal.BackgroundTasks.Services;
+using Journal.BackgroundTasks.Types;
 using Journal.Domain.AggregatesModel.ArticleAggregate;
 using Journal.Domain.AggregatesModel.JobAggregate;
 using Journal.Infrastructure;
@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,9 +23,10 @@ namespace Journal.BackgroundTasks.Tasks
     {
         private readonly ILogger<ArchiveJournalProcessingService> _logger;
         private readonly IEventBus _eventBus;
+        private readonly IExtractApiService _extractApiService;
         private readonly ITransformService _transformService;
         private readonly IFulfillmentRepository _fulfillmentRepository;
-        private readonly ArticleContext _articleContext;
+        private readonly JournalContext _journalContext;
         private readonly JournalBackgroundTasksConfiguration _config;
 
         public string AppName { get; set; } = typeof(ArchiveJournalProcessingService).Name;
@@ -34,16 +34,18 @@ namespace Journal.BackgroundTasks.Tasks
         public ArchiveJournalProcessingService(ILogger<ArchiveJournalProcessingService> logger,
             IOptions<JournalBackgroundTasksConfiguration> config,
             IEventBus eventBus,
+            IExtractApiService extractApiService,
             ITransformService transformService,
             IFulfillmentRepository fulfillmentRepository,
-            ArticleContext articleContext)
+            JournalContext journalContext)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _eventBus = eventBus;
+            _extractApiService = extractApiService;
             _transformService = transformService;
             _fulfillmentRepository = fulfillmentRepository;
-            _articleContext = articleContext;
-            _config = config?.Value ?? throw new ArgumentException(nameof(config));
+            _journalContext = journalContext;
+            _config = config?.Value ?? throw new ArgumentException("IOptions<JournalBackgroundTasksConfiguration> not found");
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -88,17 +90,29 @@ namespace Journal.BackgroundTasks.Tasks
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    int journalId = await RunArchiveJournalProcessing(stoppingToken);
+                    var (journalId, extractionFulfillmentId) = await RunArchiveJournalProcessing(stoppingToken);
 
                     if (journalId != 0)
                     {
-                        var journalProcessedIntegrationEvent = new JournalProcessedIntegrationEvent(journalId);
-                        journalProcessedIntegrationEvent.JournalType = ProcessTypeEnum.Archive;
+                        var journalProcessSucceededIntegrationEvent = new JournalProcessSucceededIntegrationEvent(journalId);
+                        journalProcessSucceededIntegrationEvent.JournalType = ProcessTypeEnum.Archive;
 
                         _logger.LogInformation("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
-                                                journalProcessedIntegrationEvent.JournalId, Program.AppName, journalProcessedIntegrationEvent);
+                                                journalProcessSucceededIntegrationEvent.JournalId,
+                                                Program.AppName, journalProcessSucceededIntegrationEvent);
 
-                        _eventBus.Publish(journalProcessedIntegrationEvent);
+                        _eventBus.Publish(journalProcessSucceededIntegrationEvent);
+                    }
+                    else if (!string.IsNullOrEmpty(extractionFulfillmentId))
+                    {
+                        var journalProcessFailedIntegrationEvent = new JournalProcessFailedIntegrationEvent(extractionFulfillmentId);
+                        journalProcessFailedIntegrationEvent.JournalType = ProcessTypeEnum.Archive;
+
+                        _logger.LogError("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
+                                               journalProcessFailedIntegrationEvent.ExtractionFulfillmentId,
+                                               Program.AppName, journalProcessFailedIntegrationEvent);
+
+                        _eventBus.Publish(journalProcessFailedIntegrationEvent);
                     }
 
                     _logger.LogInformation($"Waiting for [{_config.PostProcessingWaitTimeInMilliSeconds / 1000}] seconds ....");
@@ -107,115 +121,107 @@ namespace Journal.BackgroundTasks.Tasks
             }
         }
 
-        private async Task<int> RunArchiveJournalProcessing(CancellationToken stoppingToken)
+        private async Task<(int, string)> RunArchiveJournalProcessing(CancellationToken stoppingToken)
         {
-            // 1. Query fulfilment table to find unprocessed archive extractions, get oldest if any
-            var (found,fromDate, toDate) = _fulfillmentRepository.FindLatestProcessedQueryDates(ProcessTypeEnum.Archive);
+            // 1. Query fulfilment table to find the earliest from the set of unprocessed archive extractions
+            var (nextFound, nextFulfillment) = _fulfillmentRepository.FindNextUnprocessedFulfillment(ProcessTypeEnum.Archive);
 
-            if (!found)
+            if (!nextFound)
             {
-                //First ever entry scenario
-                //Ask extraction api for  'newest' archive query from & todate record
+                _logger.LogInformation($"Found No fulfillment records to process at [{DateTime.UtcNow}]");
+                // await StopAsync(stoppingToken);
+                return await Task.FromResult((0, string.Empty));
             }
             else
             {
-                //Ask extraction api for record that 'earlier' to  the above fromDate
-            }
+                //Query Extract Api for Publications
+                PublicationResponseDto responseDto = new PublicationResponseDto();
+                responseDto = await _extractApiService.GetExtractedPublications(nextFulfillment.ExtractionFulfillmentId);
 
-            // 2. If non fulfilments, ask extract api next to process by last processed q.from and q.to dates in fulfilment, 
-            //      -- get and save task to fulfilment
+                nextFulfillment.SetJobAsStarted();
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
 
-            string extractionFulfillmentId = ""; //mock value
-            DateTime extractionQueryFromDate = new DateTime();//mock value
-            DateTime extractionQueryToDate = new DateTime(); //mock value
+                // Invoke transform service to convert to articles
+                var (success, allArticles) = _transformService.MapToDomain(responseDto.PublicationItems, nextFulfillment.Id);
 
-            var fulfillmentItem = new Fulfillment(string.Empty, extractionFulfillmentId,
-                                    ProcessTypeEnum.Archive,
-                                    extractionQueryFromDate,
-                                    extractionQueryToDate);
-
-            var newFulfillment = _fulfillmentRepository.Save(fulfillmentItem);
-
-            // using 1 or 2, ask extraction  api for publication data for the extractionId in 1 or 2     
-            List<ArxivPublication> arxivPublications = new List<ArxivPublication>();
-
-            newFulfillment.SetJobAsStarted();
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            // invoke transform service to convert to articles
-            var (success, allArticles) = _transformService.MapToDomain(arxivPublications, newFulfillment.Id);
-
-            if (!success)
-            {
-                newFulfillment.SetJobAsFailed();
-                Log.Error($"Fulfillment Id {newFulfillment.Id} - Mapping Publications to Articles failed");
-                await StopAsync(stoppingToken);
-                return await Task.FromResult(0);
-            }
-            else
-            {
-
-                int updatedCount = 0;
-                int insertedCount = 0;
-                string[] existingArxivIds = { };
-
-                // Query Article db for the subset that already exist by (canonical) arxiv id
-                var ids = allArticles?.Select(x => x.ArxivId)?.ToArray();
-
-                ///Eager Load all articles in DB with matchin ArxivId
-                List<Article> existingArticles = GetExistingArticlesByArxivId(ids);
-
-                if(existingArticles != null && existingArticles.Count > 0)
+                if (!success)
                 {
-                    //Get List of existing arxiv Ids
-                    existingArxivIds = existingArticles?.Select(x => x.ArxivId)?.ToArray();
-
-                    // Perform 'update' operations on this subset, in the dbContext
-                    foreach (var existing in existingArticles)
-                    {
-                       var newArticleVersion = allArticles.Where(x => x.ArxivId == existing.ArxivId).FirstOrDefault();
-                        existing.Update(newArticleVersion);
-                        _articleContext.Articles.Attach(existing);
-                        updatedCount++;
-                    }
+                    nextFulfillment.SetJobAsFailed();
+                    stopwatch.Stop();
+                    nextFulfillment.SetProcessingTime(stopwatch.ElapsedMilliseconds);
+                    _logger.LogError($"Fulfillment Id {nextFulfillment.Id} - Mapping Publications to Articles failed");
+                    await StopAsync(stoppingToken);
+                    return await Task.FromResult((0, nextFulfillment.ExtractionFulfillmentId));
                 }
-
-                //Select articles to be inserted
-                var tobeInsertedArticles = allArticles.Where(x => existingArxivIds.Contains(x.ArxivId) == false)?.ToList();
-
-                // Perform 'add/insert' or 'update' operations on this 'new' subset
-                foreach (var inserted in tobeInsertedArticles ?? new List<Article>())
+                else
                 {
-                    // Query the 'new' articles sub set for duplicates i.e. different version of same arxivid
-                    var existing = _articleContext.Articles.Where(a => a.ArxivId == inserted.ArxivId).FirstOrDefault();
+                    int updatedCount = 0;
+                    int insertedCount = 0;
+                    string[] existingArxivIds = Array.Empty<string>();
 
-                    if (existing != default(Article))
+                    // Fetch Articles for the subset that already exist by in Database (canonical) arxiv id
+                    var ids = allArticles?.Select(x => x.ArxivId)?.ToArray();
+
+                    //Eager Load all existing articles in DB
+                    List<Article> existingArticles = GetExistingArticlesByArxivId(ids);
+
+                    if (existingArticles != null && existingArticles.Count > 0)
                     {
-                        ///The scenario where an article to be 'inserted' has an existing version already inserted
-                        ///in the dbConetxt witihn this processing session. The correct action is to call domain method 'Update'.
-                        existing.Update(inserted);
-                        _articleContext.Articles.Attach(existing);
-                        updatedCount++;
+                        //Get List of existing arxiv Ids
+                        existingArxivIds = existingArticles?.Select(x => x.ArxivId)?.ToArray();
+
+                        // Perform 'update' operations on 'existing' with 'new version', in the dbContext
+                        foreach (var existing in existingArticles)
+                        {
+                            var newArticleVersion = allArticles.Where(x => x.ArxivId == existing.ArxivId).FirstOrDefault();
+                            existing.Update(newArticleVersion);
+                            _journalContext.Articles.Attach(existing);
+                            updatedCount++;
+                        }
                     }
-                    else
+
+                    //Select articles to be inserted
+                    var tobeInsertedArticles = allArticles.Where(x => existingArxivIds.Contains(x.ArxivId) == false)?.ToList();
+
+                    // Perform 'add/insert' or 'update' operations on this 'new' subset
+                    foreach (var inserted in tobeInsertedArticles ?? new List<Article>())
                     {
-                        _articleContext.Articles.Attach(inserted);
-                        insertedCount++;
+                        // Query the 'new' articles sub set for duplicates i.e. different version of same arxivid
+                        var existing = _journalContext.Articles.Where(a => a.ArxivId == inserted.ArxivId).FirstOrDefault();
+
+                        if (existing != default(Article))
+                        {
+                            ///The scenario where an article to be 'inserted' has an existing version already inserted
+                            ///in the dbConetxt witihn this processing session. The correct action is to call domain method 'Update'.
+                            existing.Update(inserted);
+                            _journalContext.Articles.Attach(existing);
+                            updatedCount++;
+                        }
+                        else
+                        {
+                            _journalContext.Articles.Attach(inserted);
+                            insertedCount++;
+                        }
                     }
+
+                    await _journalContext.SaveChangesAsync(CancellationToken.None);
+
+                    _logger.LogInformation($"Saving Articles to Database from Fulfillment : id {nextFulfillment.Id}");
+
+                    stopwatch.Stop();
+
+                    // Update/Set journal fulfillment values (set as processed)
+                    nextFulfillment.SetProcessingTime(stopwatch.ElapsedMilliseconds);
+                    nextFulfillment.UpdateCounts(allArticles.Count, insertedCount, updatedCount,
+                                                tobeInsertedArticles.Count + existingArticles.Count);
+                    nextFulfillment.SetJobAsCompeleted();
+
+                    //Return journal fulfillment id
+                    int journalId = _fulfillmentRepository.Save(nextFulfillment).Id;
+
+                    return (journalId, nextFulfillment.ExtractionFulfillmentId);
                 }
-                
-
-                stopwatch.Stop();
-
-                // update journal fulfillment entry values (set as processed)
-                newFulfillment.SetProcessingTime(stopwatch.ElapsedMilliseconds);
-                newFulfillment.UpdateCounts(allArticles.Count, insertedCount, updatedCount,
-                                            tobeInsertedArticles.Count + existingArticles.Count);
-                newFulfillment.SetJobAsCompeleted();
-
-                //return journal fulfillment id
-                return _fulfillmentRepository.Save(newFulfillment).Id;
             }
         }
 
@@ -224,7 +230,7 @@ namespace Journal.BackgroundTasks.Tasks
             if (arxivIds == null | arxivIds.Length == 0)
                 return new List<Article>();
 
-            return _articleContext.Articles
+            return _journalContext.Articles
                                 .Include(x => x.AuthorArticles)
                                 .Include(x => x.PaperVersions)
                                 .Include(x => x.CategoryArticles)
