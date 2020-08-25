@@ -1,9 +1,12 @@
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
 using System.IO;
+using System.Net;
 
 namespace Journal.API
 {
@@ -43,9 +46,23 @@ namespace Journal.API
         // EF Core uses this method at design time to access the DbContext
         public static IHostBuilder CreateHostBuilder(IConfiguration configuration, string[] args)
             => Host.CreateDefaultBuilder(args)
+                   .UseServiceProviderFactory(new AutofacServiceProviderFactory())
                    .ConfigureWebHostDefaults(webBuilder =>
                    {
                        webBuilder.UseStartup<Startup>();
+                       //webBuilder.ConfigureKestrel(options =>
+                       //{
+                       //    var ports = GetDefinedPorts(configuration);
+                       //    options.Listen(IPAddress.Any, ports.httpPort, listenOptions =>
+                       //    {
+                       //        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+                       //    });
+
+                       //    options.Listen(IPAddress.Any, ports.grpcPort, listenOptions =>
+                       //    {
+                       //        listenOptions.Protocols = HttpProtocols.Http2;
+                       //    });
+                       //});
                    });
 
         private static Serilog.ILogger CreateSerilogLogger(IConfiguration configuration)
