@@ -12,7 +12,8 @@ namespace arx.Extract.Data.Repository
     public interface IFulfillmentRepository
     {
         Task<FulfillmentEntity> SaveFulfillment(FulfillmentEntity jobRecord);
-        Task<FulfillmentEntity> GetFulfillment(string FulfillmentId);
+        Task<FulfillmentEntity> GetFulfillment(string FulfillmentId);        
+        bool FulfillmentsExist(string jobName);
 
         Task<List<FulfillmentEntity>> GetFulfillments(string jobName);
         Task<List<FulfillmentEntity>> GetFulfillmentsBetweenQueryDates(string jobName, DateTime queryFromDate, DateTime queryToDate);
@@ -101,6 +102,11 @@ namespace arx.Extract.Data.Repository
                     ?.Where(x => x.CompleteSuccess == true)
                     ?.OrderByDescending(x => x.JobCompletedDate)
                     ?.FirstOrDefault() ?? null;
+        }
+
+        public bool FulfillmentsExist(string jobName)
+        {
+            return PartitionExists(jobName);
         }
 
         public async Task<List<FulfillmentEntity>> GetFailedFulfillments(string jobName)

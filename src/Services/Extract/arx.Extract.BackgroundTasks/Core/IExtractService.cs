@@ -8,9 +8,10 @@ namespace arx.Extract.BackgroundTasks.Core
     {
         (bool, JobEntity, List<JobItemEntity>) GetArchiveJob();
 
-        (bool, FulfillmentEntity) GetLastSuccessfulArchiveFulfillment(string jobName);
+        (bool,bool, FulfillmentEntity) GetLastSuccessfulArchiveFulfillment(string jobName);
 
-        (bool, FulfillmentEntity, List<FulfillmentItemEntity>) CreateArchiveFulfillmentSaga(JobEntity job, List<JobItemEntity> jobItems, FulfillmentEntity lastFulfillment);
+        (bool, FulfillmentEntity, List<FulfillmentItemEntity>) CreateArchiveFulfillmentSaga
+            (JobEntity job, List<JobItemEntity> jobItems, FulfillmentEntity lastFulfillment, bool isFirstFulfillment);
 
         Task UpdateFulfilment(FulfillmentEntity newFulfillment);
 

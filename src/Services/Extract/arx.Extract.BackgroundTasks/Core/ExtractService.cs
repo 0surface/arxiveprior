@@ -52,20 +52,28 @@ namespace arx.Extract.BackgroundTasks.Core
             }
         }
 
-        public (bool, FulfillmentEntity) GetLastSuccessfulArchiveFulfillment(string jobUniqueName)
+        public (bool, bool, FulfillmentEntity) GetLastSuccessfulArchiveFulfillment(string jobUniqueName)
         {
             FulfillmentEntity lastFulfillment = _fulfillmentRepository.GetLastSuccessfulFulfillment(jobUniqueName).Result;
 
-            return (lastFulfillment != null, lastFulfillment);
+            bool isInitialFulfillment = false;
+            bool isFound = lastFulfillment != null;
+
+            if(!isFound)
+            {
+                isInitialFulfillment = !_fulfillmentRepository.FulfillmentsExist(jobUniqueName);
+            }
+
+            return (isFound, isInitialFulfillment, lastFulfillment);
         }
 
-        public (bool, FulfillmentEntity, List<FulfillmentItemEntity>) CreateArchiveFulfillmentSaga(JobEntity job, List<JobItemEntity> jobItems, FulfillmentEntity lastFulfillment)
+        public (bool, FulfillmentEntity, List<FulfillmentItemEntity>) CreateArchiveFulfillmentSaga(JobEntity job, List<JobItemEntity> jobItems, FulfillmentEntity lastFulfillment, bool isFirstFulfillment)
         {
             try
             {
                 int minQueryDateInterval = (int)Math.Floor(jobItems.Average(x => x.QueryDateInterval));
 
-                FulfillmentEntity newFulfillment = ExtractUtil.MakeNewFulfillment(job, lastFulfillment, minQueryDateInterval);
+                FulfillmentEntity newFulfillment = ExtractUtil.MakeNewFulfillment(job, lastFulfillment, minQueryDateInterval, isFirstFulfillment);
 
                 if (ExtractUtil.HasPassedTerminationDate(_config.ArchiveTerminateDate, newFulfillment.QueryToDate))
                 {
@@ -93,7 +101,7 @@ namespace arx.Extract.BackgroundTasks.Core
 
                     foreach (var jobItem in jobItems)
                     {
-                        //For an optimal configuration, the loop below will only be executed once.
+                        //For an optimal choice of query interval date values per query, the loop below will only be executed once.
                         foreach (var interval in ExtractUtil.GetRequestChunkedArchiveDates(lastFulfillment, jobItem.QueryDateInterval))
                         {
                             if (ExtractUtil.HasPassedTerminationDate(_config.ArchiveTerminateDate, interval.QueryToDate) == false)

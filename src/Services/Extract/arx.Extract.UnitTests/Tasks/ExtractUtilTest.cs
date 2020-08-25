@@ -2,7 +2,6 @@
 using arx.Extract.Data.Entities;
 using FluentAssertions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Xunit;
 
@@ -29,7 +28,7 @@ namespace arx.Extract.UnitTests.Tasks
 
         [Theory]
         [ClassData(typeof(ChunkedArchiveDatesTestDataGenerator))]
-        public void GetRequestChunkedArchiveDates_PArams_ReturnsCorrectResults(FulfillmentEntity fulfillment, int queryInterval, List<ExtractQueryDates> expected )
+        public void GetRequestChunkedArchiveDates_Params_ReturnsCorrectResults(FulfillmentEntity fulfillment, int queryInterval, List<ExtractQueryDates> expected)
         {
             //Act 
             var sut = ExtractUtil.GetRequestChunkedArchiveDates(fulfillment, queryInterval);

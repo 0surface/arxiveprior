@@ -14,7 +14,7 @@ namespace arx.Extract.UnitTests.Tasks
             new object[]{new DateTime(2020, 08, 08), new DateTime(2020, 08, 13), 1, new Tuple<int,DateTime,DateTime>(5, new DateTime(2020, 08, 03), new DateTime(2020, 08, 07, 23, 59, 59)) },
             new object[]{ DateTime.MinValue, new DateTime(2020, 08, 13), 3, new Tuple<int,DateTime,DateTime>(3, DateTime.UtcNow.Date.AddDays(-2 - 3), DateTime.UtcNow.Date.AddDays(-2).AddSeconds(-1)) },
             new object[]{ DateTime.MinValue, DateTime.MinValue, 6, new Tuple<int,DateTime,DateTime>(6, DateTime.UtcNow.Date.AddDays(-2 - 6), DateTime.UtcNow.Date.AddDays(-2).AddSeconds(-1)) },
-            new object[]{new DateTime(2020, 08, 02), new DateTime(2020, 08, 07, 23, 59, 59), 5, new Tuple<int, DateTime, DateTime>(5, new DateTime(2020, 07, 28), new DateTime(2020, 08, 01, 23, 59, 59))}
+            new object[]{new DateTime(2020, 08, 02), new DateTime(2020, 08, 06, 23, 59, 59), 5, new Tuple<int, DateTime, DateTime>(5, new DateTime(2020, 07, 28), new DateTime(2020, 08, 01, 23, 59, 59))}
         };
 
         public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();

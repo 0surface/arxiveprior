@@ -42,25 +42,25 @@ namespace arx.Extract.BackgroundTasks.Core
         /// <param name="queryDateInterval"></param>
         /// <returns>(int, DateTime, DateTime)</returns>
         public static (int, DateTime, DateTime) CalculateArchiveQueryDates
-                        (DateTime? lastFulfillmentQueryFromDate, DateTime? lastFulfillmentQueryToDate, int queryDateInterval)
+                        (DateTime lastFulfillmentQueryFromDate, DateTime lastFulfillmentQueryToDate, int queryDateInterval)
         {
-            if (!lastFulfillmentQueryFromDate.HasValue || !lastFulfillmentQueryToDate.HasValue ||
-                lastFulfillmentQueryFromDate == DateTime.MinValue || lastFulfillmentQueryToDate == DateTime.MinValue)
+            if (lastFulfillmentQueryFromDate == DateTime.MinValue || lastFulfillmentQueryToDate == DateTime.MinValue)
             {
+                //First fulfillment record scenario.
                 //Start from Two days before current DateTime.
-                DateTime initDate = DateTime.UtcNow.Date.AddDays(-2);                
+                DateTime initDate = DateTime.UtcNow.Date.AddDays(-2);
                 var (initFrom, initTo) = GetArchiveDates(initDate, queryDateInterval);
                 return (queryDateInterval, initFrom, initTo);
             }
+            else
+            {
+                TimeSpan span = lastFulfillmentQueryToDate.AddSeconds(1) - lastFulfillmentQueryFromDate;
+                //Default to 1 day intervals if span is 0 (e.g. appsettings misread incorrectly)
+                int lastFulfillmentSpanDays = span.Days != 0 ? Math.Abs(span.Days) : 1;
+                var (queryFrom, queryTo) = GetArchiveDates(lastFulfillmentQueryFromDate, lastFulfillmentSpanDays);
 
-            TimeSpan? span = lastFulfillmentQueryToDate - lastFulfillmentQueryFromDate;
-
-            //Default to 1 day intervals in case the span is not found (e.g. appsettings misread incorrectly)
-            int lastFulfillmentSpanDays = (span.HasValue && span.Value.Days != 0) ? Math.Abs(span.Value.Days) : 1;
-
-            var (queryFrom, queryTo) = GetArchiveDates(lastFulfillmentQueryFromDate.Value, lastFulfillmentSpanDays);
-
-            return (lastFulfillmentSpanDays, queryFrom, queryTo);
+                return (lastFulfillmentSpanDays, queryFrom, queryTo);
+            }
         }
 
         /// <summary>
@@ -98,8 +98,8 @@ namespace arx.Extract.BackgroundTasks.Core
 
             try
             {
-                var (lastSpanDays, nextFromDate, nextToDate) = CalculateArchiveQueryDates(lastFulfillment?.QueryFromDate
-                                                            , lastFulfillment?.QueryToDate
+                var (lastSpanDays, nextFromDate, nextToDate) = CalculateArchiveQueryDates(lastFulfillment.QueryFromDate
+                                                            , lastFulfillment.QueryToDate
                                                             , queryDateInterval);
 
                 /* queryDateInterval is optimal */
@@ -172,7 +172,16 @@ namespace arx.Extract.BackgroundTasks.Core
             return fulfillmentItem;
         }
 
-        public static FulfillmentEntity MakeNewFulfillment(JobEntity job, FulfillmentEntity lastFulfillment, int averageQueryDateInterval)
+        /// <summary>
+        /// Pre-Condition : Expects a non-null lastFulfillment object.
+        /// Creates a New FulfillmentEntity object.
+        /// </summary>
+        /// <param name="job"></param>
+        /// <param name="lastFulfillment"></param>
+        /// <param name="averageQueryDateInterval"></param>
+        /// <param name="isFirstFulfillment"></param>
+        /// <returns>FulfillmentEntity</returns>
+        public static FulfillmentEntity MakeNewFulfillment(JobEntity job, FulfillmentEntity lastFulfillment, int averageQueryDateInterval, bool isFirstFulfillment)
         {
             FulfillmentEntity item = new FulfillmentEntity()
             {
@@ -183,11 +192,19 @@ namespace arx.Extract.BackgroundTasks.Core
                 JobCompletedDate = new DateTime(1970, 01, 01)
             };
 
+            if (isFirstFulfillment)
+            {
+                item.QueryFromDate = DateTime.MinValue;
+                item.QueryToDate = DateTime.MinValue;
+            }
+
             item.PartitionKey = item.JobName;
             item.RowKey = item.FulfillmentId.ToString();
 
-            var (_, fromDate, toDate) = ExtractUtil.CalculateArchiveQueryDates
-                (lastFulfillment?.QueryFromDate, lastFulfillment?.QueryToDate, averageQueryDateInterval);
+            var (_, fromDate, toDate) = 
+                CalculateArchiveQueryDates(lastFulfillment.QueryFromDate, 
+                                            lastFulfillment.QueryToDate, 
+                                            averageQueryDateInterval);
 
             item.QueryFromDate = fromDate;
             item.QueryToDate = toDate;
