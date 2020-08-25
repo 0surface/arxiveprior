@@ -6,9 +6,6 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY ["Services/Journal/Journal.Infrastructure/Journal.Infrastructure.csproj", "Services/Journal/Journal.Infrastructure/"]
-COPY ["BuildingBlocks/Extensions/Common.Util/Common.Util.csproj", "BuildingBlocks/Extensions/Common.Util/"]
-COPY ["Services/Journal/Journal.Domain/Journal.Domain.csproj", "Services/Journal/Journal.Domain/"]
-COPY ["BuildingBlocks/HostExtensions/Host.Customization/Host.Customization.csproj", "BuildingBlocks/HostExtensions/Host.Customization/"]
 RUN dotnet restore "Services/Journal/Journal.Infrastructure/Journal.Infrastructure.csproj"
 COPY . .
 WORKDIR "/src/Services/Journal/Journal.Infrastructure"
