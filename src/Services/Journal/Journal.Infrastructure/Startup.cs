@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 namespace Journal.Infrastructure
@@ -18,7 +17,6 @@ namespace Journal.Infrastructure
         }
 
         public IConfiguration Configuration { get; }
-
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -66,7 +64,7 @@ namespace Journal.Infrastructure
 
         public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<SubjectContext>(options =>
+            services.AddDbContext<JournalContext>(options =>
                 {
                     options.UseSqlServer(configuration["ConnectionString"],
                         sqlServerOptionsAction: sqlOptions =>
@@ -76,7 +74,29 @@ namespace Journal.Infrastructure
                     options.UseLazyLoadingProxies();
                 },
                 ServiceLifetime.Scoped //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
-                );
+            );
+            services.AddDbContext<SubjectContext>(options =>
+            {
+                options.UseSqlServer(configuration["ConnectionString"],
+                    sqlServerOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                    });
+                options.UseLazyLoadingProxies();
+            },
+             ServiceLifetime.Scoped //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
+         );
+            services.AddDbContext<FulfillmentContext>(options =>
+            {
+                options.UseSqlServer(configuration["ConnectionString"],
+                    sqlServerOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+                    });
+                options.UseLazyLoadingProxies();
+            },
+             ServiceLifetime.Scoped //Showing explicitly that the DbContext is shared across the HTTP request scope (graph of objects started in the HTTP request)
+         );
             return services;
         }
     }
