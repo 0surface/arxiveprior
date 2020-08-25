@@ -78,7 +78,7 @@ namespace arx.Extract.BackgroundTasks.Extensions
 
                     if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
                     {
-                        retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                        retryCount = int.TryParse(configuration["EventBusRetryCount"], out int val) ? val : retryCount;
                     }
 
                     return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
@@ -95,7 +95,7 @@ namespace arx.Extract.BackgroundTasks.Extensions
 
                    if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
                    {
-                       retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                       retryCount = int.TryParse(configuration["EventBusRetryCount"], out int val)? val:retryCount;
                    }
 
                    return new EventBusRabbitMQ.EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);

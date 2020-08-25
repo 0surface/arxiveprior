@@ -4,7 +4,6 @@ using arx.Extract.Data.Repository;
 using arx.Extract.Lib;
 using EventBus.Abstractions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog;
 using System;
@@ -38,7 +37,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
             IArchiveFetch archiveFetch,
             ITransformService transformService)
         {
-            _config = config?.Value ?? throw new ArgumentException(nameof(config));
+            _config = config?.Value ?? throw new ArgumentException("IOptions<BackgroundTasksConfiguration> is not configured or null");
             _eventBus = eventBus;
             _extractService = extractService;
             _subjectRepo = subjectRepo;
@@ -98,12 +97,14 @@ namespace arx.Extract.BackgroundTasks.Tasks
 
                     if (!string.IsNullOrEmpty(newFulfillmentId))
                     {
-                        var extractionCompletedEvent = new ExtractionCompletedIntegrationEvent(newFulfillmentId);
+                        var archiveExtractionSucceededIntegrationEvent = new ArchiveExtractionSucceededIntegrationEvent(newFulfillmentId);
 
                         Log.Information("----- Publishing Integration Event: {IntegrationEventId} from {AppName} = ({@IntegrationEvent})",
-                                                extractionCompletedEvent.ExtractionId, Program.AppName, extractionCompletedEvent);
+                                                archiveExtractionSucceededIntegrationEvent.ExtractionFulfillmentId,
+                                                Program.AppName,
+                                                archiveExtractionSucceededIntegrationEvent);
 
-                        _eventBus.Publish(extractionCompletedEvent);
+                        _eventBus.Publish(archiveExtractionSucceededIntegrationEvent);
                     }
 
                     Log.Information($"Waiting For [{_config.PostFetchWaitTime / 1000}] seconds before starting next extraction cycle...");
@@ -184,7 +185,7 @@ namespace arx.Extract.BackgroundTasks.Tasks
                             for (int i = 0; i < requests; i++)
                             {
                                 //Apply delay, as per the request by Arxiv.org api access policy.
-                                await Task.Delay(fulfillmentItem.DelayBetweenHttpRequests);
+                                await Task.Delay(fulfillmentItem.DelayBetweenHttpRequests, CancellationToken.None);
 
                                 //Calculate current start index value
                                 int currentStartIndex = (i + 1) * fetched + 1;

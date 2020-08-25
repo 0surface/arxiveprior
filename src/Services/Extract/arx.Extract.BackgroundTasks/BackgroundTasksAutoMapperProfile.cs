@@ -42,7 +42,7 @@ namespace arx.Extract.BackgroundTasks
         /// <param name="context"></param>
         /// <returns>bool</returns>
         public bool Resolve(PublicationItem source, PublicationItemEntity destination, bool destMember, ResolutionContext context)
-            => (destination?.AuthorSpillOverList?.Count + destination?.Authors?.Count) - source?.Authors?.Count() < 0;        
+            => (destination?.AuthorSpillOverList?.Count + destination?.Authors?.Count) - source?.Authors?.Count < 0;        
     }
 
 
@@ -61,9 +61,9 @@ namespace arx.Extract.BackgroundTasks
         {
             ///Guesstimate, tosave processing resources 
             ///30 Author Names with Affliations can be safely put into one cell
-            if (_collectionIndex == 0 && source.Authors.Count() < 30)
+            if (_collectionIndex == 0 && source.Authors.Count < 30)
                 return source.Authors;
-            else if (_collectionIndex > 0 && source.Authors.Count() < 30)
+            else if (_collectionIndex > 0 && source.Authors.Count < 30)
                 return new List<string>();
 
             int _authorsCountLimit

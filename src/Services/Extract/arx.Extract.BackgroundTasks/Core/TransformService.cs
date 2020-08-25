@@ -3,11 +3,9 @@ using arx.Extract.Data.Repository;
 using arx.Extract.Lib;
 using arx.Extract.Types;
 using AutoMapper;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 
 namespace arx.Extract.BackgroundTasks.Core
@@ -173,7 +171,7 @@ namespace arx.Extract.BackgroundTasks.Core
                 || value.ToLower().Contains("primary", StringComparison.OrdinalIgnoreCase)
                 || value.ToLower().Contains("secondary", StringComparison.OrdinalIgnoreCase)//["90C17 (Primary), 90C25 (Secondary), 90C34 (Tertiary)"]                
                 || value.ToLower().Contains("tertiary", StringComparison.OrdinalIgnoreCase)
-                || value.Contains(':',StringComparison.Ordinal) //2010 MSC: 60H15
+                || value.Contains(':', StringComparison.Ordinal) //2010 MSC: 60H15
                 || value.Contains('[', StringComparison.Ordinal) || value.Contains('(', StringComparison.Ordinal)  //[2010] 11T71
                 || value.Length == 2; // 35 85
         }
