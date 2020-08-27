@@ -3,7 +3,6 @@ using AutoMapper;
 using Journal.BackgroundTasks.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static arx.Extract.API.Services.ExtractService;
@@ -26,14 +25,19 @@ namespace Journal.BackgroundTasks.Services
         }
 
 
-        public async Task<PublicationResponseDto> GetArchiveExtractedPublications(DateTime fromDate, DateTime toDate)
+        public async Task<PublicationResponseDto> GetExtractedPublications(string fulfillmentId)
         {
+            if (string.IsNullOrEmpty(_config.GrpcExtractUrl))
+            {
+                _config.GrpcExtractUrl = "http://extract-api:81";
+            }
             return await GrpcCallerService.CallService<PublicationResponseDto>(_config.GrpcExtractUrl, async channel =>
             {
                 var client = new ExtractServiceClient(channel);
                 var request = new PublicationRequest
                 {
-                    ProcessedDataType = ProcessedDataType.Archive
+                    ProcessedDataType = ProcessedDataType.Archive,
+                    FulfillmentId = fulfillmentId
                 };
 
                 _logger.LogInformation("grpc client created, request = {@request}", request);
@@ -51,15 +55,6 @@ namespace Journal.BackgroundTasks.Services
             });
         }
 
-        public Task<PublicationResponseDto> GetExtractedPublications(string fulfillmentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<PublicationResponseDto> GetFirstArchiveExtraction()
-        {
-            throw new NotImplementedException();
-        }
 
         private PublicationResponseDto MapToArxivPublication(PublicationResponse response)
         {
