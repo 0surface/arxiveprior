@@ -31,9 +31,7 @@
       "launchBrowser": false,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/home",
       "publishAllPorts": true,
-      "useSSL": true,
-      "httpPort": 5001,
-      "sslPort": 6001
+      "useSSL": true
     }
   }
 }

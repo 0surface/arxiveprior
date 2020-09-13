@@ -3,7 +3,6 @@ using arx.Extract.Data.Repository;
 using AutoMapper;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -42,8 +41,7 @@ namespace arx.Extract.API.Services
                 }
                 else
                 {
-                    var entities = await _publicationRepo.GetByFulfilmentId(fulfillment.FulfillmentId.ToString());
-
+                    List<PublicationItemEntity> entities = await _publicationRepo.GetByFulfilmentId(fulfillment.FulfillmentId.ToString());                    
                     response.Publications.AddRange(_mapper.Map<List<Publication>>(entities));
                     response.Status = ResponseStatus.Success;
                     response.FulfillmentId = fulfillment.FulfillmentId.ToString();

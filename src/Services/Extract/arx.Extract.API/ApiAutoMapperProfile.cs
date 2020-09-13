@@ -24,6 +24,7 @@ namespace arx.Extract.API
                 .ForMember(m => m.UpdatedDate, opt => opt.MapFrom(entity => Timestamp.FromDateTime(entity.UpdatedDate)))
                 .ForMember(m => m.SubjectCodes, opt => opt.MapFrom<GrpcSubjectCodesResolver>())
                 .ForMember(m => m.Authors, opt => opt.MapFrom<GrpcAuthorListAggregateResolver>());
+                //.ForMember(m => m.MscCodes, opt => opt.MapFrom(e => e.MscCodes));
         }
 
         public class GrpcSubjectCodesResolver : IValueResolver<PublicationItemEntity, Publication, Google.Protobuf.Collections.RepeatedField<string>>

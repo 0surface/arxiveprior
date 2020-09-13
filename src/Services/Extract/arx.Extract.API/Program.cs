@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
+using System.Net;
 
 namespace arx.Extract.API
 {
@@ -21,19 +23,19 @@ namespace arx.Extract.API
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    //webBuilder.ConfigureKestrel(options =>
-                    //{
-                    //    var ports = GetDefinedPorts(configuration);
-                    //    options.Listen(IPAddress.Any, ports.httpPort, listenOptions =>
-                    //    {
-                    //        listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
-                    //    });
+                    webBuilder.ConfigureKestrel(options =>
+                    {
+                        var ports = GetDefinedPorts(configuration);
+                        options.Listen(IPAddress.Any, ports.httpPort, listenOptions =>
+                        {
+                            listenOptions.Protocols = HttpProtocols.Http1AndHttp2;
+                        });
 
-                    //    options.Listen(IPAddress.Any, ports.grpcPort, listenOptions =>
-                    //    {
-                    //        listenOptions.Protocols = HttpProtocols.Http2;
-                    //    });
-                    //});
+                        options.Listen(IPAddress.Any, ports.grpcPort, listenOptions =>
+                        {
+                            listenOptions.Protocols = HttpProtocols.Http2;
+                        });
+                    });
                 });
 
 

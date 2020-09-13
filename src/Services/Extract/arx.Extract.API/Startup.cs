@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace arx.Extract.API
@@ -36,16 +37,19 @@ namespace arx.Extract.API
                     .AddFulfillmentItemService(storageConfig);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             var pathBase = Configuration["PATH_BASE"];
+            if (!string.IsNullOrEmpty(pathBase))
+            {
+                loggerFactory.CreateLogger<Startup>().LogDebug("Using PATH BASE '{pathBase}'", pathBase);
+                app.UsePathBase(pathBase);
+            }
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
 
             app.UseCustomSwagger(pathBase);
 
@@ -56,9 +60,7 @@ namespace arx.Extract.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<JournalService>();
-
                 endpoints.MapControllers();
-
                 endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
                 {
                     Predicate = _ => true,
@@ -163,11 +165,10 @@ namespace arx.Extract.API
 
         public static IServiceCollection AddGrpc(this IServiceCollection services)
         {
-            services.AddGrpc(opt =>
+            return services.AddGrpc(opt =>
             {
                 opt.EnableDetailedErrors = true;
-            });
-            return services;
+            }).Services;
         }
 
         #endregion Service Collection

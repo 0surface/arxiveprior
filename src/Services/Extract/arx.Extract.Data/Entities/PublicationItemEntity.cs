@@ -8,28 +8,28 @@ namespace arx.Extract.Data.Entities
 {
     public class PublicationItemEntity : TableEntity, IArxivPublication
     {
-        public string FulfillmentId { get; set; }//PK
-        public string ArxivId { get; set; } //T , RK
+        public string FulfillmentId { get; set; } = "";//PK
+        public string ArxivId { get; set; } = "";//T , RK
 
-        public string FulFillmentItemId { get; set; }
+        public string FulFillmentItemId { get; set; } = "";
         public DateTime PublishedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
 
-        public string Title { get; set; }
-        public string Abstract { get; set; }
-        public string Comment { get; set; }
+        public string Title { get; set; } = "";
+        public string Abstract { get; set; } = "";
+        public string Comment { get; set; } = "";
 
-        public string PrimarySubjectCode { get; set; }
+        public string PrimarySubjectCode { get; set; } = "";
 
 
-        public string JournalReference { get; set; }
-        public string Doi { get; set; }
-        public string DoiLinks { get; set; }
+        public string JournalReference { get; set; } = "";
+        public string Doi { get; set; } = "";
+        public string DoiLinks { get; set; } = "";
 
         [EntityJsonPropertyConverter]
         public List<string> SubjectCodes { get; set; }
-        public string MscCodes { get; set; }
-        public string AcmCodes { get; set; }
+        public string MscCodes { get; set; } = "";
+        public string AcmCodes { get; set; } = "";
 
         [EntityJsonPropertyConverter]
         public List<string> Authors { get; set; }
