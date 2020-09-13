@@ -23,7 +23,7 @@ namespace Journal.BackgroundTasks.Tasks
     {
         private readonly ILogger<ArchiveJournalProcessingService> _logger;
         private readonly IEventBus _eventBus;
-        private readonly IExtractApiService _extractApiService;
+        private readonly ExtractGrpcService _extractApiService;
         private readonly ITransformService _transformService;
         private readonly IFulfillmentRepository _fulfillmentRepository;
         private readonly JournalContext _journalContext;
@@ -34,7 +34,7 @@ namespace Journal.BackgroundTasks.Tasks
         public ArchiveJournalProcessingService(ILogger<ArchiveJournalProcessingService> logger,
             IOptions<JournalBackgroundTasksConfiguration> config,
             IEventBus eventBus,
-            IExtractApiService extractApiService,
+            ExtractGrpcService extractApiService,
             ITransformService transformService,
             IFulfillmentRepository fulfillmentRepository,
             JournalContext journalContext)
@@ -133,11 +133,11 @@ namespace Journal.BackgroundTasks.Tasks
                 return await Task.FromResult((0, string.Empty));
             }
             else
-            {
+            {                
                 //Query Extract Api for Publications
                 PublicationResponseDto responseDto = new PublicationResponseDto();
-                responseDto = await _extractApiService.GetExtractedPublications(nextFulfillment.ExtractionFulfillmentId);
-
+                responseDto = await _extractApiService.GetExtractedPublications(nextFulfillment.ExtractionFulfillmentId);                
+                
                 nextFulfillment.SetJobAsStarted();
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();

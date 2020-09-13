@@ -1,4 +1,5 @@
 using Autofac.Extensions.DependencyInjection;
+using Journal.BackgroundTasks.Config;
 using Journal.BackgroundTasks.Services;
 using Journal.BackgroundTasks.Tasks;
 using Journal.Infrastructure.Repositories;
@@ -26,14 +27,16 @@ namespace Journal.BackgroundTasks
                     string connectionString = hostContext.Configuration["ConnectionString"];
 
                     services.AddHostedService<ArchiveJournalProcessingService>();
+                    services.AddGrpcClient<ExtractGrpcService>();
 
                     services.Configure<EventBusConfiguration>(eventBusConfig)
-                            .Configure<JournalBackgroundTasksConfiguration>(hostContext.Configuration);
+                            .Configure<JournalBackgroundTasksConfiguration>(hostContext.Configuration)
+                            .Configure<UrlsConfig>(hostContext.Configuration.GetSection("urls"));
 
                     services.AddEventBus(eventBusConfig)
                             .AddConfiguredAutoMapper()
-                            .AddScoped<IFulfillmentRepository, FulfillmentRepository>()
-                            .AddScoped<IExtractApiService, ExtractApiService>()
+                            .AddScoped<IFulfillmentRepository, FulfillmentRepository>()                            
+                            .AddScoped<ExtractGrpcService, ExtractGrpcService>()
                             .AddScoped<ITransformService, TransformService>()
                             .AddCustomDbContext(connectionString);
                 })

@@ -1,60 +1,72 @@
 ﻿using arx.Extract.API.Services;
 using AutoMapper;
+using Journal.BackgroundTasks.Config;
 using Journal.BackgroundTasks.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static arx.Extract.API.Services.ExtractService;
 
 namespace Journal.BackgroundTasks.Services
 {
-    public class ExtractApiService : IExtractApiService
+    public class ExtractGrpcService : ExtractServiceClient
     {
-        private readonly ILogger<ExtractApiService> _logger;
+        private readonly ILogger<ExtractGrpcService> _logger;
         private readonly IMapper _mapper;
+        private readonly UrlsConfig _urlsConfig;
         private readonly JournalBackgroundTasksConfiguration _config;
 
-        public ExtractApiService(ILogger<ExtractApiService> logger,
+        public ExtractGrpcService(ILogger<ExtractGrpcService> logger,
             IMapper mapper,
-            IOptions<JournalBackgroundTasksConfiguration> config)
+            IOptions<JournalBackgroundTasksConfiguration> config,
+             IOptions<UrlsConfig> urlsConfig)
+
         {
             _logger = logger;
             _mapper = mapper;
+            _urlsConfig = urlsConfig.Value;
             _config = config.Value;
         }
 
-
         public async Task<PublicationResponseDto> GetExtractedPublications(string fulfillmentId)
         {
-            if (string.IsNullOrEmpty(_config.GrpcExtractUrl))
+            try
             {
-                _config.GrpcExtractUrl = "http://extract-api:81";
+                return await GrpcCallerService.CallService(_urlsConfig.GrpcExtract, async channel =>
+                {
+                    var client = new ExtractServiceClient(channel);
+
+                    var request = new PublicationRequest
+                    {
+                        ProcessedDataType = ProcessedDataType.Archive,
+                        FulfillmentId = fulfillmentId
+                    };
+
+                    _logger.LogInformation("grpc client created, request = {@request}", request);
+                    var response = await client.GetExtractedPublicationsAsync(request);
+                    _logger.LogInformation("grpc response {@response}", response);
+
+                    var dto = MapToArxivPublication(response);
+
+                    if (!dto.IsSuccess)
+                    {
+                        _logger.LogError("ExtractServiceClient grpc request returned a non-successful result.", request, dto.ErrorMessage);
+                    }
+
+                    return dto;
+                });
             }
-            return await GrpcCallerService.CallService<PublicationResponseDto>(_config.GrpcExtractUrl, async channel =>
+            catch (Exception ex)
             {
-                var client = new ExtractServiceClient(channel);
-                var request = new PublicationRequest
+                return new PublicationResponseDto()
                 {
-                    ProcessedDataType = ProcessedDataType.Archive,
-                    FulfillmentId = fulfillmentId
+                    ErrorMessage = ex.Message,
+                    IsSuccess = false
                 };
-
-                _logger.LogInformation("grpc client created, request = {@request}", request);
-                var response = await client.GetExtractedPublicationsAsync(request);
-                _logger.LogInformation("grpc response {@response}", response);
-
-                var dto = MapToArxivPublication(response);
-
-                if (!dto.IsSuccess)
-                {
-                    _logger.LogError("ExtractServiceClient grpc request returned a non-successful result.", request, dto.ErrorMessage);
-                }
-
-                return dto;
-            });
+            }
         }
-
 
         private PublicationResponseDto MapToArxivPublication(PublicationResponse response)
         {
