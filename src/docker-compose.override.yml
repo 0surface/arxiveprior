@@ -31,8 +31,9 @@ services:
   arx.extract.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_URLS=http://0.0.0.0:80
       - Storage__StorageConnectionString=${ARX_AZURE_EXTRACT_STORAGE_CS}
+      - PATH_BASE=/extract-api
       - GRPC_PORT=81
       - PORT=80
     ports:
@@ -56,8 +57,10 @@ services:
   journal.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionString=${ARX_AZURE_JOURNAL_DB:-Server=sqldata;Database=arxiveprior.Services.JournalDb;User Id=sa;Password=Pass@word}
+      - urls__grpcExtract=http://arx.extract.api:81
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ConnectionString=${ARX_AZURE_JOURNAL_DB:-Server=sqldata;Database=arxiveprior.Services.JournalDb;User Id=sa;Password=Pass@word}      
+      - PATH_BASE=/journal-api
       - GRPC_PORT=81
       - PORT=80
     ports:
@@ -79,6 +82,7 @@ services:
       - EventBusUserName=${ARX_SERVICE_BUS_USERNAME}
       - EventBusPassword=${ARX_SERVICE_BUS_PASSWORD}
       - AzureServiceBusEnabled=False
+      - urls__grpcExtract=http://arx.extract.api:81
   
   journal.infrastructure:
     environment:
