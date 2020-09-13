@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Common\Common.Types\Common.Types.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Extensions\Common.Util\Common.Util.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\HostExtensions\WebHost.Customization\WebHost.Customization.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\EventBusRabbitMQ\EventBusRabbitMQ.csproj" />
@@ -54,6 +55,15 @@
     <Folder Include="Application\Models\Article\" />
     <Folder Include="Application\Models\Author\" />
     <Folder Include="Application\Models\ExtractJob\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\..\Extract\arx.Extract.API\Protos\enums.proto" GrpcServices="None">
+      <Link>Protos\enums.proto</Link>
+    </Protobuf>
+    <Protobuf Include="..\..\Extract\arx.Extract.API\Protos\ExtractService.proto" GrpcServices="Client">
+      <Link>Protos\ExtractService.proto</Link>
+    </Protobuf>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://json.schemastore.org/appsettings" appsettings_1production_1json__JsonSchema="https://json.schemastore.org/appsettings" /></VisualStudio></ProjectExtensions>

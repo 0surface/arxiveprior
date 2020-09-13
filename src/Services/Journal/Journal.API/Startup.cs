@@ -7,6 +7,8 @@ using EventBusServiceBus;
 using HealthChecks.UI.Client;
 using Journal.API.Application.IntegrationEvents.EventHandling;
 using Journal.API.Application.IntegrationEvents.Events;
+using Journal.API.Config;
+using Journal.API.Services;
 using Journal.Infrastructure;
 using Journal.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
@@ -21,6 +23,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
+using Serilog;
 using System.Reflection;
 
 namespace Journal.API
@@ -48,15 +51,10 @@ namespace Journal.API
                     .AddCustomDbContext(Configuration)
                     .AddCustomIntegrations(Configuration.GetSection("EventBus"))
                     .RegisterEventBus(Configuration.GetSection("EventBus"))
+                    .Configure<UrlsConfig>(Configuration.GetSection("urls"))
                     .AddCustomSwagger()
-                    .AddCustomServices();
-
-            //configure autofac
-
-            //var container = new ContainerBuilder();
-            //container.Populate(services);
-            //container.Build();
-            //return new AutofacServiceProvider(container.Build());
+                    .AddCustomServices()
+                    .AddHttpServices();
         }
 
         /// <summary>
@@ -82,6 +80,12 @@ namespace Journal.API
         {
             var pathBase = Configuration["PATH_BASE"];
 
+            if (!string.IsNullOrEmpty(pathBase))
+            {                
+                Log.Debug("Using PATH BASE '{pathBase}'", pathBase);
+                app.UsePathBase(pathBase);
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -96,7 +100,7 @@ namespace Journal.API
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
-            {
+            {                
                 endpoints.MapControllers();
                 endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
                 {
@@ -193,7 +197,14 @@ namespace Journal.API
         {
             services.AddScoped<ISubjectRepository, SubjectRepository>();
             services.AddScoped<IFulfillmentRepository, FulfillmentRepository>();
+            services.AddScoped<IArticleService, ArticleService>();
 
+            return services;
+        }
+
+        public static IServiceCollection AddHttpServices(this IServiceCollection services)
+        {
+            services.AddHttpClient<IArticleService, ArticleService>();
             return services;
         }
 
@@ -232,7 +243,7 @@ namespace Journal.API
                 });
             }
             else
-            {            
+            {
                 services.AddSingleton<IEventBus, EventBusRabbitMQ.EventBusRabbitMQ>(sp =>
                 {
                     var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
