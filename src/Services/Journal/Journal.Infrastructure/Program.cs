@@ -27,6 +27,20 @@ namespace Journal.Infrastructure
                 Log.Information("Configuring Console Application ({ApplicationContext})...", AppName);
                 var host = CreateHostBuilder(args).Build();
 
+                Log.Information("Starting Journal DbContext Migration  ({ApplicationContext})...", AppName);
+                host.MigrateDbContext<JournalContext>((context, services) => 
+                {
+                    var settings = services.GetService<IOptions<JournalConfiguration>>();
+                    var logger = services.GetService<ILogger<JournalContextSeed>>();
+
+                    new JournalContextSeed()
+                        .SeedAsync(context, settings, logger)
+                        .Wait();
+                });
+
+                Log.Information("Starting Fulfillment DbContext Migration({ApplicationContext})...", AppName);
+                host.MigrateDbContext<FulfillmentContext>((context, services) => { });
+
                 Log.Information("Starting Subject DbContext Migration Seeding ({ApplicationContext})...", AppName);
                 host.MigrateDbContext<SubjectContext>((context, services) =>
                 {
@@ -37,7 +51,7 @@ namespace Journal.Infrastructure
                         .SeedAsync(context, settings, logger)
                         .Wait();
                 });
-
+              
                 host.Run();
 
                 return 0;

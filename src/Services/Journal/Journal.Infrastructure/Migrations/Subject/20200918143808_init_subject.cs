@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Journal.Infrastructure.Migrations
+namespace Journal.Infrastructure.Migrations.Subject
 {
-    public partial class Initial : Migration
+    public partial class init_subject : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

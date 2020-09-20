@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Journal.Infrastructure.Migrations.Journal
+namespace Journal.Infrastructure.Migrations
 {
-    public partial class update_02_Journal : Migration
+    public partial class init_journal : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -102,24 +102,6 @@ namespace Journal.Infrastructure.Migrations.Journal
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SubjectGroup", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Subjects",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
-                    GroupCode = table.Column<string>(nullable: true),
-                    GroupName = table.Column<string>(nullable: true),
-                    Discipline = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Subjects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -371,9 +353,6 @@ namespace Journal.Infrastructure.Migrations.Journal
 
             migrationBuilder.DropTable(
                 name: "Fulfillments");
-
-            migrationBuilder.DropTable(
-                name: "Subjects");
 
             migrationBuilder.DropTable(
                 name: "Version");

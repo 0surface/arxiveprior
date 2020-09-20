@@ -17,6 +17,9 @@ namespace Journal.Infrastructure
         public DbSet<Author> Authors { get; set; }
         public DbSet<PaperVersion> PaperVersions { get; set; }
         public DbSet<Fulfillment> Fulfillments { get; set; }
+        public DbSet<SubjectCode> SubjectCode { get; set; }
+        public DbSet<SubjectGroup> SubjectGroup { get; set; }
+        public DbSet<Discipline> Discipline { get; set; }
 
         public JournalContext(DbContextOptions<JournalContext> options) : base(options) { }
 

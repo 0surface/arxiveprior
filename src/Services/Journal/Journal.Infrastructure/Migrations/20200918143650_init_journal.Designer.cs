@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Journal.Infrastructure.Migrations.Journal
+namespace Journal.Infrastructure.Migrations
 {
     [DbContext(typeof(JournalContext))]
-    [Migration("20200822235411_update_0.2_Journal")]
-    partial class update_02_Journal
+    [Migration("20200918143650_init_journal")]
+    partial class init_journal
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -366,36 +366,6 @@ namespace Journal.Infrastructure.Migrations.Journal
                     b.HasKey("Id");
 
                     b.ToTable("Fulfillments");
-                });
-
-            modelBuilder.Entity("Journal.Domain.AggregatesModel.SubjectAggregate.Subject", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Code")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discipline")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GroupCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GroupName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("Journal.Domain.AggregatesModel.ArticleAggregate.Article", b =>

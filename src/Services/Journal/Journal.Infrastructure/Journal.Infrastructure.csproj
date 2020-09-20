@@ -10,6 +10,8 @@
   <ItemGroup>
     <Compile Remove="Migrations\20200802103913_initial.cs" />
     <Compile Remove="Migrations\20200802103913_initial.Designer.cs" />
+    <Compile Remove="Migrations\Fulfillment\20200918143908_init_fulfillment.cs" />
+    <Compile Remove="Migrations\Fulfillment\20200918143908_init_fulfillment.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,6 +74,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Migrations\Fulfillment\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

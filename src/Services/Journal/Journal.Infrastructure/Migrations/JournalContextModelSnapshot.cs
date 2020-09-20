@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Journal.Infrastructure.Migrations.Journal
+namespace Journal.Infrastructure.Migrations
 {
     [DbContext(typeof(JournalContext))]
     partial class JournalContextModelSnapshot : ModelSnapshot
