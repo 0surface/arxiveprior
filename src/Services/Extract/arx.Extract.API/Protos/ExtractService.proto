@@ -5,8 +5,9 @@ option csharp_namespace = "arx.Extract.API.Services";
 import "enums.proto";
 import "google/protobuf/timestamp.proto";
 
-service ExtractService {
+service ExtractService {   
 	rpc GetExtractedPublications (PublicationRequest) returns (PublicationResponse);
+    rpc StreamExtractedPublications (PublicationRequest) returns (stream PublicationResponse);
 }
 
 message PublicationRequest {

@@ -1,7 +1,10 @@
+using arx.Extract.API.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.IO;
 using System.Net;
@@ -10,15 +13,15 @@ namespace arx.Extract.API
 {
     public class Program
     {
+        public static readonly string AppName = typeof(Program).Assembly.GetName().Name;
         public static readonly string EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
         public static void Main(string[] args)
         {
-            var configuration = GetConfiguration();
-            CreateHostBuilder(configuration, args).Build().Run();
+            CreateHostBuilder(GetConfiguration(), args).Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(IConfiguration configuration, string[] args) =>
+        public static IHost CreateHostBuilder(IConfiguration configuration, string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -36,7 +39,9 @@ namespace arx.Extract.API
                             listenOptions.Protocols = HttpProtocols.Http2;
                         });
                     });
-                });
+                })
+             .ConfigureLogging((host, builder) => builder.UseSerilog(configuration).AddSerilog())
+             .Build();
 
 
         private static IConfiguration GetConfiguration()

@@ -29,10 +29,11 @@ namespace arx.Extract.API
             services.AddControllers();
             services.Configure<StorageConfiguration>(storageConfig)
                     .AddCustomSwagger()
-                    .AddGrpc()
+                    .AddConfiguredGrpc()
                     .AddHealthChecks(storageConfig)
                     .AddConfiguredAutoMapper()
                     .AddJournalService(storageConfig)
+                    .AddPublicationRepository(storageConfig)
                     .AddFulfillmentService(storageConfig)
                     .AddFulfillmentItemService(storageConfig);
         }
@@ -122,6 +123,18 @@ namespace arx.Extract.API
             return services;
         }
 
+        public static IServiceCollection AddPublicationRepository(this IServiceCollection services, IConfiguration configuration)
+        {
+            var storageConnectionString = configuration["StorageConnectionString"];
+            var publicationTableName = configuration["PublicationTableName"];
+
+            services.AddScoped<IPublicationRepository>(opt =>
+            {
+                return new PublicationRepository(storageConnectionString, publicationTableName);
+            });
+            return services;
+        }
+
         public static IServiceCollection AddFulfillmentService(this IServiceCollection services, IConfiguration configuration)
         {
             var storageConnectionString = configuration["StorageConnectionString"];
@@ -149,6 +162,16 @@ namespace arx.Extract.API
         public static IServiceCollection AddConfiguredAutoMapper(this IServiceCollection services)
         {
             services.AddSingleton(ConfigureAutoMapper());
+            return services;
+        }
+
+        public static IServiceCollection AddConfiguredGrpc(this IServiceCollection services)
+        {
+            services.AddGrpc(opt =>
+            {
+                opt.MaxSendMessageSize = int.MaxValue; //~2GB
+                opt.MaxReceiveMessageSize = int.MaxValue; //~2GB
+            });
             return services;
         }
 
