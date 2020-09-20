@@ -136,14 +136,17 @@ namespace Journal.BackgroundTasks.Tasks
             {                
                 //Query Extract Api for Publications
                 PublicationResponseDto responseDto = new PublicationResponseDto();
-                responseDto = await _extractApiService.GetExtractedPublications(nextFulfillment.ExtractionFulfillmentId);                
-                
+                responseDto = await _extractApiService.StreamPublications(nextFulfillment.ExtractionFulfillmentId);
+
+                //Set the Query Dates (since these weren't included in the received Queue Message)
+                nextFulfillment.SetQueryDates(responseDto.QueryFromDate, responseDto.QueryToDate);
+
                 nextFulfillment.SetJobAsStarted();
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
 
                 // Invoke transform service to convert to articles
-                var (success, allArticles) = _transformService.MapToDomain(responseDto.PublicationItems, nextFulfillment.Id);
+                var (success, allArticles) = _transformService.MapToDomain(responseDto?.PublicationItems, nextFulfillment.Id);
 
                 if (!success)
                 {
@@ -151,6 +154,7 @@ namespace Journal.BackgroundTasks.Tasks
                     stopwatch.Stop();
                     nextFulfillment.SetProcessingTime(stopwatch.ElapsedMilliseconds);
                     _logger.LogError($"Fulfillment Id {nextFulfillment.Id} - Mapping Publications to Articles failed");
+                    _fulfillmentRepository.Save(nextFulfillment);
                     await StopAsync(stoppingToken);
                     return await Task.FromResult((0, nextFulfillment.ExtractionFulfillmentId));
                 }
@@ -171,18 +175,36 @@ namespace Journal.BackgroundTasks.Tasks
                         //Get List of existing arxiv Ids
                         existingArxivIds = existingArticles?.Select(x => x.ArxivId)?.ToArray();
 
+                        int updateBatchSize = 30;
+                        int updateAttachedCount = 0;
+                        int updatedBatchCount = 0;
+
                         // Perform 'update' operations on 'existing' with 'new version', in the dbContext
-                        foreach (var existing in existingArticles)
+                        foreach (var existing in existingArticles ?? new List<Article>())
                         {
                             var newArticleVersion = allArticles.Where(x => x.ArxivId == existing.ArxivId).FirstOrDefault();
                             existing.Update(newArticleVersion);
                             _journalContext.Articles.Attach(existing);
                             updatedCount++;
+
+                            updateAttachedCount++;
+
+                            if (updateAttachedCount == updateBatchSize)
+                            {
+                                await _journalContext.SaveChangesAsync(CancellationToken.None);
+                                updatedBatchCount++;
+                                _logger.LogInformation($"Updating batch No: [{updatedBatchCount}]");
+                                updateAttachedCount = 0;
+                            }
                         }
                     }
 
                     //Select articles to be inserted
                     var tobeInsertedArticles = allArticles.Where(x => existingArxivIds.Contains(x.ArxivId) == false)?.ToList();
+
+                    int insertBatchSize = 30;
+                    int insertAttachedCount = 0;
+                    int insertedBatchCount = 0;
 
                     // Perform 'add/insert' or 'update' operations on this 'new' subset
                     foreach (var inserted in tobeInsertedArticles ?? new List<Article>())
@@ -203,9 +225,17 @@ namespace Journal.BackgroundTasks.Tasks
                             _journalContext.Articles.Attach(inserted);
                             insertedCount++;
                         }
-                    }
 
-                    await _journalContext.SaveChangesAsync(CancellationToken.None);
+                        insertAttachedCount++;
+
+                        if(insertAttachedCount == insertBatchSize)
+                        {
+                            await _journalContext.SaveChangesAsync(CancellationToken.None);
+                            insertedBatchCount++;
+                            _logger.LogInformation($"Inserting batch No: [{insertedBatchCount}]");
+                            insertAttachedCount = 0;
+                        }
+                    }                    
 
                     _logger.LogInformation($"Saving Articles to Database from Fulfillment : id {nextFulfillment.Id}");
 

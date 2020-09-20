@@ -22,8 +22,6 @@ namespace Journal.BackgroundTasks.Services
                 {
                     articles.AddIfNotNull(MapArxivPublicationToArticle(dto, journalProcessId));
                 });
-
-                return (articles.Count == publications.Count, articles);
             }
             catch (Exception ex)
             {

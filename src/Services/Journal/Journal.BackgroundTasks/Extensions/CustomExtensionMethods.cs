@@ -4,6 +4,7 @@ using EventBus;
 using EventBus.Abstractions;
 using EventBusRabbitMQ;
 using EventBusServiceBus;
+using Journal.BackgroundTasks.Services;
 using Journal.Infrastructure;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
@@ -134,6 +135,15 @@ namespace Journal.BackgroundTasks
         public static IServiceCollection AddConfiguredAutoMapper(this IServiceCollection services)
         {
             services.AddSingleton(ConfigureAutoMapper());
+            return services;
+        }
+        
+        public static IServiceCollection AddConfiguredGrpcClient(this IServiceCollection services)
+        {
+            services.AddGrpcClient<ExtractGrpcService>(opt =>
+            {
+                opt.ChannelOptionsActions.Add(opt => opt.MaxReceiveMessageSize = int.MaxValue /*~2GB*/);
+            });
             return services;
         }
 
