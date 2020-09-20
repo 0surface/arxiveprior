@@ -27,7 +27,7 @@ namespace Journal.BackgroundTasks
                     string connectionString = hostContext.Configuration["ConnectionString"];
 
                     services.AddHostedService<ArchiveJournalProcessingService>();
-                    services.AddGrpcClient<ExtractGrpcService>();
+                    services.AddConfiguredGrpcClient();
 
                     services.Configure<EventBusConfiguration>(eventBusConfig)
                             .Configure<JournalBackgroundTasksConfiguration>(hostContext.Configuration)
