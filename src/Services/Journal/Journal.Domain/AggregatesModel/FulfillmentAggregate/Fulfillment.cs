@@ -70,6 +70,12 @@ namespace Journal.Domain.AggregatesModel.JobAggregate
             IsPending = false;
         }
 
+        public void SetQueryDates(DateTime queryFromDate, DateTime queryToDate)
+        {
+            QueryFromDate = queryFromDate;
+            QueryToDate = queryToDate;
+        }
+
         public void SetJobAsFailed()
         {
             JobCompletedDate = DateTime.UtcNow;

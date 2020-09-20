@@ -85,7 +85,7 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             string mscCategory, string acmCategory,
             string doi, string doiLinks,
             List<string> subjects, List<String> authors) 
-            : this()
+            : base()
         {
             JournalProcessedId = journalProcessedId;
             VersionedArxivId = arxivId;
@@ -102,6 +102,10 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
             AcmCategory = acmCategory;
             Doi = doi;
             DoiLinks = doiLinks;
+
+            AuthorArticles = new List<AuthorArticle>();
+            CategoryArticles = new List<CategoryArticle>();
+            _paperVersions = new List<PaperVersion>();
 
             ProcessDates();
             ProcessDerived();
@@ -135,7 +139,7 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
            
 
             string tag = VersionedArxivId.GetSubStringAfterCharValue('v', true);
-            ArxivId = ArxivId.Replace(tag, string.Empty);
+            ArxivId = VersionedArxivId.Replace(tag, string.Empty);
 
             int.TryParse(tag.Replace("v", string.Empty), out int vnum);
             VersionNumber = vnum;

@@ -16,7 +16,6 @@ namespace Journal.Domain.AggregatesModel.ArticleAggregate
         }
 
         public Affiliation(string affiliateName) 
-            : base()
         {
             Name = affiliateName;
         }
